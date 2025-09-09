@@ -656,7 +656,12 @@ export default {
       heading: 'IGTV 视频下载',
       subheading: '下载 IGTV 长视频内容，支持高清格式',
       inputPlaceholder: '粘贴IGTV视频链接...',
-      features: ['长视频', '高清格式', '稳定下载', '大文件支持'],
+      features: {
+        0: '长视频',
+        1: '高清格式',
+        2: '稳定下载',
+        3: '大文件支持'
+      },
       howToUse: '如何下载 IGTV 视频？'
     },
     highlights: {

@@ -49,7 +49,7 @@ const createDownloadFormSchema = (t: any) => z.object({
   format: z.enum(['individual', 'zip']).default('individual'),
 });
 
-type FormData = z.infer<typeof downloadFormSchema>;
+// FormData类型将在组件内部定义
 
 interface DownloadFormProps {
   onDownloadStart?: (data: DownloadFormData) => void;
@@ -79,6 +79,7 @@ export function DownloadForm({
   const t = useI18n();
   
   const downloadFormSchema = createDownloadFormSchema(t);
+  type FormData = z.infer<typeof downloadFormSchema>;
   
   const {
     register,

@@ -656,7 +656,12 @@ export default {
       heading: 'IGTV Video Download',
       subheading: 'Download IGTV long video content with HD format support',
       inputPlaceholder: 'Paste IGTV video link...',
-      features: ['Long Videos', 'HD Format', 'Stable Download', 'Large File Support'],
+      features: {
+        0: 'Long Videos',
+        1: 'HD Format', 
+        2: 'Stable Download',
+        3: 'Large File Support'
+      },
       howToUse: 'How to Download IGTV Videos?'
     },
     highlights: {
