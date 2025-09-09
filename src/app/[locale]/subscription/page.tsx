@@ -22,7 +22,7 @@ interface SubscriptionData {
 }
 
 export default function SubscriptionPage() {
-  const { t } = useI18n()
+  const t = useI18n()
   const { status } = useSession()
   const router = useRouter()
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null)

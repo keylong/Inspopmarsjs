@@ -23,7 +23,6 @@ export default function SignInPage() {
 
         {/* Stack Auth 登录组件 */}
         <SignIn 
-          afterSignIn={() => router.push('/')}
           // 自定义样式
           className="w-full"
         />

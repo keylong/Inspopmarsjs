@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { locales, defaultLocale, getLocaleFromCountryCode, isValidLocale } from './lib/i18n/config';
-import { stackApp } from '@/lib/stack-auth';
 
 // 辅助函数：从路径中提取语言代码
 function getLocaleFromPathname(pathname: string): string | undefined {
@@ -86,20 +85,15 @@ export default async function middleware(request: NextRequest) {
   // 移除语言代码后的实际路径
   const pathnameWithoutLocale = pathname.slice(`/${currentLocale}`.length) || '/';
 
-  // 检查认证要求 - 使用 Stack Auth
+  // 检查认证要求
+  // 注意：Stack Auth 的认证检查应该在组件级别进行，
+  // 因为中间件在 Edge Runtime 中运行，无法访问某些 Node.js API
   if (requiresAuth(pathnameWithoutLocale)) {
-    try {
-      // Stack Auth 会自动从 cookies 中读取 session
-      const user = await stackApp.getUser({ req: request });
-      
-      if (!user) {
-        // 重定向到登录页面，保持当前语言
-        const loginUrl = new URL(`/${currentLocale}/auth/signin`, request.url);
-        loginUrl.searchParams.set('callbackUrl', request.url);
-        return NextResponse.redirect(loginUrl);
-      }
-    } catch (error) {
-      // 认证检查失败，重定向到登录页
+    // 检查是否有 Stack Auth 的 cookie
+    const stackSession = request.cookies.get('stack-session');
+    
+    if (!stackSession) {
+      // 重定向到登录页面，保持当前语言
       const loginUrl = new URL(`/${currentLocale}/auth/signin`, request.url);
       loginUrl.searchParams.set('callbackUrl', request.url);
       return NextResponse.redirect(loginUrl);

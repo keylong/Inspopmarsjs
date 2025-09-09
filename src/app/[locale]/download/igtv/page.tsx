@@ -88,9 +88,9 @@ export default function IGTVDownloadPage() {
 
             {/* 特性标签 */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {[0, 1, 2, 3].map((index: number) => (
+              {Object.values(t('downloadPages.igtv.features') as Record<string, string>).map((feature: string, index: number) => (
                 <span key={index} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                  {t('downloadPages.igtv.features')[index]}
+                  {feature}
                 </span>
               ))}
             </div>
@@ -204,28 +204,28 @@ export default function IGTVDownloadPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-purple-500 mb-3"><Clock /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.igtv.features.0' as any)}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{(t('downloadPages.igtv.features') as Record<string, string>)['0']}</h3>
               <p className="text-gray-600 text-sm">
                 专为 IGTV 长视频设计，支持任意时长的视频内容。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-purple-500 mb-3">🎯</div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.igtv.features.1' as any)}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{(t('downloadPages.igtv.features') as Record<string, string>)['1']}</h3>
               <p className="text-gray-600 text-sm">
                 下载高清格式的 IGTV 视频，保持最佳画质。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-purple-500 mb-3"><PlayCircle /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.igtv.features.2' as any)}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{(t('downloadPages.igtv.features') as Record<string, string>)['2']}</h3>
               <p className="text-gray-600 text-sm">
                 优化的下载算法，即使是大文件也能稳定下载。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-purple-500 mb-3"><HardDrive /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.igtv.features.3' as any)}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{(t('downloadPages.igtv.features') as Record<string, string>)['3']}</h3>
               <p className="text-gray-600 text-sm">
                 专门处理大文件，确保完整下载不中断。
               </p>

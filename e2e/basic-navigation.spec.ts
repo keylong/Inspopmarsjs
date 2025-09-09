@@ -46,13 +46,13 @@ test.describe('基础导航测试', () => {
     const footer = page.getByRole('contentinfo');
     
     // 检查Twitter链接
-    const twitterLink = footer.getByLabelText('在 Twitter 上关注我们');
+    const twitterLink = footer.getByLabel('在 Twitter 上关注我们');
     await expect(twitterLink).toBeVisible();
     await expect(twitterLink).toHaveAttribute('target', '_blank');
     await expect(twitterLink).toHaveAttribute('rel', 'noopener noreferrer');
     
     // 检查Facebook链接
-    const facebookLink = footer.getByLabelText('在 Facebook 上关注我们');
+    const facebookLink = footer.getByLabel('在 Facebook 上关注我们');
     await expect(facebookLink).toBeVisible();
     await expect(facebookLink).toHaveAttribute('target', '_blank');
     await expect(facebookLink).toHaveAttribute('rel', 'noopener noreferrer');

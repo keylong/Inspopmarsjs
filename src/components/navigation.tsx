@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
@@ -11,7 +10,7 @@ import { User, LogOut } from 'lucide-react';
 
 export function Navigation() {
   const pathname = usePathname();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, signOut } = useAuth();
   const currentLocale = useCurrentLocale() || 'zh-CN';
   const t = useI18n();
 
@@ -35,8 +34,9 @@ export function Navigation() {
     { href: `/${currentLocale}/about`, label: nav.about },
   ];
 
-  const handleSignOut = () => {
-    signOut({ callbackUrl: `/${currentLocale}` });
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.href = `/${currentLocale}`;
   };
 
   return (

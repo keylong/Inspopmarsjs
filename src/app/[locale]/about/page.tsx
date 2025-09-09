@@ -20,7 +20,7 @@ export default function AboutPage() {
             <CardContent>
               <ul className="space-y-2 text-sm">
                 {[0, 1, 2, 3, 4, 5].map((index) => (
-                  <li key={index}>• {t('about.features.items')[index]}</li>
+                  <li key={index}>• {(t as any)(`about.features.items.${index}`)}</li>
                 ))}
               </ul>
             </CardContent>
@@ -33,7 +33,7 @@ export default function AboutPage() {
             <CardContent>
               <ul className="space-y-2 text-sm">
                 {[0, 1, 2, 3, 4, 5].map((index) => (
-                  <li key={index}>• {t('about.contentTypes.items')[index]}</li>
+                  <li key={index}>• {(t as any)(`about.contentTypes.items.${index}`)}</li>
                 ))}
               </ul>
             </CardContent>

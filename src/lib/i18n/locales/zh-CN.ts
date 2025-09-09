@@ -440,25 +440,25 @@ export default {
     title: '关于 Instagram 下载器',
     features: {
       title: '功能特点',
-      items: [
-        '支持下载 Instagram 图片和视频',
-        '高质量媒体文件下载',
-        '支持批量下载',
-        '简单易用的界面',
-        '无需登录 Instagram 账户',
-        '快速安全的下载过程'
-      ]
+      items: {
+        0: '支持下载 Instagram 图片和视频',
+        1: '高质量媒体文件下载',
+        2: '支持批量下载',
+        3: '简单易用的界面',
+        4: '无需登录 Instagram 账户',
+        5: '快速安全的下载过程'
+      }
     },
     contentTypes: {
       title: '支持的内容类型',
-      items: [
-        '单张图片帖子',
-        '视频帖子',
-        '轮播图片/视频',
-        'Instagram Stories',
-        'Highlights',
-        '个人资料图片'
-      ]
+      items: {
+        0: '单张图片帖子',
+        1: '视频帖子',
+        2: '轮播图片/视频',
+        3: 'Instagram Stories',
+        4: 'Highlights',
+        5: '个人资料图片'
+      }
     },
     instructions: {
       title: '使用说明',

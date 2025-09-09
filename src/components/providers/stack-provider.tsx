@@ -1,17 +1,13 @@
 'use client'
 
-import { StackProvider, StackTheme } from '@stackframe/stack'
+import { StackProvider, StackClientApp } from '@stackframe/stack'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { ReactNode } from 'react'
 
-// Stack Auth 主题配置
-const stackTheme: StackTheme = {
-  colors: {
-    primaryColor: '#3b82f6', // 蓝色主题
-    neutralColor: '#6b7280',
-    errorColor: '#ef4444',
-    successColor: '#10b981',
-  },
-}
+// 创建 Stack Client App 实例
+const stackApp = new StackClientApp({
+  tokenStore: 'cookie', // 使用 cookie 存储 token
+})
 
 interface StackAuthProviderProps {
   children: ReactNode
@@ -19,14 +15,10 @@ interface StackAuthProviderProps {
 
 export function StackAuthProvider({ children }: StackAuthProviderProps) {
   return (
-    <StackProvider
-      app={{
-        projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
-        publishableClientKey: process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
-      }}
-      theme={stackTheme}
-    >
-      {children}
-    </StackProvider>
+    <TooltipProvider>
+      <StackProvider app={stackApp}>
+        {children}
+      </StackProvider>
+    </TooltipProvider>
   )
 }

@@ -1,15 +1,24 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
-import { SessionUser } from '@/types/auth'
+import { useUser } from '@stackframe/stack'
 
 export function useAuth() {
-  const { data: session, status } = useSession()
+  const user = useUser()
 
   return {
-    user: session?.user as SessionUser | undefined,
-    isLoading: status === 'loading',
-    isAuthenticated: !!session?.user,
-    status,
+    user: user ? {
+      id: user.id,
+      email: user.primaryEmail || '',
+      name: user.displayName || '',
+      image: user.profileImageUrl || '',
+      emailVerified: user.primaryEmailVerified || false,
+    } : null,
+    isLoading: false,
+    isAuthenticated: !!user,
+    signOut: async () => {
+      if (user) {
+        await user.signOut()
+      }
+    },
   }
 }

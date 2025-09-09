@@ -3,21 +3,22 @@
 import { useUser } from '@stackframe/stack'
 
 export function useStackAuth() {
-  const user = useUser()
+  const user = useUser({ or: 'redirect' })
 
   return {
     user: user ? {
       id: user.id,
-      email: user.primaryEmail,
-      name: user.displayName,
-      image: user.profileImageUrl,
-      emailVerified: user.primaryEmailVerified,
+      email: user.primaryEmail || user.clientMetadata?.email as string || '',
+      name: user.displayName || '',
+      image: user.profileImageUrl || '',
+      emailVerified: user.primaryEmailVerified || false,
     } : null,
-    isLoading: false, // Stack Auth 自动处理加载状态
+    isLoading: false,
     isAuthenticated: !!user,
     signOut: async () => {
-      // Stack Auth 会自动处理登出
-      await user?.signOut()
+      if (user) {
+        await user.signOut()
+      }
     },
   }
 }

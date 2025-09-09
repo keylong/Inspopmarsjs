@@ -23,7 +23,6 @@ export default function SignUpPage() {
 
         {/* Stack Auth 注册组件 */}
         <SignUp 
-          afterSignUp={() => router.push('/')}
           // 自定义样式
           className="w-full"
         />

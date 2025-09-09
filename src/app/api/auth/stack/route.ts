@@ -1,5 +1,9 @@
-import { stackApp } from '@/lib/stack-auth'
+import { StackServerApp } from '@stackframe/stack'
 import { NextRequest } from 'next/server'
+
+const stackApp = new StackServerApp({
+  tokenStore: 'nextjs-cookie',
+})
 
 // Stack Auth API 处理器
 export async function GET(req: NextRequest) {

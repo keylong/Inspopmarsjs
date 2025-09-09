@@ -88,9 +88,9 @@ export default function InstagramReelsDownloadPage() {
 
             {/* 特性标签 */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {[0, 1, 2, 3].map((index: number) => (
+              {Object.values(t('downloadPages.reels.features') as Record<string, string>).map((feature: string, index: number) => (
                 <span key={index} className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
-                  {t('downloadPages.reels.features')[index]}
+                  {feature}
                 </span>
               ))}
             </div>
