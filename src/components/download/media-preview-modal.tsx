@@ -231,7 +231,8 @@ export function MediaPreviewModal({
           <AnimatePresence mode="wait">
             <motion.div
               key={`${currentIndex}-${currentMedia?.id}`}
-              initial={{ opacity: 0, scale: 0.9 }}\n              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.1 }}
               transition={{ duration: 0.3 }}
               className="relative max-w-full max-h-full"
@@ -334,7 +335,11 @@ export function MediaPreviewModal({
                 <button
                   key={mediaItem.id}
                   onClick={() => setCurrentIndex(index)}
-                  className={`flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden border-2 transition-all ${\n                    index === currentIndex \n                      ? 'border-white scale-110' \n                      : 'border-white/30 hover:border-white/60'\n                  }`}
+                  className={`flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden border-2 transition-all ${
+                    index === currentIndex 
+                      ? 'border-white scale-110' 
+                      : 'border-white/30 hover:border-white/60'
+                  }`}
                 >
                   <Image
                     src={mediaItem.thumbnail || mediaItem.url}
