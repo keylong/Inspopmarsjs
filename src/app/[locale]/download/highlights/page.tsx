@@ -1,14 +1,19 @@
+'use client'
+
 import { SEOLayout } from '@/components/seo/seo-layout';
 import { DownloadForm } from '@/components/download/download-form';
+import { useI18n } from '@/lib/i18n/client';
 
 export default function InstagramHighlightsDownloadPage() {
+  const { t } = useI18n();
+
   return (
     <SEOLayout contentType="highlights">
       <DownloadForm 
-        placeholder="输入Instagram用户名..."
+        placeholder={t('downloadPages.highlights.inputPlaceholder')}
         acceptedTypes={['highlights']}
-        optimizedFor="精选故事下载"
-        features={['批量下载', '分类管理', '永久保存']}
+        optimizedFor={t('downloadPages.highlights.subheading')}
+        features={t('downloadPages.highlights.features')}
       />
     </SEOLayout>
   );

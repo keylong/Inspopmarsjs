@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { useI18n } from '@/lib/i18n/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,6 +13,7 @@ import { Github, Mail } from 'lucide-react'
 
 export default function SignUpPage() {
   const router = useRouter()
+  const t = useI18n()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -30,13 +32,13 @@ export default function SignUpPage() {
 
     // 验证密码
     if (formData.password !== formData.confirmPassword) {
-      setError('两次输入的密码不一致')
+      setError(t('auth.errors.passwordMismatch'))
       setIsLoading(false)
       return
     }
 
     if (formData.password.length < 6) {
-      setError('密码至少需要6个字符')
+      setError(t('auth.errors.passwordTooShort'))
       setIsLoading(false)
       return
     }
@@ -57,9 +59,9 @@ export default function SignUpPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || '注册失败')
+        setError(data.error || t('auth.errors.registrationFailed'))
       } else {
-        setSuccess('注册成功！正在为您自动登录...')
+        setSuccess(t('auth.errors.registrationSuccess'))
         
         // 自动登录
         setTimeout(async () => {
@@ -70,7 +72,7 @@ export default function SignUpPage() {
           })
 
           if (result?.error) {
-            setError('注册成功但自动登录失败，请手动登录')
+            setError(t('auth.errors.autoLoginFailed'))
           } else {
             router.push('/')
             router.refresh()
@@ -78,7 +80,7 @@ export default function SignUpPage() {
         }, 1000)
       }
     } catch {
-      setError('注册失败，请重试')
+      setError(t('auth.errors.registrationFailed'))
     } finally {
       setIsLoading(false)
     }
@@ -89,7 +91,7 @@ export default function SignUpPage() {
     try {
       await signIn(provider, { callbackUrl: '/' })
     } catch {
-      setError('登录失败，请重试')
+      setError(t('auth.errors.loginFailed'))
       setIsLoading(false)
     }
   }
@@ -105,9 +107,9 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">注册</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">{t('auth.signup.title')}</CardTitle>
           <CardDescription className="text-center">
-            创建您的新账户
+            {t('auth.signup.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -126,7 +128,7 @@ export default function SignUpPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-medium">
-                姓名
+                {t('auth.signup.name')}
               </label>
               <Input
                 id="name"
@@ -134,7 +136,7 @@ export default function SignUpPage() {
                 type="text"
                 value={formData.name}
                 onChange={handleInputChange}
-                placeholder="请输入姓名"
+                placeholder={t('auth.signup.namePlaceholder')}
                 required
                 disabled={isLoading}
               />
@@ -142,7 +144,7 @@ export default function SignUpPage() {
 
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
-                邮箱
+                {t('auth.signup.email')}
               </label>
               <Input
                 id="email"
@@ -150,7 +152,7 @@ export default function SignUpPage() {
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="请输入邮箱"
+                placeholder={t('auth.signup.emailPlaceholder')}
                 required
                 disabled={isLoading}
               />
@@ -158,7 +160,7 @@ export default function SignUpPage() {
 
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                密码
+                {t('auth.signup.password')}
               </label>
               <Input
                 id="password"
@@ -166,7 +168,7 @@ export default function SignUpPage() {
                 type="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="请输入密码(至少6个字符)"
+                placeholder={`${t('auth.signup.passwordPlaceholder')} ${t('auth.errors.passwordHint')}`}
                 required
                 disabled={isLoading}
               />
@@ -174,7 +176,7 @@ export default function SignUpPage() {
 
             <div className="space-y-2">
               <label htmlFor="confirmPassword" className="text-sm font-medium">
-                确认密码
+                {t('auth.signup.confirmPassword')}
               </label>
               <Input
                 id="confirmPassword"
@@ -182,7 +184,7 @@ export default function SignUpPage() {
                 type="password"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                placeholder="请再次输入密码"
+                placeholder={t('auth.signup.confirmPasswordPlaceholder')}
                 required
                 disabled={isLoading}
               />
@@ -193,7 +195,7 @@ export default function SignUpPage() {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? '注册中...' : '注册'}
+              {isLoading ? t('auth.errors.registering') : t('auth.signup.submit')}
             </Button>
           </form>
 
@@ -202,7 +204,7 @@ export default function SignUpPage() {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">或者</span>
+              <span className="px-2 bg-white text-gray-500">{t('auth.errors.or')}</span>
             </div>
           </div>
 
@@ -229,9 +231,9 @@ export default function SignUpPage() {
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-600">
-            已有账户？{' '}
+{t('auth.signup.hasAccount')}{' '}
             <Link href="/auth/signin" className="text-blue-600 hover:underline">
-              立即登录
+              {t('auth.signup.signIn')}
             </Link>
           </p>
         </CardFooter>

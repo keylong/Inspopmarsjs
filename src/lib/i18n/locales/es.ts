@@ -1,4 +1,9 @@
 export default {
+  // Site information
+  site: {
+    title: 'Descargador de Instagram',
+  },
+
   // Common UI elements
   common: {
     loading: 'Cargando...',
@@ -72,6 +77,20 @@ export default {
       passwordPlaceholder: 'Ingresa tu contraseña',
       confirmPasswordPlaceholder: 'Confirma tu contraseña',
     },
+    errors: {
+      invalidCredentials: 'Email o contraseña incorrectos',
+      loginFailed: 'Error de inicio de sesión, inténtalo de nuevo',
+      registrationFailed: 'Falló el registro',
+      passwordMismatch: 'Las contraseñas no coinciden',
+      passwordTooShort: 'La contraseña debe tener al menos 6 caracteres',
+      registrationSuccess: '¡Registro exitoso! Iniciando sesión automáticamente...',
+      autoLoginFailed: 'Registro exitoso pero el inicio automático falló, inicia sesión manualmente',
+      loggingIn: 'Iniciando sesión...',
+      registering: 'Creando cuenta...',
+      loginWithAccount: 'Inicia sesión en tu cuenta',
+      passwordHint: '(al menos 6 caracteres)',
+      or: 'O'
+    }
   },
 
   // Download page
@@ -104,6 +123,78 @@ export default {
       allFormats: 'Todos los formatos',
       allFormatsDesc: 'Soporte para todos los formatos de contenido de Instagram',
     },
+    // Página de resultados de descarga
+    result: {
+      completed: 'Descarga Completada',
+      downloadFailed: 'Descarga Fallida',
+      retryDownload: 'Reintentar Descarga',
+      errorCode: 'Código de Error',
+      mediaDownload: 'Descarga de Medios',
+      selectResolution: 'Seleccionar Resolución',
+      preview: 'Vista Previa',
+      copyFailed: 'Copia Fallida',
+      downloadAll: 'Descargar Todo',
+      downloadOptions: 'opciones de descarga, tamaño total aproximadamente',
+      mediaFiles: 'archivos multimedia',
+      totalSize: 'Tamaño total',
+      carousel: 'Carrusel',
+      multiMedia: 'Multi-media',
+      original: 'Original',
+      video: 'Video',
+      image: 'Imagen',
+      videoContent: 'Contenido de Video',
+      imageContent: 'Contenido de Imagen',
+      resolutions: 'resoluciones',
+      post: 'Publicación',
+      story: 'Historia',
+      reel: 'Reels',
+      igtv: 'IGTV',
+      highlight: 'Destacado',
+      content: 'Contenido',
+      trustedUsers: 'Usuarios Confían en Nosotros',
+      totalDownloads: 'Descargas',
+      rating: 'Calificación',
+      extremeSpeed: 'Velocidad Extrema',
+      pureNoWatermark: 'Puro Sin Marca de Agua',
+      fullFormatSupport: 'Soporte Completo de Formatos',
+      supportedContent: 'Soporta descargar todo el contenido de Instagram',
+      photoPosts: 'Publicaciones de Fotos',
+      videoContent2: 'Contenido de Video',
+      stories: 'Stories',
+      reels: 'Reels',
+    },
+    // Formulario de descarga
+    form: {
+      urlLabel: 'URL de Instagram',
+      urlPlaceholder: 'Pega el enlace de Instagram aquí...',
+      urlRequired: 'Por favor ingresa el enlace de Instagram',
+      urlInvalid: 'Por favor ingresa una URL válida',
+      urlInvalidInstagram: 'Por favor ingresa un enlace válido de Instagram',
+      urlValidationFailed: 'Falló la validación de URL',
+      downloadFailed: 'Descarga fallida',
+      downloading: 'Descargando...',
+      startDownload: 'Iniciar Descarga',
+      detected: 'Detectado',
+      advancedOptions: 'Opciones Avanzadas',
+      contentType: 'Tipo de Contenido',
+      quality: 'Calidad',
+      downloadFormat: 'Formato de Descarga',
+      supportedTypes: 'Tipos de contenido soportados:',
+      autoDetect: 'Detección Automática',
+      originalQuality: 'Calidad Original',
+      hdQuality: 'Alta Definición',
+      sdQuality: 'Definición Estándar',
+      individualFiles: 'Archivos Individuales',
+      zipArchive: 'Archivo ZIP',
+      posts: '📷 Publicaciones',
+      videos: '📹 Videos',
+      stories2: '⭐ Historias',
+      highlights2: '✨ Destacados',
+      unknownType: 'Tipo Desconocido',
+      profileType: 'Perfil',
+      optimizedTool: 'Herramienta',
+      contentDownloader: 'Descargador de Contenido de Instagram',
+    },
   },
 
   // Profile page
@@ -118,6 +209,39 @@ export default {
     deleteAccount: 'Eliminar cuenta',
     confirmDelete: 'Confirmar eliminación de cuenta',
     deleteWarning: 'Esta acción no se puede deshacer. Todos tus datos serán eliminados permanentemente.',
+    // Nuevas adiciones para la página de perfil
+    pageTitle: 'Perfil',
+    pageDescription: 'Gestiona la información de tu cuenta y configuraciones',
+    basicInfo: {
+      title: 'Información Básica',
+      description: 'Actualiza la información básica de tu cuenta',
+      nameLabel: 'Nombre',
+      namePlaceholder: 'Ingresa tu nombre',
+      emailLabel: 'Correo electrónico',
+      emailNote: 'La dirección de correo electrónico no se puede modificar',
+      saveButton: 'Guardar',
+      savingButton: 'Guardando...',
+      cancelButton: 'Cancelar',
+      editButton: 'Editar Perfil',
+      updateSuccess: 'Perfil actualizado exitosamente',
+      updateError: 'Error en la actualización, por favor intenta de nuevo'
+    },
+    accountInfo: {
+      title: 'Información de la Cuenta',
+      description: 'Ver los detalles de tu cuenta',
+      email: 'Correo electrónico',
+      userId: 'ID de Usuario',
+      registrationDate: 'Fecha de Registro'
+    },
+    dangerZone: {
+      title: 'Zona de Peligro',
+      description: 'Estas acciones son irreversibles, úsalas con precaución',
+      deleteAccount: {
+        title: 'Eliminar Cuenta',
+        warning: 'Eliminar tu cuenta eliminará permanentemente todos los datos. Esta acción no se puede recuperar.',
+        button: 'Eliminar Cuenta'
+      }
+    }
   },
 
   // SEO and meta
@@ -243,6 +367,120 @@ export default {
     },
     effectiveDate: 'Fecha de vigencia: 1 de enero de 2024',
     acknowledgment: 'Al usar este servicio, reconoces que has leído, entendido y aceptas estar sujeto a estos Términos del servicio.'
+  },
+
+  // Download Center page
+  downloadCenter: {
+    title: 'Centro de Descargas de Instagram',
+    subtitle: 'Elige tu tipo de descarga preferido y disfruta del servicio profesional de descarga de contenido de Instagram',
+    breadcrumb: {
+      home: 'Inicio',
+      center: 'Centro de Descargas'
+    },
+    badges: {
+      freeUse: 'Uso Gratuito',
+      hdNoWatermark: 'HD Sin Marca de Agua'
+    },
+    options: {
+      post: {
+        title: 'Publicaciones de Instagram',
+        description: 'Descarga fotos y videos de Instagram con calidad HD y sin marca de agua',
+        features: ['Calidad HD', 'Sin Marca de Agua', 'Descarga en Lote']
+      },
+      stories: {
+        title: 'Instagram Stories',
+        description: 'Descarga anónima de Stories, sin registros de visualización, contenido de 24 horas',
+        features: ['Descarga Anónima', 'Sin Registros', 'Obtención en Tiempo Real']
+      },
+      reels: {
+        title: 'Instagram Reels',
+        description: 'Descarga videos cortos de Instagram Reels manteniendo la calidad original',
+        features: ['Videos Cortos', 'Calidad Original', 'Descarga Rápida']
+      },
+      igtv: {
+        title: 'Videos IGTV',
+        description: 'Descarga contenido de video largo de IGTV en formato HD',
+        features: ['Videos Largos', 'Formato HD', 'Descarga Estable']
+      },
+      highlights: {
+        title: 'Highlights',
+        description: 'Descarga contenido destacado del usuario para almacenamiento permanente',
+        features: ['Contenido Seleccionado', 'Almacenamiento Permanente', 'Procesamiento en Lote']
+      },
+      profile: {
+        title: 'Perfil de Usuario',
+        description: 'Descarga avatares de usuario, fotos de perfil y otro contenido',
+        features: ['Descarga de Avatar', 'Fotos de Perfil', 'Rápido y Sencillo']
+      }
+    },
+    howToUse: {
+      title: '¿Cómo usar el Descargador de Instagram?',
+      steps: {
+        step1: {
+          title: 'Seleccionar Tipo de Descarga',
+          description: 'Elige diferentes tipos de descarga como Publicaciones, Stories, Reels etc. según tus necesidades'
+        },
+        step2: {
+          title: 'Pegar Enlace',
+          description: 'Copia el enlace del contenido de Instagram y pégalo en la página de descarga correspondiente'
+        },
+        step3: {
+          title: 'Iniciar Descarga',
+          description: 'Haz clic en el botón de descarga, espera a que termine el procesamiento y guarda el archivo en tu dispositivo'
+        }
+      }
+    },
+    button: {
+      useNow: 'Usar Ahora'
+    }
+  },
+
+  // About page
+  about: {
+    title: 'Acerca del Descargador de Instagram',
+    features: {
+      title: 'Características',
+      items: [
+        'Soporte para descargar fotos y videos de Instagram',
+        'Descargas de archivos multimedia de alta calidad',
+        'Soporte para descargas en lote',
+        'Interfaz simple y fácil de usar',
+        'No necesitas iniciar sesión en la cuenta de Instagram',
+        'Proceso de descarga rápido y seguro'
+      ]
+    },
+    contentTypes: {
+      title: 'Tipos de Contenido Soportados',
+      items: [
+        'Publicaciones de imagen única',
+        'Publicaciones de video',
+        'Carrusel de fotos/videos',
+        'Instagram Stories',
+        'Highlights',
+        'Fotos de perfil'
+      ]
+    },
+    instructions: {
+      title: 'Instrucciones',
+      steps: {
+        step1: {
+          title: 'Copiar Enlace',
+          description: 'Encuentra el contenido que quieres descargar en Instagram, haz clic en compartir, copia el enlace'
+        },
+        step2: {
+          title: 'Pegar Enlace',
+          description: 'Pega el enlace copiado en el cuadro de entrada de la página de descarga'
+        },
+        step3: {
+          title: 'Iniciar Descarga',
+          description: 'Haz clic en el botón de descarga y espera a que termine el procesamiento'
+        },
+        step4: {
+          title: 'Guardar Archivo',
+          description: 'Después de completar el procesamiento, el archivo comenzará a descargarse automáticamente a tu dispositivo'
+        }
+      }
+    }
   },
 
   // Footer
@@ -376,155 +614,171 @@ export default {
       }
     }
   },
-  // Download Center page
-  downloadCenter: {
-    title: 'Centro de Descargas de Instagram',
-    subtitle: 'Elige tu tipo de descarga preferido y disfruta del servicio profesional de descarga de contenido de Instagram',
-    breadcrumb: {
-      home: 'Inicio',
-      center: 'Centro de Descargas'
-    },
-    badges: {
-      freeUse: 'Uso Gratuito',
-      hdNoWatermark: 'HD Sin Marca de Agua'
-    },
-    options: {
-      post: {
-        title: 'Publicaciones de Instagram',
-        description: 'Descarga fotos y videos de Instagram con calidad HD y sin marca de agua',
-        features: ['Calidad HD', 'Sin Marca de Agua', 'Descarga en Lote']
-      },
-      stories: {
-        title: 'Instagram Stories',
-        description: 'Descarga anónima de Stories, sin registros de visualización, contenido de 24 horas',
-        features: ['Descarga Anónima', 'Sin Registros', 'Obtención en Tiempo Real']
-      },
-      reels: {
-        title: 'Instagram Reels',
-        description: 'Descarga videos cortos de Instagram Reels manteniendo la calidad original',
-        features: ['Videos Cortos', 'Calidad Original', 'Descarga Rápida']
-      },
-      igtv: {
-        title: 'Videos IGTV',
-        description: 'Descarga contenido de video largo de IGTV en formato HD',
-        features: ['Videos Largos', 'Formato HD', 'Descarga Estable']
-      },
-      highlights: {
-        title: 'Highlights',
-        description: 'Descarga contenido destacado del usuario para almacenamiento permanente',
-        features: ['Contenido Seleccionado', 'Almacenamiento Permanente', 'Procesamiento en Lote']
-      },
-      profile: {
-        title: 'Perfil de Usuario',
-        description: 'Descarga avatares de usuario, fotos de perfil y otro contenido',
-        features: ['Descarga de Avatar', 'Fotos de Perfil', 'Rápido y Sencillo']
-      }
-    },
-    howToUse: {
-      title: '¿Cómo usar el Descargador de Instagram?',
+
+  // Download subpage translations
+  downloadPages: {
+    stories: {
+      title: 'Descargador de Instagram Stories',
+      description: 'Herramienta profesional de descarga de Instagram Stories',
+      heading: 'Descargador de Instagram Stories',
+      subheading: 'Descarga anónima de fotos y videos de Instagram Stories',
+      inputPlaceholder: 'Ingresa nombre de usuario de Instagram o enlace de Stories...',
+      features: ['Descarga Anónima', 'Sin Registros de Vista', 'Contenido de 24 Horas'],
+      howToUse: '¿Cómo Descargar Instagram Stories?',
       steps: {
-        step1: {
-          title: 'Seleccionar Tipo de Descarga',
-          description: 'Elige diferentes tipos de descarga como Publicaciones, Stories, Reels etc. según tus necesidades'
-        },
-        step2: {
-          title: 'Pegar Enlace',
-          description: 'Copia el enlace del contenido de Instagram y pégalo en la página de descarga correspondiente'
-        },
-        step3: {
-          title: 'Iniciar Descarga',
-          description: 'Haz clic en el botón de descarga, espera a que termine el procesamiento y guarda el archivo en tu dispositivo'
-        }
+        step1: 'Ingresa nombre de usuario o copia enlace de Stories',
+        step2: 'Haz clic en el botón de descarga para comenzar el procesamiento',
+        step3: 'Selecciona contenido de Stories para descargar',
+        step4: 'Espera a que termine el procesamiento y guarda en el dispositivo'
       }
     },
-    button: {
-      useNow: 'Usar Ahora'
+    post: {
+      title: 'Descargador de Publicaciones de Instagram',
+      description: 'Herramienta de descarga de fotos y videos de publicaciones de Instagram',
+      heading: 'Descarga de Fotos/Videos de Instagram',
+      subheading: 'Descarga de alta calidad del contenido de publicaciones de Instagram, soporta imágenes individuales, carruseles y videos',
+      inputPlaceholder: 'Pega enlace de publicación de Instagram...',
+      features: ['Calidad HD', 'Sin Marca de Agua', 'Descarga en Lote', 'Soporte de Carrusel'],
+      howToUse: '¿Cómo Descargar Publicaciones de Instagram?'
+    },
+    reels: {
+      title: 'Descargador de Instagram Reels',
+      description: 'Herramienta de descarga de videos cortos de Instagram Reels',
+      heading: 'Descarga de Instagram Reels',
+      subheading: 'Descarga videos cortos de Instagram Reels manteniendo la calidad original',
+      inputPlaceholder: 'Pega enlace de Instagram Reels...',
+      features: ['Videos Cortos', 'Calidad Original', 'Descarga Rápida', 'Formato MP4'],
+      howToUse: '¿Cómo Descargar Instagram Reels?'
+    },
+    igtv: {
+      title: 'Descargador de Videos IGTV',
+      description: 'Herramienta de descarga de contenido de video largo de IGTV',
+      heading: 'Descarga de Videos IGTV',
+      subheading: 'Descarga contenido de video largo de IGTV con soporte de formato HD',
+      inputPlaceholder: 'Pega enlace de video IGTV...',
+      features: ['Videos Largos', 'Formato HD', 'Descarga Estable', 'Soporte de Archivos Grandes'],
+      howToUse: '¿Cómo Descargar Videos IGTV?'
+    },
+    highlights: {
+      title: 'Descargador de Highlights',
+      description: 'Herramienta de descarga de contenido seleccionado de Instagram Highlights',
+      heading: 'Descarga de Highlights',
+      subheading: 'Descarga contenido destacado del usuario para almacenamiento permanente',
+      inputPlaceholder: 'Ingresa nombre de usuario de Instagram...',
+      features: ['Contenido Seleccionado', 'Almacenamiento Permanente', 'Procesamiento en Lote', 'Descarga por Categoría'],
+      howToUse: '¿Cómo Descargar Instagram Highlights?'
+    },
+    profile: {
+      title: 'Descargador de Perfil de Usuario',
+      description: 'Herramienta de descarga de avatar de usuario de Instagram y perfil',
+      heading: 'Descarga de Avatar de Usuario',
+      subheading: 'Descarga avatares de usuario, fotos de perfil y otro contenido',
+      inputPlaceholder: 'Ingresa nombre de usuario de Instagram...',
+      features: ['Descarga de Avatar', 'Fotos de Perfil', 'Rápido y Sencillo', 'Calidad HD'],
+      howToUse: '¿Cómo Descargar Perfiles de Usuario?'
+    },
+    private: {
+      title: 'Descargador de Contenido Privado',
+      description: 'Herramienta de descarga de contenido privado de Instagram',
+      heading: 'Descarga de Contenido Privado',
+      subheading: 'Descargar contenido de cuenta privada (se requiere autorización)',
+      inputPlaceholder: 'Se requiere autorización de inicio de sesión para descarga de contenido privado...',
+      features: ['Contenido Privado', 'Acceso Autorizado', 'Descarga Segura', 'Privacidad del Usuario'],
+      howToUse: '¿Cómo Descargar Contenido Privado?'
     }
   },
 
-  // About page
-  about: {
-    title: 'Acerca del Descargador de Instagram',
+  // Páginas de suscripción
+  subscription: {
+    // Títulos y descripciones de páginas
+    pageTitle: 'Gestión de Suscripción',
+    pageDescription: 'Gestiona tus planes de suscripción e información de facturación',
+    // Sección de suscripción actual
+    currentSubscription: 'Suscripción Actual',
+    noSubscription: 'Sin Suscripción Activa',
+    selectPlan: 'Elige un plan de suscripción que te convenga para comenzar',
+    plans: 'Planes de Suscripción',
+    currentPlan: 'Plan Actual',
+    validUntil: 'Válido Hasta',
+    usageThisPeriod: 'Uso en Este Período',
+    unlimited: 'Ilimitado',
+    times: 'veces',
+    paymentMethod: 'Método de Pago',
+    stripePayment: 'Pago Stripe',
+    alipayPayment: 'Pago Alipay',
+    verifyingPayment: 'Verificando estado de pago...',
+    paymentSuccess: '¡Pago Exitoso!',
+    paymentCanceled: 'Pago Cancelado',
+    thankYouSubscription: '¡Gracias por tu suscripción! Tu cuenta ha sido actualizada exitosamente y ahora puedes disfrutar del servicio completo.',
+    paymentCanceledMessage: 'Tu pago ha sido cancelado y no se han realizado cargos. Si tienes preguntas, no dudes en contactarnos.',
+    viewSubscriptionDetails: 'Ver Detalles de Suscripción',
+    startUsing: 'Comenzar a Usar',
+    retrySelectPlan: 'Seleccionar Plan de Nuevo',
+    returnHome: 'Volver al Inicio',
+    status: {
+      active: 'Activo',
+      canceled: 'Cancelado',
+      expired: 'Expirado',
+      pending: 'Pendiente'
+    },
+    errors: {
+      fetchFailed: 'Error al obtener información de suscripción',
+      plansFetchFailed: 'Error al obtener información de planes',
+      checkoutFailed: 'Error al crear sesión de pago',
+      unknownError: 'Error desconocido',
+      retryLater: 'Error al crear sesión de pago, inténtalo más tarde'
+    },
+    duration: {
+      monthly: 'mes',
+      yearly: 'año'
+    },
+    // Contenido de plan original
+    title: 'Planes de Suscripción',
+    description: 'Elige el plan de suscripción que te convenga',
+    heading: 'Elige tu Plan de Suscripción',
+    subheading: 'Desbloquea más funciones avanzadas y disfruta de una mejor experiencia de descarga',
     features: {
-      title: 'Características',
+      title: '¿Por Qué Elegir un Plan de Pago?',
       items: [
-        'Soporte para descargar fotos y videos de Instagram',
-        'Descargas de archivos multimedia de alta calidad',
-        'Soporte para descargas en lote',
-        'Interfaz simple y fácil de usar',
-        'No necesitas iniciar sesión en la cuenta de Instagram',
-        'Proceso de descarga rápido y seguro'
+        'Límites de descarga más altos',
+        'Mejor garantía de calidad',
+        'Soporte técnico prioritario',
+        'Actualizaciones continuas de funciones'
       ]
-    },
-    contentTypes: {
-      title: 'Tipos de Contenido Soportados',
-      items: [
-        'Publicaciones de imagen única',
-        'Publicaciones de video',
-        'Carrusel de fotos/videos',
-        'Instagram Stories',
-        'Highlights',
-        'Fotos de perfil'
-      ]
-    },
-    instructions: {
-      title: 'Instrucciones',
-      steps: {
-        step1: {
-          title: 'Copiar Enlace',
-          description: 'Encuentra el contenido que quieres descargar en Instagram, haz clic en compartir, copia el enlace'
-        },
-        step2: {
-          title: 'Pegar Enlace',
-          description: 'Pega el enlace copiado en el cuadro de entrada de la página de descarga'
-        },
-        step3: {
-          title: 'Iniciar Descarga',
-          description: 'Haz clic en el botón de descarga y espera a que termine el procesamiento'
-        },
-        step4: {
-          title: 'Guardar Archivo',
-          description: 'Después de completar el procesamiento, el archivo comenzará a descargarse automáticamente a tu dispositivo'
-        }
-      }
     }
   },
 
-  // Profile page additions
-  profile: {
-    ...profile,
-    pageTitle: 'Perfil',
-    pageDescription: 'Gestiona la información de tu cuenta y configuraciones',
-    basicInfo: {
-      title: 'Información Básica',
-      description: 'Actualiza la información básica de tu cuenta',
-      nameLabel: 'Nombre',
-      namePlaceholder: 'Ingresa tu nombre',
-      emailLabel: 'Correo electrónico',
-      emailNote: 'La dirección de correo electrónico no se puede modificar',
-      saveButton: 'Guardar',
-      savingButton: 'Guardando...',
-      cancelButton: 'Cancelar',
-      editButton: 'Editar Perfil',
-      updateSuccess: 'Perfil actualizado exitosamente',
-      updateError: 'Error en la actualización, por favor intenta de nuevo'
+  // Páginas de descarga en lote
+  batchDownload: {
+    // Información básica de página
+    pageTitle: 'Descarga en Lote',
+    pageDescription: 'Procesa eficientemente múltiples enlaces de Instagram para descarga en lote',
+    placeholder: 'Agregar múltiples enlaces de Instagram para descarga en lote...',
+    optimizedFor: 'Descarga en Lote',
+    features: ['Procesamiento en Lote', 'Cola de Tareas', 'Seguimiento de Progreso'],
+    title: 'Descarga en Lote',
+    description: 'Descargar múltiple contenido de Instagram de una vez',
+    heading: 'Herramienta de Descarga en Lote',
+    subheading: 'Mejora la eficiencia procesando múltiples enlaces de Instagram de una vez',
+    inputPlaceholder: 'Ingresa un enlace de Instagram por línea...',
+    addLink: 'Agregar Enlace',
+    removeLink: 'Eliminar',
+    startBatch: 'Comenzar Descarga en Lote',
+    progress: 'Progreso',
+    completed: 'Completado',
+    failed: 'Fallido',
+    pending: 'Pendiente',
+    howToUse: '¿Cómo Usar la Descarga en Lote?',
+    steps: {
+      step1: 'Pega múltiples enlaces de Instagram (uno por línea)',
+      step2: 'Haz clic en comenzar descarga en lote',
+      step3: 'Monitorea el progreso y estado de descarga',
+      step4: 'Obtén paquete de archivo cuando termine la descarga'
     },
-    accountInfo: {
-      title: 'Información de la Cuenta',
-      description: 'Ver los detalles de tu cuenta',
-      email: 'Correo electrónico',
-      userId: 'ID de Usuario',
-      registrationDate: 'Fecha de Registro'
-    },
-    dangerZone: {
-      title: 'Zona de Peligro',
-      description: 'Estas acciones son irreversibles, úsalas con precaución',
-      deleteAccount: {
-        title: 'Eliminar Cuenta',
-        warning: 'Eliminar tu cuenta eliminará permanentemente todos los datos. Esta acción no se puede recuperar.',
-        button: 'Eliminar Cuenta'
-      }
+    limits: {
+      free: 'Usuarios gratuitos: Máximo 5 enlaces por lote',
+      premium: 'Usuarios premium: Máximo 50 enlaces por lote',
+      pro: 'Usuarios pro: Ilimitado'
     }
-  },
-
+  }
 } as const;

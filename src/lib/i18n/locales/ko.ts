@@ -1,4 +1,9 @@
 export default {
+  // Site information
+  site: {
+    title: 'Instagram 다운로더',
+  },
+
   // Common UI elements
   common: {
     loading: '로딩 중...',
@@ -72,6 +77,20 @@ export default {
       passwordPlaceholder: '비밀번호를 입력하세요',
       confirmPasswordPlaceholder: '비밀번호를 다시 입력하세요',
     },
+    errors: {
+      invalidCredentials: '이메일 또는 비밀번호가 올바르지 않습니다',
+      loginFailed: '로그인에 실패했습니다. 다시 시도해주세요',
+      registrationFailed: '회원가입에 실패했습니다',
+      passwordMismatch: '비밀번호가 일치하지 않습니다',
+      passwordTooShort: '비밀번호는 최소 6자 이상이어야 합니다',
+      registrationSuccess: '회원가입이 완료되었습니다! 자동 로그인 중...',
+      autoLoginFailed: '회원가입은 완료되었으나 자동 로그인에 실패했습니다. 수동으로 로그인해주세요',
+      loggingIn: '로그인 중...',
+      registering: '계정 생성 중...',
+      loginWithAccount: '계정에 로그인',
+      passwordHint: '(최소 6자)',
+      or: '또는'
+    }
   },
 
   // Download page
@@ -104,6 +123,78 @@ export default {
       allFormats: '모든 형식',
       allFormatsDesc: '모든 Instagram 콘텐츠 형식 지원',
     },
+    // 다운로드 결과 페이지
+    result: {
+      completed: '다운로드 완료',
+      downloadFailed: '다운로드 실패',
+      retryDownload: '다시 다운로드',
+      errorCode: '오류 코드',
+      mediaDownload: '미디어 다운로드',
+      selectResolution: '해상도 선택',
+      preview: '미리보기',
+      copyFailed: '복사 실패',
+      downloadAll: '모두 다운로드',
+      downloadOptions: '개의 다운로드 옵션, 총 크기 약',
+      mediaFiles: '개의 미디어 파일',
+      totalSize: '총 크기',
+      carousel: '카루셀',
+      multiMedia: '멀티미디어',
+      original: '원본',
+      video: '동영상',
+      image: '이미지',
+      videoContent: '동영상 콘텐츠',
+      imageContent: '이미지 콘텐츠',
+      resolutions: '해상도',
+      post: '게시물',
+      story: '스토리',
+      reel: '릴스',
+      igtv: 'IGTV',
+      highlight: '하이라이트',
+      content: '콘텐츠',
+      trustedUsers: '명의 사용자가 신뢰',
+      totalDownloads: '회 다운로드',
+      rating: '평점',
+      extremeSpeed: '초고속',
+      pureNoWatermark: '완전 무워터마크',
+      fullFormatSupport: '전체 포맷 지원',
+      supportedContent: '모든 Instagram 콘텐츠 다운로드 지원',
+      photoPosts: '사진 게시물',
+      videoContent2: '동영상 콘텐츠',
+      stories: '스토리',
+      reels: '릴스',
+    },
+    // 다운로드 폼
+    form: {
+      urlLabel: 'Instagram URL',
+      urlPlaceholder: 'Instagram 링크를 여기에 붙여넣으세요...',
+      urlRequired: 'Instagram 링크를 입력해주세요',
+      urlInvalid: '유효한 URL을 입력해주세요',
+      urlInvalidInstagram: '유효한 Instagram 링크를 입력해주세요',
+      urlValidationFailed: 'URL 검증 실패',
+      downloadFailed: '다운로드 실패',
+      downloading: '다운로드 중...',
+      startDownload: '다운로드 시작',
+      detected: '감지됨',
+      advancedOptions: '고급 옵션',
+      contentType: '콘텐츠 유형',
+      quality: '품질',
+      downloadFormat: '다운로드 형식',
+      supportedTypes: '지원되는 콘텐츠 유형:',
+      autoDetect: '자동 감지',
+      originalQuality: '원본 품질',
+      hdQuality: '고화질',
+      sdQuality: '표준 화질',
+      individualFiles: '개별 파일',
+      zipArchive: 'ZIP 압축파일',
+      posts: '📷 게시물',
+      videos: '📹 동영상',
+      stories2: '⭐ 스토리',
+      highlights2: '✨ 하이라이트',
+      unknownType: '알 수 없는 유형',
+      profileType: '프로필',
+      optimizedTool: '최적화 도구',
+      contentDownloader: 'Instagram 콘텐츠 다운로더',
+    },
   },
 
   // Profile page
@@ -118,6 +209,39 @@ export default {
     deleteAccount: '계정 삭제',
     confirmDelete: '계정 삭제 확인',
     deleteWarning: '이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.',
+    // 프로필 페이지 추가 항목
+    pageTitle: '프로필',
+    pageDescription: '계정 정보와 설정을 관리하세요',
+    basicInfo: {
+      title: '기본 정보',
+      description: '기본 계정 정보를 업데이트하세요',
+      nameLabel: '이름',
+      namePlaceholder: '이름을 입력하세요',
+      emailLabel: '이메일',
+      emailNote: '이메일 주소는 수정할 수 없습니다',
+      saveButton: '저장',
+      savingButton: '저장 중...',
+      cancelButton: '취소',
+      editButton: '프로필 편집',
+      updateSuccess: '프로필이 성공적으로 업데이트되었습니다',
+      updateError: '업데이트 실패, 다시 시도해주세요'
+    },
+    accountInfo: {
+      title: '계정 정보',
+      description: '계정 세부 정보를 확인하세요',
+      email: '이메일',
+      userId: '사용자 ID',
+      registrationDate: '가입 날짜'
+    },
+    dangerZone: {
+      title: '위험 구역',
+      description: '이 작업들은 되돌릴 수 없으므로 신중하게 사용하세요',
+      deleteAccount: {
+        title: '계정 삭제',
+        warning: '계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다. 이 작업은 복구할 수 없습니다.',
+        button: '계정 삭제'
+      }
+    }
   },
 
   // SEO and meta
@@ -243,6 +367,120 @@ export default {
     },
     effectiveDate: '시행일: 2024년 1월 1일',
     acknowledgment: '이 서비스를 사용함으로써 귀하는 이 서비스 이용약관을 읽고 이해했으며, 이에 구속되는 것에 동의함을 인정합니다.'
+  },
+
+  // Download Center page
+  downloadCenter: {
+    title: 'Instagram 다운로드 센터',
+    subtitle: '원하는 다운로드 유형을 선택하고 전문적인 Instagram 콘텐츠 다운로드 서비스를 즐기세요',
+    breadcrumb: {
+      home: '홈',
+      center: '다운로드 센터'
+    },
+    badges: {
+      freeUse: '무료 사용',
+      hdNoWatermark: 'HD 무워터마크'
+    },
+    options: {
+      post: {
+        title: 'Instagram 게시물',
+        description: 'HD 품질과 워터마크 없이 Instagram 사진과 동영상 게시물을 다운로드하세요',
+        features: ['HD 품질', '워터마크 없음', '일괄 다운로드']
+      },
+      stories: {
+        title: 'Instagram 스토리',
+        description: '익명으로 스토리를 다운로드하고, 조회 기록이 남지 않으며, 24시간 콘텐츠',
+        features: ['익명 다운로드', '조회 기록 없음', '실시간 가져오기']
+      },
+      reels: {
+        title: 'Instagram 릴스',
+        description: '원본 품질을 유지하면서 Instagram 릴스 짧은 동영상을 다운로드하세요',
+        features: ['짧은 동영상', '원본 품질', '빠른 다운로드']
+      },
+      igtv: {
+        title: 'IGTV 동영상',
+        description: 'HD 형식으로 IGTV 긴 동영상 콘텐츠를 다운로드하세요',
+        features: ['긴 동영상', 'HD 형식', '안정적 다운로드']
+      },
+      highlights: {
+        title: '하이라이트',
+        description: '사용자 하이라이트 콘텐츠를 영구 보관용으로 다운로드하세요',
+        features: ['선별된 콘텐츠', '영구 보관', '일괄 처리']
+      },
+      profile: {
+        title: '사용자 프로필',
+        description: '사용자 아바타, 프로필 사진 및 기타 콘텐츠를 다운로드하세요',
+        features: ['아바타 다운로드', '프로필 사진', '간단하고 빠름']
+      }
+    },
+    howToUse: {
+      title: 'Instagram 다운로더 사용 방법',
+      steps: {
+        step1: {
+          title: '다운로드 유형 선택',
+          description: '필요에 따라 게시물, 스토리, 릴스 등 다양한 다운로드 유형을 선택하세요'
+        },
+        step2: {
+          title: '링크 붙여넣기',
+          description: 'Instagram 콘텐츠 링크를 복사하여 해당 다운로드 페이지에 붙여넣으세요'
+        },
+        step3: {
+          title: '다운로드 시작',
+          description: '다운로드 버튼을 클릭하고 처리가 완료될 때까지 기다린 후 기기에 파일을 저장하세요'
+        }
+      }
+    },
+    button: {
+      useNow: '지금 사용'
+    }
+  },
+
+  // About page
+  about: {
+    title: 'Instagram 다운로더 소개',
+    features: {
+      title: '기능',
+      items: [
+        'Instagram 사진 및 동영상 다운로드 지원',
+        '고품질 미디어 파일 다운로드',
+        '일괄 다운로드 지원',
+        '간단하고 사용하기 쉬운 인터페이스',
+        'Instagram 계정 로그인 불필요',
+        '빠르고 안전한 다운로드 프로세스'
+      ]
+    },
+    contentTypes: {
+      title: '지원되는 콘텐츠 유형',
+      items: [
+        '단일 이미지 게시물',
+        '동영상 게시물',
+        '사진/동영상 캐러셀',
+        'Instagram 스토리',
+        '하이라이트',
+        '프로필 사진'
+      ]
+    },
+    instructions: {
+      title: '사용 방법',
+      steps: {
+        step1: {
+          title: '링크 복사',
+          description: 'Instagram에서 다운로드하려는 콘텐츠를 찾아 공유 버튼을 클릭하고 링크를 복사하세요'
+        },
+        step2: {
+          title: '링크 붙여넣기',
+          description: '복사한 링크를 다운로드 페이지의 입력 상자에 붙여넣으세요'
+        },
+        step3: {
+          title: '다운로드 시작',
+          description: '다운로드 버튼을 클릭하고 처리가 완료될 때까지 기다리세요'
+        },
+        step4: {
+          title: '파일 저장',
+          description: '처리가 완료되면 파일이 자동으로 기기에 다운로드됩니다'
+        }
+      }
+    }
   },
 
   // Footer
@@ -376,4 +614,171 @@ export default {
       }
     }
   },
+
+  // 다운로드 서브페이지 번역
+  downloadPages: {
+    stories: {
+      title: 'Instagram 스토리 다운로더',
+      description: '전문적인 Instagram 스토리 다운로드 도구',
+      heading: 'Instagram 스토리 다운로더',
+      subheading: 'Instagram 스토리 사진과 동영상을 익명으로 다운로드',
+      inputPlaceholder: 'Instagram 사용자명 또는 스토리 링크를 입력하세요...',
+      features: ['익명 다운로드', '조회 기록 없음', '24시간 콘텐츠'],
+      howToUse: 'Instagram 스토리 다운로드 방법',
+      steps: {
+        step1: '사용자명을 입력하거나 스토리 링크를 복사하세요',
+        step2: '다운로드 버튼을 클릭하여 처리를 시작하세요',
+        step3: '다운로드할 스토리 콘텐츠를 선택하세요',
+        step4: '처리가 완료될 때까지 기다리고 기기에 저장하세요'
+      }
+    },
+    post: {
+      title: 'Instagram 게시물 다운로더',
+      description: 'Instagram 사진 및 동영상 게시물 다운로드 도구',
+      heading: 'Instagram 사진/동영상 다운로드',
+      subheading: 'Instagram 게시물 콘텐츠를 고품질로 다운로드, 단일 이미지, 캐러셀, 동영상 지원',
+      inputPlaceholder: 'Instagram 게시물 링크를 붙여넣으세요...',
+      features: ['HD 품질', '워터마크 없음', '일괄 다운로드', '캐러셀 지원'],
+      howToUse: 'Instagram 게시물 다운로드 방법'
+    },
+    reels: {
+      title: 'Instagram 릴스 다운로더',
+      description: 'Instagram 릴스 짧은 동영상 다운로드 도구',
+      heading: 'Instagram 릴스 다운로드',
+      subheading: '원본 품질을 유지하면서 Instagram 릴스 짧은 동영상을 다운로드',
+      inputPlaceholder: 'Instagram 릴스 링크를 붙여넣으세요...',
+      features: ['짧은 동영상', '원본 품질', '빠른 다운로드', 'MP4 형식'],
+      howToUse: 'Instagram 릴스 다운로드 방법'
+    },
+    igtv: {
+      title: 'IGTV 동영상 다운로더',
+      description: 'IGTV 긴 동영상 콘텐츠 다운로드 도구',
+      heading: 'IGTV 동영상 다운로드',
+      subheading: 'HD 형식을 지원하는 IGTV 긴 동영상 콘텐츠 다운로드',
+      inputPlaceholder: 'IGTV 동영상 링크를 붙여넣으세요...',
+      features: ['긴 동영상', 'HD 형식', '안정적 다운로드', '대용량 파일 지원'],
+      howToUse: 'IGTV 동영상 다운로드 방법'
+    },
+    highlights: {
+      title: '하이라이트 다운로더',
+      description: 'Instagram 하이라이트 선별 콘텐츠 다운로드 도구',
+      heading: '하이라이트 다운로드',
+      subheading: '사용자 선별 하이라이트 콘텐츠를 영구 보관용으로 다운로드',
+      inputPlaceholder: 'Instagram 사용자명을 입력하세요...',
+      features: ['선별된 콘텐츠', '영구 보관', '일괄 처리', '카테고리별 다운로드'],
+      howToUse: 'Instagram 하이라이트 다운로드 방법'
+    },
+    profile: {
+      title: '사용자 프로필 다운로더',
+      description: 'Instagram 사용자 아바타 및 프로필 다운로드 도구',
+      heading: '사용자 아바타 다운로드',
+      subheading: '사용자 아바타, 프로필 사진 및 기타 콘텐츠 다운로드',
+      inputPlaceholder: 'Instagram 사용자명을 입력하세요...',
+      features: ['아바타 다운로드', '프로필 사진', '간단하고 빠름', 'HD 품질'],
+      howToUse: '사용자 프로필 다운로드 방법'
+    },
+    private: {
+      title: '비공개 콘텐츠 다운로더',
+      description: 'Instagram 비공개 콘텐츠 다운로드 도구',
+      heading: '비공개 콘텐츠 다운로드',
+      subheading: '비공개 계정 콘텐츠 다운로드 (인증 필요)',
+      inputPlaceholder: '비공개 콘텐츠 다운로드를 위해 로그인 인증이 필요합니다...',
+      features: ['비공개 콘텐츠', '인증된 접근', '보안 다운로드', '사용자 개인정보'],
+      howToUse: '비공개 콘텐츠 다운로드 방법'
+    }
+  },
+
+  // 구독 페이지
+  subscription: {
+    // 페이지 제목 및 설명
+    pageTitle: '구독 관리',
+    pageDescription: '구독 계획 및 결제 정보를 관리하세요',
+    // 현재 구독 섹션
+    currentSubscription: '현재 구독',
+    noSubscription: '활성 구독 없음',
+    selectPlan: '시작하기에 적합한 구독 계획을 선택하세요',
+    plans: '구독 계획',
+    currentPlan: '현재 계획',
+    validUntil: '유효 기간',
+    usageThisPeriod: '이번 기간 사용량',
+    unlimited: '무제한',
+    times: '회',
+    paymentMethod: '결제 방법',
+    stripePayment: 'Stripe 결제',
+    alipayPayment: 'Alipay 결제',
+    verifyingPayment: '결제 상태 확인 중...',
+    paymentSuccess: '결제 성공!',
+    paymentCanceled: '결제 취소됨',
+    thankYouSubscription: '구독해 주셔서 감사합니다! 계정이 성공적으로 업그레이드되었으며 이제 전체 서비스를 이용할 수 있습니다.',
+    paymentCanceledMessage: '결제가 취소되었으며 요금이 청구되지 않았습니다. 궁금한 점이 있으시면 언제든지 문의해 주세요.',
+    viewSubscriptionDetails: '구독 세부 정보 보기',
+    startUsing: '사용 시작',
+    retrySelectPlan: '계획 다시 선택',
+    returnHome: '홈으로 돌아가기',
+    status: {
+      active: '활성',
+      canceled: '취소됨',
+      expired: '만료됨',
+      pending: '대기 중'
+    },
+    errors: {
+      fetchFailed: '구독 정보 가져오기 실패',
+      plansFetchFailed: '계획 정보 가져오기 실패',
+      checkoutFailed: '결제 세션 생성 실패',
+      unknownError: '알 수 없는 오류',
+      retryLater: '결제 세션 생성 실패, 나중에 다시 시도하세요'
+    },
+    duration: {
+      monthly: '월',
+      yearly: '년'
+    },
+    // 원래 계획 내용
+    title: '구독 계획',
+    description: '적합한 구독 계획을 선택하세요',
+    heading: '구독 계획을 선택하세요',
+    subheading: '더 많은 고급 기능을 잠금 해제하고 더 나은 다운로드 경험을 즐기세요',
+    features: {
+      title: '유료 계획을 선택하는 이유는?',
+      items: [
+        '더 높은 다운로드 제한',
+        '더 나은 품질 보장',
+        '우선 기술 지원',
+        '지속적인 기능 업데이트'
+      ]
+    }
+  },
+
+  // 일괄 다운로드 페이지
+  batchDownload: {
+    // 페이지 기본 정보
+    pageTitle: '일괄 다운로드',
+    pageDescription: '여러 Instagram 링크를 효율적으로 처리하여 일괄 다운로드',
+    placeholder: '일괄 다운로드를 위해 여러 Instagram 링크를 추가하세요...',
+    optimizedFor: '일괄 다운로드',
+    features: ['일괄 처리', '작업 대기열', '진행 상황 추적'],
+    title: '일괄 다운로드',
+    description: '여러 Instagram 콘텐츠를 한 번에 다운로드',
+    heading: '일괄 다운로드 도구',
+    subheading: '여러 Instagram 링크를 한 번에 처리하여 효율성을 향상시키세요',
+    inputPlaceholder: '한 줄에 하나의 Instagram 링크를 입력하세요...',
+    addLink: '링크 추가',
+    removeLink: '제거',
+    startBatch: '일괄 다운로드 시작',
+    progress: '진행 상황',
+    completed: '완료됨',
+    failed: '실패',
+    pending: '대기 중',
+    howToUse: '일괄 다운로드 사용 방법',
+    steps: {
+      step1: '여러 Instagram 링크를 붙여넣으세요 (한 줄에 하나씩)',
+      step2: '일괄 다운로드 시작 버튼을 클릭하세요',
+      step3: '다운로드 진행 상황과 상태를 모니터링하세요',
+      step4: '다운로드 완료 후 압축 패키지를 받으세요'
+    },
+    limits: {
+      free: '무료 사용자: 일괄당 최대 5개 링크',
+      premium: '프리미엄 사용자: 일괄당 최대 50개 링크',
+      pro: '프로 사용자: 무제한'
+    }
+  }
 } as const;

@@ -1,4 +1,9 @@
 export default {
+  // Site information
+  site: {
+    title: 'Instagram 下載器',
+  },
+
   // Common UI elements
   common: {
     loading: '載入中...',
@@ -72,6 +77,20 @@ export default {
       passwordPlaceholder: '請輸入密碼',
       confirmPasswordPlaceholder: '請再次輸入密碼',
     },
+    errors: {
+      invalidCredentials: '電子信箱或密碼不正確',
+      loginFailed: '登入失敗，請重試',
+      registrationFailed: '註冊失敗',
+      passwordMismatch: '密碼不相符',
+      passwordTooShort: '密碼至少需要 6 個字元',
+      registrationSuccess: '註冊成功！正在自動登入...',
+      autoLoginFailed: '註冊成功但自動登入失敗，請手動登入',
+      loggingIn: '正在登入...',
+      registering: '正在建立帳戶...',
+      loginWithAccount: '登入您的帳戶',
+      passwordHint: '(至少 6 個字元)',
+      or: '或'
+    }
   },
 
   // Download page
@@ -104,6 +123,78 @@ export default {
       allFormats: '全格式支援',
       allFormatsDesc: '支援所有 Instagram 內容格式',
     },
+    // 下載結果頁面
+    result: {
+      completed: '下載完成',
+      downloadFailed: '下載失敗',
+      retryDownload: '重試下載',
+      errorCode: '錯誤代碼',
+      mediaDownload: '媒體下載',
+      selectResolution: '選擇解析度',
+      preview: '預覽',
+      copyFailed: '複製失敗',
+      downloadAll: '全部下載',
+      downloadOptions: '個下載選項，總大小約',
+      mediaFiles: '個媒體檔案',
+      totalSize: '總大小',
+      carousel: '輪播',
+      multiMedia: '多媒體',
+      original: '原始',
+      video: '影片',
+      image: '圖片',
+      videoContent: '影片內容',
+      imageContent: '圖片內容',
+      resolutions: '解析度',
+      post: '貼文',
+      story: 'Story',
+      reel: 'Reel',
+      igtv: 'IGTV',
+      highlight: 'Highlight',
+      content: '內容',
+      trustedUsers: '位用戶信任',
+      totalDownloads: '次下載',
+      rating: '評分',
+      extremeSpeed: '極速',
+      pureNoWatermark: '純無浮水印',
+      fullFormatSupport: '完整格式支援',
+      supportedContent: '支援下載所有 Instagram 內容',
+      photoPosts: '圖片貼文',
+      videoContent2: '影片內容',
+      stories: 'Stories',
+      reels: 'Reels',
+    },
+    // 下載表單
+    form: {
+      urlLabel: 'Instagram URL',
+      urlPlaceholder: '貼上 Instagram 連結...',
+      urlRequired: '請輸入 Instagram 連結',
+      urlInvalid: '請輸入有效的 URL',
+      urlInvalidInstagram: '請輸入有效的 Instagram 連結',
+      urlValidationFailed: 'URL 驗證失敗',
+      downloadFailed: '下載失敗',
+      downloading: '下載中...',
+      startDownload: '開始下載',
+      detected: '已偵測',
+      advancedOptions: '進階選項',
+      contentType: '內容類型',
+      quality: '品質',
+      downloadFormat: '下載格式',
+      supportedTypes: '支援的內容類型：',
+      autoDetect: '自動偵測',
+      originalQuality: '原始品質',
+      hdQuality: '高清',
+      sdQuality: '標清',
+      individualFiles: '個別檔案',
+      zipArchive: 'ZIP 壓縮檔',
+      posts: '📷 貼文',
+      videos: '📹 影片',
+      stories2: '⭐ Stories',
+      highlights2: '✨ Highlights',
+      unknownType: '未知類型',
+      profileType: '個人檔案',
+      optimizedTool: '最佳化工具',
+      contentDownloader: 'Instagram 內容下載器',
+    },
   },
 
   // Profile page
@@ -118,6 +209,39 @@ export default {
     deleteAccount: '刪除帳戶',
     confirmDelete: '確認刪除帳戶',
     deleteWarning: '此操作無法復原。您的所有資料將被永久刪除。',
+    // 個人資料頁面新增項目
+    pageTitle: '個人資料',
+    pageDescription: '管理您的帳戶資訊和設定',
+    basicInfo: {
+      title: '基本資訊',
+      description: '更新您的基本帳戶資訊',
+      nameLabel: '姓名',
+      namePlaceholder: '請輸入您的姓名',
+      emailLabel: '電子信箱',
+      emailNote: '電子信箱地址無法修改',
+      saveButton: '儲存',
+      savingButton: '儲存中...',
+      cancelButton: '取消',
+      editButton: '編輯個人資料',
+      updateSuccess: '個人資料更新成功',
+      updateError: '更新失敗，請重試'
+    },
+    accountInfo: {
+      title: '帳戶資訊',
+      description: '檢視您的帳戶詳細資料',
+      email: '電子信箱',
+      userId: '使用者 ID',
+      registrationDate: '註冊日期'
+    },
+    dangerZone: {
+      title: '危險區域',
+      description: '這些操作無法復原，請謹慎使用',
+      deleteAccount: {
+        title: '刪除帳戶',
+        warning: '刪除您的帳戶將永久移除所有資料。此操作無法復原。',
+        button: '刪除帳戶'
+      }
+    }
   },
 
   // SEO and meta
@@ -243,6 +367,120 @@ export default {
     },
     effectiveDate: '生效日期：2024年1月1日',
     acknowledgment: '使用本服務即表示您已閱讀、理解並同意受本使用條款約束。'
+  },
+
+  // Download Center page
+  downloadCenter: {
+    title: 'Instagram 下載中心',
+    subtitle: '選擇您偏好的下載類型，享受專業的 Instagram 內容下載服務',
+    breadcrumb: {
+      home: '首頁',
+      center: '下載中心'
+    },
+    badges: {
+      freeUse: '免費使用',
+      hdNoWatermark: '高清無浮水印'
+    },
+    options: {
+      post: {
+        title: 'Instagram 貼文',
+        description: '下載高清無浮水印的 Instagram 圖片和影片貼文',
+        features: ['高清品質', '無浮水印', '批量下載']
+      },
+      stories: {
+        title: 'Instagram Stories',
+        description: '匿名下載 Stories，無觀看記錄，24小時內容',
+        features: ['匿名下載', '無觀看記錄', '即時獲取']
+      },
+      reels: {
+        title: 'Instagram Reels',
+        description: '保持原始品質下載 Instagram Reels 短影片',
+        features: ['短影片', '原始品質', '快速下載']
+      },
+      igtv: {
+        title: 'IGTV 影片',
+        description: '以高清格式下載 IGTV 長影片內容',
+        features: ['長影片', '高清格式', '穩定下載']
+      },
+      highlights: {
+        title: 'Highlights',
+        description: '下載用戶精選 Highlights 內容供永久保存',
+        features: ['精選內容', '永久保存', '批量處理']
+      },
+      profile: {
+        title: '用戶個人檔案',
+        description: '下載用戶頭像、個人檔案圖片和其他內容',
+        features: ['頭像下載', '個人檔案圖片', '簡單快速']
+      }
+    },
+    howToUse: {
+      title: '如何使用 Instagram 下載器',
+      steps: {
+        step1: {
+          title: '選擇下載類型',
+          description: '根據需求選擇不同的下載類型，如貼文、Stories、Reels 等'
+        },
+        step2: {
+          title: '貼上連結',
+          description: '複製 Instagram 內容連結並貼到對應的下載頁面'
+        },
+        step3: {
+          title: '開始下載',
+          description: '點擊下載按鈕，等待處理完成並將檔案儲存到您的裝置'
+        }
+      }
+    },
+    button: {
+      useNow: '立即使用'
+    }
+  },
+
+  // About page
+  about: {
+    title: '關於 Instagram 下載器',
+    features: {
+      title: '功能特色',
+      items: [
+        '支援下載 Instagram 圖片和影片',
+        '高品質媒體檔案下載',
+        '支援批量下載',
+        '簡潔易用的介面',
+        '無需登入 Instagram 帳戶',
+        '快速安全的下載流程'
+      ]
+    },
+    contentTypes: {
+      title: '支援的內容類型',
+      items: [
+        '單張圖片貼文',
+        '影片貼文',
+        '圖片/影片輪播',
+        'Instagram Stories',
+        'Highlights',
+        '個人檔案圖片'
+      ]
+    },
+    instructions: {
+      title: '使用說明',
+      steps: {
+        step1: {
+          title: '複製連結',
+          description: '在 Instagram 上找到您想下載的內容，點擊分享按鈕並複製連結'
+        },
+        step2: {
+          title: '貼上連結',
+          description: '將複製的連結貼到下載頁面的輸入框中'
+        },
+        step3: {
+          title: '開始下載',
+          description: '點擊下載按鈕並等待處理完成'
+        },
+        step4: {
+          title: '儲存檔案',
+          description: '處理完成後，檔案將自動開始下載到您的裝置'
+        }
+      }
+    }
   },
 
   // Footer
@@ -376,4 +614,171 @@ export default {
       }
     }
   },
+
+  // 下載子頁面翻譯
+  downloadPages: {
+    stories: {
+      title: 'Instagram Stories 下載器',
+      description: '專業的 Instagram Stories 下載工具',
+      heading: 'Instagram Stories 下載器',
+      subheading: '匿名下載 Instagram Stories 圖片和影片',
+      inputPlaceholder: '輸入 Instagram 用戶名或 Stories 連結...',
+      features: ['匿名下載', '無觀看記錄', '24小時內容'],
+      howToUse: '如何下載 Instagram Stories',
+      steps: {
+        step1: '輸入用戶名或複製 Stories 連結',
+        step2: '點擊下載按鈕開始處理',
+        step3: '選擇要下載的 Stories 內容',
+        step4: '等待處理完成並儲存到裝置'
+      }
+    },
+    post: {
+      title: 'Instagram 貼文下載器',
+      description: 'Instagram 圖片和影片貼文下載工具',
+      heading: 'Instagram 圖片/影片下載',
+      subheading: '高品質下載 Instagram 貼文內容，支援單張圖片、輪播和影片',
+      inputPlaceholder: '貼上 Instagram 貼文連結...',
+      features: ['高清品質', '無浮水印', '批量下載', '輪播支援'],
+      howToUse: '如何下載 Instagram 貼文'
+    },
+    reels: {
+      title: 'Instagram Reels 下載器',
+      description: 'Instagram Reels 短影片下載工具',
+      heading: 'Instagram Reels 下載',
+      subheading: '保持原始品質下載 Instagram Reels 短影片',
+      inputPlaceholder: '貼上 Instagram Reels 連結...',
+      features: ['短影片', '原始品質', '快速下載', 'MP4格式'],
+      howToUse: '如何下載 Instagram Reels'
+    },
+    igtv: {
+      title: 'IGTV 影片下載器',
+      description: 'IGTV 長影片內容下載工具',
+      heading: 'IGTV 影片下載',
+      subheading: '支援高清格式的 IGTV 長影片內容下載',
+      inputPlaceholder: '貼上 IGTV 影片連結...',
+      features: ['長影片', '高清格式', '穩定下載', '大檔案支援'],
+      howToUse: '如何下載 IGTV 影片'
+    },
+    highlights: {
+      title: 'Highlights 下載器',
+      description: 'Instagram Highlights 精選內容下載工具',
+      heading: 'Highlights 下載',
+      subheading: '下載用戶精選 Highlights 內容供永久保存',
+      inputPlaceholder: '輸入 Instagram 用戶名...',
+      features: ['精選內容', '永久保存', '批量處理', '分類下載'],
+      howToUse: '如何下載 Instagram Highlights'
+    },
+    profile: {
+      title: '用戶個人檔案下載器',
+      description: 'Instagram 用戶頭像和個人檔案下載工具',
+      heading: '用戶頭像下載',
+      subheading: '下載用戶頭像、個人檔案圖片和其他內容',
+      inputPlaceholder: '輸入 Instagram 用戶名...',
+      features: ['頭像下載', '個人檔案圖片', '簡單快速', '高清品質'],
+      howToUse: '如何下載用戶個人檔案'
+    },
+    private: {
+      title: '私人內容下載器',
+      description: 'Instagram 私人內容下載工具',
+      heading: '私人內容下載',
+      subheading: '下載私人帳戶內容（需要授權）',
+      inputPlaceholder: '私人內容下載需要登入授權...',
+      features: ['私人內容', '授權存取', '安全下載', '用戶隱私'],
+      howToUse: '如何下載私人內容'
+    }
+  },
+
+  // 訂閱頁面
+  subscription: {
+    // 頁面標題和描述
+    pageTitle: '訂閱管理',
+    pageDescription: '管理您的訂閱計劃和付款資訊',
+    // 當前訂閱部分
+    currentSubscription: '當前訂閱',
+    noSubscription: '無有效訂閱',
+    selectPlan: '選擇適合您開始使用的訂閱計劃',
+    plans: '訂閱計劃',
+    currentPlan: '當前計劃',
+    validUntil: '有效期至',
+    usageThisPeriod: '本期使用量',
+    unlimited: '無限',
+    times: '次',
+    paymentMethod: '付款方式',
+    stripePayment: 'Stripe 付款',
+    alipayPayment: 'Alipay 付款',
+    verifyingPayment: '正在驗證付款狀態...',
+    paymentSuccess: '付款成功！',
+    paymentCanceled: '付款已取消',
+    thankYouSubscription: '感謝您的訂閱！您的帳戶已成功升級，現在可以享受完整的服務。',
+    paymentCanceledMessage: '您的付款已被取消，未產生任何費用。如有問題，請隨時聯絡我們。',
+    viewSubscriptionDetails: '查看訂閱詳情',
+    startUsing: '開始使用',
+    retrySelectPlan: '重新選擇計劃',
+    returnHome: '返回首頁',
+    status: {
+      active: '有效',
+      canceled: '已取消',
+      expired: '已過期',
+      pending: '待處理'
+    },
+    errors: {
+      fetchFailed: '獲取訂閱資訊失敗',
+      plansFetchFailed: '獲取計劃資訊失敗',
+      checkoutFailed: '建立付款會話失敗',
+      unknownError: '未知錯誤',
+      retryLater: '建立付款會話失敗，請稍後重試'
+    },
+    duration: {
+      monthly: '個月',
+      yearly: '年'
+    },
+    // 原始計劃內容
+    title: '訂閱計劃',
+    description: '選擇適合您的訂閱計劃',
+    heading: '選擇您的訂閱計劃',
+    subheading: '解鎖更多進階功能，享受更好的下載體驗',
+    features: {
+      title: '為什麼選擇付費計劃？',
+      items: [
+        '更高的下載限制',
+        '更好的品質保證',
+        '優先技術支援',
+        '持續的功能更新'
+      ]
+    }
+  },
+
+  // 批量下載頁面
+  batchDownload: {
+    // 頁面基本資訊
+    pageTitle: '批量下載',
+    pageDescription: '高效處理多個 Instagram 連結進行批量下載',
+    placeholder: '添加多個 Instagram 連結進行批量下載...',
+    optimizedFor: '批量下載',
+    features: ['批量處理', '任務佇列', '進度追蹤'],
+    title: '批量下載',
+    description: '一次下載多個 Instagram 內容',
+    heading: '批量下載工具',
+    subheading: '一次處理多個 Instagram 連結，提高效率',
+    inputPlaceholder: '每行輸入一個 Instagram 連結...',
+    addLink: '添加連結',
+    removeLink: '移除',
+    startBatch: '開始批量下載',
+    progress: '進度',
+    completed: '已完成',
+    failed: '失敗',
+    pending: '待處理',
+    howToUse: '如何使用批量下載',
+    steps: {
+      step1: '貼上多個 Instagram 連結（每行一個）',
+      step2: '點擊開始批量下載',
+      step3: '監控下載進度和狀態',
+      step4: '下載完成後獲取打包檔案'
+    },
+    limits: {
+      free: '免費用戶：每批最多 5 個連結',
+      premium: '高級用戶：每批最多 50 個連結',
+      pro: '專業用戶：無限制'
+    }
+  }
 } as const;

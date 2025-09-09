@@ -1,4 +1,9 @@
 export default {
+  // Site information
+  site: {
+    title: 'Instagram ダウンローダー',
+  },
+
   // Common UI elements
   common: {
     loading: '読み込み中...',
@@ -72,6 +77,20 @@ export default {
       passwordPlaceholder: 'パスワードを入力',
       confirmPasswordPlaceholder: 'パスワードを再入力',
     },
+    errors: {
+      invalidCredentials: 'メールアドレスまたはパスワードが正しくありません',
+      loginFailed: 'ログインに失敗しました。もう一度試してください',
+      registrationFailed: '登録に失敗しました',
+      passwordMismatch: 'パスワードが一致しません',
+      passwordTooShort: 'パスワードは最低6文字必要です',
+      registrationSuccess: '登録が完了しました！自動ログイン中...',
+      autoLoginFailed: '登録は完了しましたが、自動ログインに失敗しました。手動でログインしてください',
+      loggingIn: 'ログイン中...',
+      registering: 'アカウント作成中...',
+      loginWithAccount: 'アカウントにサインイン',
+      passwordHint: '(最低6文字)',
+      or: 'または'
+    }
   },
 
   // Download page
@@ -104,6 +123,78 @@ export default {
       allFormats: '全フォーマット対応',
       allFormatsDesc: 'すべての Instagram コンテンツフォーマットに対応',
     },
+    // ダウンロード結果ページ
+    result: {
+      completed: 'ダウンロード完了',
+      downloadFailed: 'ダウンロード失敗',
+      retryDownload: 'ダウンロード再試行',
+      errorCode: 'エラーコード',
+      mediaDownload: 'メディアダウンロード',
+      selectResolution: '解像度選択',
+      preview: 'プレビュー',
+      copyFailed: 'コピー失敗',
+      downloadAll: 'すべてダウンロード',
+      downloadOptions: 'のダウンロードオプション、総サイズ約',
+      mediaFiles: 'のメディアファイル',
+      totalSize: '総サイズ',
+      carousel: 'カルーセル',
+      multiMedia: 'マルチメディア',
+      original: 'オリジナル',
+      video: '動画',
+      image: '画像',
+      videoContent: '動画コンテンツ',
+      imageContent: '画像コンテンツ',
+      resolutions: '解像度',
+      post: '投稿',
+      story: 'ストーリー',
+      reel: 'リール',
+      igtv: 'IGTV',
+      highlight: 'ハイライト',
+      content: 'コンテンツ',
+      trustedUsers: 'ユーザーが信頼',
+      totalDownloads: 'ダウンロード回数',
+      rating: '評価',
+      extremeSpeed: '超高速',
+      pureNoWatermark: '完全透かしなし',
+      fullFormatSupport: '全フォーマット対応',
+      supportedContent: 'すべての Instagram コンテンツのダウンロードをサポート',
+      photoPosts: '写真投稿',
+      videoContent2: '動画コンテンツ',
+      stories: 'ストーリー',
+      reels: 'リール',
+    },
+    // ダウンロードフォーム
+    form: {
+      urlLabel: 'Instagram URL',
+      urlPlaceholder: 'Instagram のリンクを貼り付け...',
+      urlRequired: 'Instagram のリンクを入力してください',
+      urlInvalid: '有効な URL を入力してください',
+      urlInvalidInstagram: '有効な Instagram リンクを入力してください',
+      urlValidationFailed: 'URL 検証に失敗',
+      downloadFailed: 'ダウンロードに失敗',
+      downloading: 'ダウンロード中...',
+      startDownload: 'ダウンロード開始',
+      detected: '検出',
+      advancedOptions: '高度なオプション',
+      contentType: 'コンテンツタイプ',
+      quality: '品質',
+      downloadFormat: 'ダウンロード形式',
+      supportedTypes: 'サポートされるコンテンツタイプ:',
+      autoDetect: '自動検出',
+      originalQuality: 'オリジナル品質',
+      hdQuality: '高画質',
+      sdQuality: '標準画質',
+      individualFiles: '個別ファイル',
+      zipArchive: 'ZIP アーカイブ',
+      posts: '📷 投稿',
+      videos: '📹 動画',
+      stories2: '⭐ ストーリー',
+      highlights2: '✨ ハイライト',
+      unknownType: '不明なタイプ',
+      profileType: 'プロフィール',
+      optimizedTool: '最適化ツール',
+      contentDownloader: 'Instagram コンテンツダウンローダー',
+    },
   },
 
   // Profile page
@@ -118,6 +209,39 @@ export default {
     deleteAccount: 'アカウント削除',
     confirmDelete: 'アカウント削除の確認',
     deleteWarning: 'この操作は元に戻せません。すべてのデータが永久に削除されます。',
+    // プロフィールページの追加項目
+    pageTitle: 'プロフィール',
+    pageDescription: 'アカウント情報と設定を管理',
+    basicInfo: {
+      title: '基本情報',
+      description: 'アカウントの基本情報を更新',
+      nameLabel: '名前',
+      namePlaceholder: '名前を入力',
+      emailLabel: 'メール',
+      emailNote: 'メールアドレスは変更できません',
+      saveButton: '保存',
+      savingButton: '保存中...',
+      cancelButton: 'キャンセル',
+      editButton: 'プロフィール編集',
+      updateSuccess: 'プロフィールの更新が完了しました',
+      updateError: '更新に失敗しました。もう一度試してください'
+    },
+    accountInfo: {
+      title: 'アカウント情報',
+      description: 'アカウントの詳細を確認',
+      email: 'メール',
+      userId: 'ユーザー ID',
+      registrationDate: '登録日'
+    },
+    dangerZone: {
+      title: '危険な操作',
+      description: 'これらの操作は元に戻すことができません。注意してご利用ください',
+      deleteAccount: {
+        title: 'アカウント削除',
+        warning: 'アカウントを削除すると、すべてのデータが永久に削除されます。この操作は元に戻すことができません。',
+        button: 'アカウント削除'
+      }
+    }
   },
 
   // SEO and meta
@@ -227,7 +351,7 @@ export default {
         content: [
           '本規約から生じるいかなる紛争も、まず友好的な交渉により解決されるべきです。',
           '交渉が失敗した場合、紛争はサービス提供者の所在地の管轄権を有する裁判所に提出されるべきです。',
-          '本規約の解釈と執行は、中華人民共和国の法律に準拠します。',
+          '本規約の解釈と執行は、日本の法律に準拠します。',
           '本規約のいずれかの条項が無効とみなされた場合でも、他の条項の有効性には影響しません。'
         ]
       },
@@ -243,6 +367,120 @@ export default {
     },
     effectiveDate: '施行日：2024年1月1日',
     acknowledgment: '本サービスを使用することで、本利用規約を読み、理解し、これに拘束されることに同意したものとみなされます。'
+  },
+
+  // Download Center page
+  downloadCenter: {
+    title: 'Instagram ダウンロードセンター',
+    subtitle: 'お好みのダウンロードタイプを選択し、プロフェッショナルな Instagram コンテンツダウンロードサービスをお楽しみください',
+    breadcrumb: {
+      home: 'ホーム',
+      center: 'ダウンロードセンター'
+    },
+    badges: {
+      freeUse: '無料利用',
+      hdNoWatermark: 'HD 透かしなし'
+    },
+    options: {
+      post: {
+        title: 'Instagram 投稿',
+        description: 'HD 品質で透かしなしの Instagram 写真・動画投稿をダウンロード',
+        features: ['HD 品質', '透かしなし', '一括ダウンロード']
+      },
+      stories: {
+        title: 'Instagram ストーリー',
+        description: '匿名でストーリーをダウンロード、閲覧記録なし、24時間コンテンツ',
+        features: ['匿名ダウンロード', '閲覧記録なし', 'リアルタイム取得']
+      },
+      reels: {
+        title: 'Instagram リール',
+        description: 'オリジナル品質を保持したまま Instagram リール短動画をダウンロード',
+        features: ['短動画', 'オリジナル品質', '高速ダウンロード']
+      },
+      igtv: {
+        title: 'IGTV 動画',
+        description: 'HD 形式で IGTV 長動画コンテンツをダウンロード',
+        features: ['長動画', 'HD 形式', '安定ダウンロード']
+      },
+      highlights: {
+        title: 'ハイライト',
+        description: 'ユーザーハイライトコンテンツを永続保存用にダウンロード',
+        features: ['厳選コンテンツ', '永続保存', '一括処理']
+      },
+      profile: {
+        title: 'ユーザープロフィール',
+        description: 'ユーザーアバター、プロフィール写真その他コンテンツをダウンロード',
+        features: ['アバターダウンロード', 'プロフィール写真', 'シンプル & 高速']
+      }
+    },
+    howToUse: {
+      title: 'Instagram ダウンローダーの使用方法',
+      steps: {
+        step1: {
+          title: 'ダウンロードタイプ選択',
+          description: 'ニーズに応じて投稿、ストーリー、リールなど異なるダウンロードタイプを選択'
+        },
+        step2: {
+          title: 'リンク貼り付け',
+          description: 'Instagram コンテンツリンクをコピーして対応するダウンロードページに貼り付け'
+        },
+        step3: {
+          title: 'ダウンロード開始',
+          description: 'ダウンロードボタンをクリック、処理完了を待ってデバイスにファイル保存'
+        }
+      }
+    },
+    button: {
+      useNow: '今すぐ使用'
+    }
+  },
+
+  // About page
+  about: {
+    title: 'Instagram ダウンローダーについて',
+    features: {
+      title: '機能',
+      items: [
+        'Instagram 写真・動画ダウンロード対応',
+        '高品質メディアファイルダウンロード',
+        '一括ダウンロード対応',
+        'シンプルで使いやすいインターフェース',
+        'Instagram アカウントログイン不要',
+        '高速で安全なダウンロードプロセス'
+      ]
+    },
+    contentTypes: {
+      title: '対応コンテンツタイプ',
+      items: [
+        '単一画像投稿',
+        '動画投稿',
+        '写真・動画カルーセル',
+        'Instagram ストーリー',
+        'ハイライト',
+        'プロフィール写真'
+      ]
+    },
+    instructions: {
+      title: '使用方法',
+      steps: {
+        step1: {
+          title: 'リンクコピー',
+          description: 'Instagram でダウンロードしたいコンテンツを見つけ、共有ボタンをクリックしてリンクをコピー'
+        },
+        step2: {
+          title: 'リンク貼り付け',
+          description: 'コピーしたリンクをダウンロードページの入力ボックスに貼り付け'
+        },
+        step3: {
+          title: 'ダウンロード開始',
+          description: 'ダウンロードボタンをクリックして処理完了を待つ'
+        },
+        step4: {
+          title: 'ファイル保存',
+          description: '処理完了後、ファイルが自動的にデバイスにダウンロード開始'
+        }
+      }
+    }
   },
 
   // Footer
@@ -376,4 +614,171 @@ export default {
       }
     }
   },
+
+  // ダウンロードサブページ翻訳
+  downloadPages: {
+    stories: {
+      title: 'Instagram ストーリーダウンローダー',
+      description: 'プロフェッショナルな Instagram ストーリーダウンロードツール',
+      heading: 'Instagram ストーリーダウンローダー',
+      subheading: 'Instagram ストーリーの写真と動画を匿名でダウンロード',
+      inputPlaceholder: 'Instagram ユーザー名またはストーリーリンクを入力...',
+      features: ['匿名ダウンロード', '閲覧記録なし', '24時間コンテンツ'],
+      howToUse: 'Instagram ストーリーのダウンロード方法',
+      steps: {
+        step1: 'ユーザー名を入力またはストーリーリンクをコピー',
+        step2: 'ダウンロードボタンをクリックして処理開始',
+        step3: 'ダウンロードするストーリーコンテンツを選択',
+        step4: '処理完了を待ってデバイスに保存'
+      }
+    },
+    post: {
+      title: 'Instagram 投稿ダウンローダー',
+      description: 'Instagram 写真・動画投稿ダウンロードツール',
+      heading: 'Instagram 写真・動画ダウンロード',
+      subheading: 'Instagram 投稿コンテンツを高品質でダウンロード、単一画像、カルーセル、動画対応',
+      inputPlaceholder: 'Instagram 投稿リンクを貼り付け...',
+      features: ['HD 品質', '透かしなし', '一括ダウンロード', 'カルーセル対応'],
+      howToUse: 'Instagram 投稿のダウンロード方法'
+    },
+    reels: {
+      title: 'Instagram リールダウンローダー',
+      description: 'Instagram リール短動画ダウンロードツール',
+      heading: 'Instagram リールダウンロード',
+      subheading: 'オリジナル品質を保持して Instagram リール短動画をダウンロード',
+      inputPlaceholder: 'Instagram リールリンクを貼り付け...',
+      features: ['短動画', 'オリジナル品質', '高速ダウンロード', 'MP4 形式'],
+      howToUse: 'Instagram リールのダウンロード方法'
+    },
+    igtv: {
+      title: 'IGTV 動画ダウンローダー',
+      description: 'IGTV 長動画コンテンツダウンロードツール',
+      heading: 'IGTV 動画ダウンロード',
+      subheading: 'HD 形式対応で IGTV 長動画コンテンツをダウンロード',
+      inputPlaceholder: 'IGTV 動画リンクを貼り付け...',
+      features: ['長動画', 'HD 形式', '安定ダウンロード', '大容量ファイル対応'],
+      howToUse: 'IGTV 動画のダウンロード方法'
+    },
+    highlights: {
+      title: 'ハイライトダウンローダー',
+      description: 'Instagram ハイライト厳選コンテンツダウンロードツール',
+      heading: 'ハイライトダウンロード',
+      subheading: 'ユーザー厳選ハイライトコンテンツを永続保存用にダウンロード',
+      inputPlaceholder: 'Instagram ユーザー名を入力...',
+      features: ['厳選コンテンツ', '永続保存', '一括処理', 'カテゴリ別ダウンロード'],
+      howToUse: 'Instagram ハイライトのダウンロード方法'
+    },
+    profile: {
+      title: 'ユーザープロフィールダウンローダー',
+      description: 'Instagram ユーザーアバター・プロフィールダウンロードツール',
+      heading: 'ユーザーアバターダウンロード',
+      subheading: 'ユーザーアバター、プロフィール写真その他コンテンツをダウンロード',
+      inputPlaceholder: 'Instagram ユーザー名を入力...',
+      features: ['アバターダウンロード', 'プロフィール写真', 'シンプル & 高速', 'HD 品質'],
+      howToUse: 'ユーザープロフィールのダウンロード方法'
+    },
+    private: {
+      title: '非公開コンテンツダウンローダー',
+      description: 'Instagram 非公開コンテンツダウンロードツール',
+      heading: '非公開コンテンツダウンロード',
+      subheading: '非公開アカウントコンテンツのダウンロード（認証が必要）',
+      inputPlaceholder: '非公開コンテンツダウンロードにはログイン認証が必要...',
+      features: ['非公開コンテンツ', '認証アクセス', 'セキュアダウンロード', 'ユーザープライバシー'],
+      howToUse: '非公開コンテンツのダウンロード方法'
+    }
+  },
+
+  // サブスクリプションページ
+  subscription: {
+    // ページタイトルと説明
+    pageTitle: 'サブスクリプション管理',
+    pageDescription: 'サブスクリプションプランと請求情報を管理',
+    // 現在のサブスクリプションセクション
+    currentSubscription: '現在のサブスクリプション',
+    noSubscription: 'アクティブなサブスクリプションなし',
+    selectPlan: '開始に適したサブスクリプションプランを選択してください',
+    plans: 'サブスクリプションプラン',
+    currentPlan: '現在のプラン',
+    validUntil: '有効期限',
+    usageThisPeriod: 'この期間の使用量',
+    unlimited: '無制限',
+    times: '回',
+    paymentMethod: '支払方法',
+    stripePayment: 'Stripe 支払い',
+    alipayPayment: 'Alipay 支払い',
+    verifyingPayment: '支払状況確認中...',
+    paymentSuccess: '支払い成功！',
+    paymentCanceled: '支払いキャンセル',
+    thankYouSubscription: 'サブスクリプションありがとうございます！アカウントが正常にアップグレードされ、フルサービスをご利用いただけます。',
+    paymentCanceledMessage: '支払いがキャンセルされ、料金は発生しませんでした。ご質問がございましたら、お気軽にお問い合わせください。',
+    viewSubscriptionDetails: 'サブスクリプション詳細表示',
+    startUsing: '使用開始',
+    retrySelectPlan: 'プラン再選択',
+    returnHome: 'ホームに戻る',
+    status: {
+      active: 'アクティブ',
+      canceled: 'キャンセル済み',
+      expired: '期限切れ',
+      pending: '保留中'
+    },
+    errors: {
+      fetchFailed: 'サブスクリプション情報の取得に失敗',
+      plansFetchFailed: 'プラン情報の取得に失敗',
+      checkoutFailed: '支払いセッションの作成に失敗',
+      unknownError: '未知のエラー',
+      retryLater: '支払いセッションの作成に失敗、後でもう一度試してください'
+    },
+    duration: {
+      monthly: 'ヶ月',
+      yearly: '年'
+    },
+    // 元のプラン内容
+    title: 'サブスクリプションプラン',
+    description: '適切なサブスクリプションプランを選択',
+    heading: 'サブスクリプションプランを選択',
+    subheading: 'より多くの高度な機能をアンロックし、より良いダウンロード体験をお楽しみください',
+    features: {
+      title: '有料プランを選択する理由',
+      items: [
+        'より高いダウンロード制限',
+        'より良い品質保証',
+        '優先技術サポート',
+        '継続的な機能アップデート'
+      ]
+    }
+  },
+
+  // 一括ダウンロードページ
+  batchDownload: {
+    // ページ基本情報
+    pageTitle: '一括ダウンロード',
+    pageDescription: '複数の Instagram リンクを効率的に処理して一括ダウンロード',
+    placeholder: '一括ダウンロード用に複数の Instagram リンクを追加...',
+    optimizedFor: '一括ダウンロード',
+    features: ['一括処理', 'タスクキュー', '進行状況追跡'],
+    title: '一括ダウンロード',
+    description: '複数の Instagram コンテンツを一度にダウンロード',
+    heading: '一括ダウンロードツール',
+    subheading: '複数の Instagram リンクを一度に処理して効率を向上',
+    inputPlaceholder: '1行に1つの Instagram リンクを入力...',
+    addLink: 'リンク追加',
+    removeLink: '削除',
+    startBatch: '一括ダウンロード開始',
+    progress: '進行状況',
+    completed: '完了',
+    failed: '失敗',
+    pending: '保留中',
+    howToUse: '一括ダウンロードの使用方法',
+    steps: {
+      step1: '複数の Instagram リンクを貼り付け（1行に1つずつ）',
+      step2: '一括ダウンロード開始をクリック',
+      step3: 'ダウンロード進行状況とステータスを監視',
+      step4: 'ダウンロード完了後にアーカイブパッケージを取得'
+    },
+    limits: {
+      free: '無料ユーザー：一括あたり最大5リンク',
+      premium: 'プレミアムユーザー：一括あたり最大50リンク',
+      pro: 'プロユーザー：無制限'
+    }
+  }
 } as const;

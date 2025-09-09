@@ -1,14 +1,19 @@
+'use client'
+
 import { SEOLayout } from '@/components/seo/seo-layout';
 import { DownloadForm } from '@/components/download/download-form';
+import { useI18n } from '@/lib/i18n/client';
 
 export default function InstagramPrivateDownloadPage() {
+  const { t } = useI18n();
+
   return (
     <SEOLayout contentType="private">
       <DownloadForm 
-        placeholder="需要登录授权后下载私密内容..."
+        placeholder={t('downloadPages.private.inputPlaceholder')}
         acceptedTypes={['private']}
-        optimizedFor="私密内容下载"
-        features={['安全认证', '隐私保护', '授权访问']}
+        optimizedFor={t('downloadPages.private.subheading')}
+        features={t('downloadPages.private.features')}
         requireAuth={true}
       />
     </SEOLayout>

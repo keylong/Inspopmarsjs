@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { useI18n } from '@/lib/i18n/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,6 +13,7 @@ import { Github, Mail } from 'lucide-react'
 
 export default function SignInPage() {
   const router = useRouter()
+  const t = useI18n()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -32,14 +34,14 @@ export default function SignInPage() {
       })
 
       if (result?.error) {
-        setError('邮箱或密码错误')
+        setError(t('auth.errors.invalidCredentials'))
       } else {
         // 登录成功，重定向到首页
         router.push('/')
         router.refresh()
       }
     } catch {
-      setError('登录失败，请重试')
+      setError(t('auth.errors.loginFailed'))
     } finally {
       setIsLoading(false)
     }
@@ -50,7 +52,7 @@ export default function SignInPage() {
     try {
       await signIn(provider, { callbackUrl: '/' })
     } catch {
-      setError('登录失败，请重试')
+      setError(t('auth.errors.loginFailed'))
       setIsLoading(false)
     }
   }
@@ -66,9 +68,9 @@ export default function SignInPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">登录</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">{t('auth.signin.title')}</CardTitle>
           <CardDescription className="text-center">
-            登录到您的账户
+            {t('auth.errors.loginWithAccount')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -81,7 +83,7 @@ export default function SignInPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
-                邮箱
+                {t('auth.signin.email')}
               </label>
               <Input
                 id="email"
@@ -89,7 +91,7 @@ export default function SignInPage() {
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="请输入邮箱"
+                placeholder={t('auth.signin.emailPlaceholder')}
                 required
                 disabled={isLoading}
               />
@@ -97,7 +99,7 @@ export default function SignInPage() {
 
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
-                密码
+                {t('auth.signin.password')}
               </label>
               <Input
                 id="password"
@@ -105,7 +107,7 @@ export default function SignInPage() {
                 type="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="请输入密码"
+                placeholder={t('auth.signin.passwordPlaceholder')}
                 required
                 disabled={isLoading}
               />
@@ -116,7 +118,7 @@ export default function SignInPage() {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? '登录中...' : '登录'}
+              {isLoading ? t('auth.errors.loggingIn') : t('auth.signin.submit')}
             </Button>
           </form>
 
@@ -125,7 +127,7 @@ export default function SignInPage() {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">或者</span>
+              <span className="px-2 bg-white text-gray-500">{t('auth.errors.or')}</span>
             </div>
           </div>
 
@@ -152,9 +154,9 @@ export default function SignInPage() {
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-600">
-            还没有账户？{' '}
+{t('auth.signin.noAccount')}{' '}
             <Link href="/auth/signup" className="text-blue-600 hover:underline">
-              立即注册
+              {t('auth.signin.createAccount')}
             </Link>
           </p>
         </CardFooter>

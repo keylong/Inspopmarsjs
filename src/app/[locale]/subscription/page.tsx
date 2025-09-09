@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Loader2, CreditCard, Calendar, Download, Check } from 'lucide-react'
 import { SubscriptionPlan, UserSubscription } from '@/types/payment'
+import { useI18n } from '@/lib/i18n/client'
 
 interface SubscriptionData {
   subscription: UserSubscription | null
@@ -21,6 +22,7 @@ interface SubscriptionData {
 }
 
 export default function SubscriptionPage() {
+  const { t } = useI18n()
   const { status } = useSession()
   const router = useRouter()
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null)
@@ -49,7 +51,7 @@ export default function SubscriptionPage() {
         setSubscriptionData(result.data)
       }
     } catch (error) {
-      console.error('获取订阅信息失败:', error)
+      console.error(t('subscription.errors.fetchFailed'), error)
     }
   }
 
@@ -62,7 +64,7 @@ export default function SubscriptionPage() {
         setPlans(result.data)
       }
     } catch (error) {
-      console.error('获取套餐信息失败:', error)
+      console.error(t('subscription.errors.plansFetchFailed'), error)
     } finally {
       setLoading(false)
     }
@@ -88,11 +90,11 @@ export default function SubscriptionPage() {
       if (result.success && result.data?.checkoutUrl) {
         window.location.href = result.data.checkoutUrl
       } else {
-        alert('创建支付会话失败: ' + (result.error || '未知错误'))
+        alert(t('subscription.errors.checkoutFailed') + ': ' + (result.error || t('subscription.errors.unknownError')))
       }
     } catch (error) {
-      console.error('创建支付会话失败:', error)
-      alert('创建支付会话失败，请稍后重试')
+      console.error(t('subscription.errors.checkoutFailed'), error)
+      alert(t('subscription.errors.retryLater'))
     } finally {
       setUpgrading(false)
     }
@@ -101,13 +103,13 @@ export default function SubscriptionPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-green-100 text-green-800">激活</Badge>
+        return <Badge className="bg-green-100 text-green-800">{t('subscription.status.active')}</Badge>
       case 'canceled':
-        return <Badge variant="secondary">已取消</Badge>
+        return <Badge variant="secondary">{t('subscription.status.canceled')}</Badge>
       case 'expired':
-        return <Badge variant="destructive">已过期</Badge>
+        return <Badge variant="destructive">{t('subscription.status.expired')}</Badge>
       case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800">待支付</Badge>
+        return <Badge className="bg-yellow-100 text-yellow-800">{t('subscription.status.pending')}</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
@@ -133,7 +135,7 @@ export default function SubscriptionPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="h-5 w-5" />
-              当前订阅
+              {t('subscription.currentSubscription')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -149,7 +151,7 @@ export default function SubscriptionPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">有效期至</span>
+                  <span className="text-sm text-gray-600">{t('subscription.validUntil')}</span>
                 </div>
                 <p className="font-medium">
                   {new Date(currentSubscription.currentPeriodEnd).toLocaleDateString('zh-CN')}
@@ -159,12 +161,12 @@ export default function SubscriptionPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Download className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">本周期使用</span>
+                  <span className="text-sm text-gray-600">{t('subscription.usageThisPeriod')}</span>
                 </div>
                 <p className="font-medium">
                   {usage?.downloadLimit === -1 
-                    ? `${usage.downloadCount} 次（无限制）`
-                    : `${usage.downloadCount} / ${usage.downloadLimit} 次`
+                    ? `${usage.downloadCount} ${t('subscription.times')}（${t('subscription.unlimited')}）`
+                    : `${usage.downloadCount} / ${usage.downloadLimit} ${t('subscription.times')}`
                   }
                 </p>
                 {usage?.downloadLimit !== -1 && (
@@ -178,10 +180,10 @@ export default function SubscriptionPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <CreditCard className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">支付方式</span>
+                  <span className="text-sm text-gray-600">{t('subscription.paymentMethod')}</span>
                 </div>
                 <p className="font-medium">
-                  {currentSubscription.paymentMethod === 'stripe' ? 'Stripe' : '支付宝'}
+                  {currentSubscription.paymentMethod === 'stripe' ? 'Stripe' : t('subscription.alipayPayment').replace(' 支付', '')}
                 </p>
               </div>
             </div>
@@ -190,9 +192,9 @@ export default function SubscriptionPage() {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>暂无有效订阅</CardTitle>
+            <CardTitle>{t('subscription.noSubscription')}</CardTitle>
             <CardDescription>
-              选择适合您的订阅套餐开始使用
+              {t('subscription.selectPlan')}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -200,7 +202,7 @@ export default function SubscriptionPage() {
 
       {/* 套餐选择 */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-bold">订阅套餐</h2>
+        <h2 className="text-2xl font-bold">{t('subscription.plans')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan) => {
             const isCurrentPlan = currentPlan?.id === plan.id
@@ -209,7 +211,7 @@ export default function SubscriptionPage() {
               <Card key={plan.id} className={`relative ${isCurrentPlan ? 'ring-2 ring-blue-500' : ''}`}>
                 {isCurrentPlan && (
                   <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-500">当前套餐</Badge>
+                    <Badge className="bg-blue-500">{t('subscription.currentPlan')}</Badge>
                   </div>
                 )}
                 
@@ -219,7 +221,7 @@ export default function SubscriptionPage() {
                   <div className="text-3xl font-bold">
                     ${plan.price}
                     <span className="text-base font-normal text-gray-600">
-                      /{plan.duration === 'monthly' ? '月' : plan.duration === 'yearly' ? '年' : ''}
+                      /{plan.duration === 'monthly' ? t('subscription.duration.monthly') : plan.duration === 'yearly' ? t('subscription.duration.yearly') : ''}
                     </span>
                   </div>
                 </CardHeader>
@@ -244,7 +246,7 @@ export default function SubscriptionPage() {
                         {upgrading ? (
                           <Loader2 className="h-4 w-4 animate-spin mr-2" />
                         ) : null}
-                        Stripe 支付
+                        {t('subscription.stripePayment')}
                       </Button>
                       
                       <Button
@@ -256,7 +258,7 @@ export default function SubscriptionPage() {
                         {upgrading ? (
                           <Loader2 className="h-4 w-4 animate-spin mr-2" />
                         ) : null}
-                        支付宝支付
+                        {t('subscription.alipayPayment')}
                       </Button>
                     </div>
                   )}

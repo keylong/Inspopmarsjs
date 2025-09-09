@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useCurrentLocale } from '@/lib/i18n/client';
+import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 
 import { InstagramPost, DownloadItem } from '@/types/instagram';
 
@@ -37,6 +37,7 @@ interface DownloadResult {
 
 export default function InstagramPostDownloadPage() {
   const currentLocale = useCurrentLocale() || 'zh-CN';
+  const t = useI18n();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DownloadResult | null>(null);
@@ -50,7 +51,7 @@ export default function InstagramPostDownloadPage() {
     if (!url.trim()) {
       setResult({
         success: false,
-        error: '请输入Instagram链接'
+        error: t('download.form.urlRequired')
       });
       return;
     }
@@ -77,7 +78,7 @@ export default function InstagramPostDownloadPage() {
       console.error('API请求失败:', error);
       setResult({
         success: false,
-        error: error instanceof Error ? error.message : '网络请求失败'
+        error: error instanceof Error ? error.message : t('errors.networkError')
       });
     } finally {
       setLoading(false);
@@ -141,18 +142,18 @@ export default function InstagramPostDownloadPage() {
       <div className="container mx-auto px-4 py-8">
         {/* 面包屑导航 */}
         <nav className="text-sm mb-8">
-          <Link href={`/${currentLocale}`} className="text-blue-600 hover:underline">首页</Link>
+          <Link href={`/${currentLocale}`} className="text-blue-600 hover:underline">{t('nav.home')}</Link>
           <span className="mx-2 text-gray-400">/</span>
-          <Link href={`/${currentLocale}/download`} className="text-blue-600 hover:underline">下载中心</Link>
+          <Link href={`/${currentLocale}/download`} className="text-blue-600 hover:underline">{t('downloadCenter.title')}</Link>
           <span className="mx-2 text-gray-400">/</span>
-          <span className="text-gray-600">帖子下载</span>
+          <span className="text-gray-600">{t('downloadPages.post.title')}</span>
         </nav>
 
         {/* 返回按钮 */}
         <Link href={`/${currentLocale}/download`}>
           <Button variant="outline" className="mb-8">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            返回下载中心
+            {t('common.back')} {t('downloadCenter.title')}
           </Button>
         </Link>
 
@@ -177,11 +178,11 @@ export default function InstagramPostDownloadPage() {
             </motion.div>
             
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
-              Instagram 帖子下载
+              {t('downloadPages.post.heading')}
             </h1>
             
             <p className="text-xl text-gray-600 mb-8">
-              下载 Instagram 图片和视频帖子，支持高清无水印
+              {t('downloadPages.post.subheading')}
             </p>
           </div>
 
@@ -190,7 +191,7 @@ export default function InstagramPostDownloadPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-xl">
                 <LinkIcon className="w-5 h-5" />
-                输入 Instagram 链接
+                {t('download.form.urlLabel')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -199,7 +200,7 @@ export default function InstagramPostDownloadPage() {
                   <Input
                     ref={inputRef}
                     type="url"
-                    placeholder="粘贴Instagram帖子链接，如: https://www.instagram.com/p/..."
+                    placeholder={t('downloadPages.post.inputPlaceholder')}
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     className="flex-1"
@@ -211,7 +212,7 @@ export default function InstagramPostDownloadPage() {
                     onClick={handleClear}
                     disabled={loading || !url}
                   >
-                    清空
+                    {t('common.cancel')}
                   </Button>
                 </div>
                 
@@ -225,12 +226,12 @@ export default function InstagramPostDownloadPage() {
                     {loading ? (
                       <>
                         <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        正在解析...
+                        {t('download.form.downloading')}
                       </>
                     ) : (
                       <>
                         <Download className="w-5 h-5 mr-2" />
-                        开始下载
+                        {t('download.form.startDownload')}
                       </>
                     )}
                   </Button>
@@ -240,7 +241,7 @@ export default function InstagramPostDownloadPage() {
               {/* 示例链接 */}
               <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-2">
-                  <strong>支持的链接格式：</strong>
+                  <strong>{t('download.form.supportedTypes')}</strong>
                 </p>
                 <ul className="text-sm text-gray-500 space-y-1">
                   <li>• https://www.instagram.com/p/ABC123...</li>
@@ -263,7 +264,7 @@ export default function InstagramPostDownloadPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-green-800">
                       <CheckCircle className="w-5 h-5" />
-                      解析成功！
+                      {t('download.result.completed')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -295,7 +296,7 @@ export default function InstagramPostDownloadPage() {
                         <div>
                           <h4 className="text-lg font-semibold mb-4 text-gray-800 flex items-center gap-2">
                             <Image className="w-5 h-5" />
-                            选择图片质量下载
+                            {t('download.result.selectResolution')}
                           </h4>
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -308,6 +309,7 @@ export default function InstagramPostDownloadPage() {
                                 onImageClick={handleImageClick}
                                 onDirectDownload={handleDirectDownload}
                                 onCopyUrl={handleCopyUrl}
+                                t={t}
                               />
                             ))}
                           </div>
@@ -319,23 +321,23 @@ export default function InstagramPostDownloadPage() {
                             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                               <h4 className="text-lg font-semibold mb-2 text-blue-900 flex items-center gap-2">
                                 <Download className="w-5 h-5" />
-                                下载统计
+                                {t('download.result.mediaDownload')}
                               </h4>
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                 <div>
-                                  <span className="text-blue-600 font-medium">总文件数：</span>
+                                  <span className="text-blue-600 font-medium">{t('download.result.mediaFiles')}：</span>
                                   <span className="text-blue-800">{result.downloads.length} 个</span>
                                 </div>
                                 <div>
-                                  <span className="text-blue-600 font-medium">图片数：</span>
+                                  <span className="text-blue-600 font-medium">{t('download.result.image')}：</span>
                                   <span className="text-blue-800">{result.downloads.filter(d => d.type === 'image').length} 个</span>
                                 </div>
                                 <div>
-                                  <span className="text-blue-600 font-medium">视频数：</span>
+                                  <span className="text-blue-600 font-medium">{t('download.result.video')}：</span>
                                   <span className="text-blue-800">{result.downloads.filter(d => d.type === 'video').length} 个</span>
                                 </div>
                                 <div>
-                                  <span className="text-blue-600 font-medium">总大小：</span>
+                                  <span className="text-blue-600 font-medium">{t('download.result.totalSize')}：</span>
                                   <span className="text-blue-800">
                                     {(result.downloads.reduce((acc, d) => acc + d.size, 0) / 1024 / 1024).toFixed(2)} MB
                                   </span>
@@ -349,7 +351,7 @@ export default function InstagramPostDownloadPage() {
                       <Alert>
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription>
-                          解析成功但未获得下载链接，请检查链接是否有效
+                          {t('download.result.downloadFailed')}
                         </AlertDescription>
                       </Alert>
                     )}
@@ -359,7 +361,7 @@ export default function InstagramPostDownloadPage() {
                 <Alert variant="destructive" className="mb-8">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    {result.error || '下载失败，请检查链接是否正确'}
+                    {result.error || t('download.form.downloadFailed')}
                   </AlertDescription>
                 </Alert>
               )}
@@ -370,7 +372,7 @@ export default function InstagramPostDownloadPage() {
         {/* 使用步骤 */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            如何使用Instagram帖子下载器？
+            {t('downloadPages.post.howToUse')}
           </h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className="text-center">
@@ -378,10 +380,10 @@ export default function InstagramPostDownloadPage() {
                 1
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                复制链接
+                {t('download.step1')}
               </h3>
               <p className="text-gray-600">
-                在 Instagram 中找到要下载的帖子，复制其链接
+                {t('download.step1')}
               </p>
             </div>
             <div className="text-center">
@@ -389,10 +391,10 @@ export default function InstagramPostDownloadPage() {
                 2
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                粘贴链接
+                {t('download.step2')}
               </h3>
               <p className="text-gray-600">
-                将链接粘贴到上方的输入框中
+                {t('download.step2')}
               </p>
             </div>
             <div className="text-center">
@@ -400,10 +402,10 @@ export default function InstagramPostDownloadPage() {
                 3
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                开始下载
+                {t('download.step3')}
               </h3>
               <p className="text-gray-600">
-                点击下载按钮，等待处理完成并保存文件
+                {t('download.step4')}
               </p>
             </div>
           </div>
@@ -412,28 +414,28 @@ export default function InstagramPostDownloadPage() {
         {/* 功能特色 */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            为什么选择我们的Instagram下载器？
+            {t('download.features.title')}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-green-500 mb-3">✓</div>
-              <h3 className="font-semibold text-gray-900 mb-2">高清质量</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('download.features.highQuality')}</h3>
               <p className="text-gray-600 text-sm">
-                下载原始高清质量的图片和视频，保持最佳观看体验。
+                {t('download.features.highQualityDesc')}
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-green-500 mb-3">✓</div>
-              <h3 className="font-semibold text-gray-900 mb-2">无水印下载</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('download.features.noWatermark')}</h3>
               <p className="text-gray-600 text-sm">
-                下载的内容不含任何水印，享受纯净的视觉体验。
+                {t('download.features.noWatermarkDesc')}
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-green-500 mb-3">✓</div>
-              <h3 className="font-semibold text-gray-900 mb-2">快速处理</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('download.features.fastSpeed')}</h3>
               <p className="text-gray-600 text-sm">
-                优化的下载引擎，确保快速处理和下载速度。
+                {t('download.features.fastSpeedDesc')}
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
@@ -524,7 +526,7 @@ export default function InstagramPostDownloadPage() {
                       onClick={() => handleDirectDownload(selectedImage.src, selectedImage.alt)}
                     >
                       <Download className="w-4 h-4 mr-1" />
-                      下载
+                      {t('common.download')}
                     </Button>
                     <Button
                       size="sm"
@@ -532,7 +534,7 @@ export default function InstagramPostDownloadPage() {
                       onClick={() => handleCopyUrl(selectedImage.src)}
                     >
                       <Copy className="w-4 h-4 mr-1" />
-                      复制链接
+                      {t('common.copy')}
                     </Button>
                   </div>
                 </div>
@@ -552,9 +554,10 @@ interface MediaCardProps {
   onImageClick: (url: string, title: string) => void;
   onDirectDownload: (url: string, filename: string) => void;
   onCopyUrl: (url: string) => void;
+  t: any;
 }
 
-function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl }: MediaCardProps) {
+function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t }: MediaCardProps) {
   // 状态管理：当前选中的分辨率
   const [selectedResolution, setSelectedResolution] = useState(
     media.display_resources && media.display_resources.length > 0 
@@ -591,14 +594,14 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl }: 
         {media.is_video && (
           <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
             <Film className="w-3 h-3" />
-            视频
+            {t('download.result.video')}
           </div>
         )}
         {/* 图片标识 */}
         {!media.is_video && (
           <div className="absolute top-2 left-2 bg-white/90 text-gray-800 px-2 py-1 rounded text-xs flex items-center gap-1">
             <Image className="w-3 h-3" />
-            图片
+            {t('download.result.image')}
           </div>
         )}
         {/* 媒体序号 */}
@@ -611,10 +614,10 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl }: 
         {/* 标题和描述 */}
         <div className="mb-3">
           <h5 className="font-semibold text-gray-800">
-            {media.is_video ? '视频内容' : '图片内容'}
+            {media.is_video ? t('download.result.videoContent') : t('download.result.imageContent')}
           </h5>
           <p className="text-sm text-gray-500">
-            媒体 {index + 1} • {media.display_resources?.length || 1} 种分辨率可选
+            媒体 {index + 1} • {media.display_resources?.length || 1} {t('download.result.resolutions')}可选
           </p>
         </div>
         
@@ -622,7 +625,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl }: 
         {media.display_resources && media.display_resources.length > 0 && (
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              选择分辨率:
+              {t('download.result.selectResolution')}:
             </label>
             <div className="flex flex-wrap gap-2">
               {media.display_resources.map((resource: any, resIndex: number) => (
@@ -635,7 +638,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl }: 
                       : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
                   }`}
                 >
-                  {resIndex === 0 ? '原图' : resource.label || `${resource.config_width}×${resource.config_height}`}
+                  {resIndex === 0 ? t('download.result.original') : resource.label || `${resource.config_width}×${resource.config_height}`}
                 </button>
               ))}
             </div>
@@ -655,7 +658,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl }: 
             onClick={() => onImageClick(currentUrl, `Instagram 媒体 ${index + 1}`)}
           >
             <ZoomIn className="w-4 h-4 mr-1" />
-            预览
+            {t('download.result.preview')}
           </Button>
           <Button
             size="sm"
@@ -663,7 +666,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl }: 
             onClick={() => onDirectDownload(currentUrl, `instagram-${media.id || index}-${currentWidth}x${currentHeight}`)}
           >
             <Download className="w-4 h-4 mr-1" />
-            下载
+            {t('common.download')}
           </Button>
           <Button
             size="sm"

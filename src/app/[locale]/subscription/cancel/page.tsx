@@ -4,8 +4,10 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { XCircle } from 'lucide-react'
+import { useI18n } from '@/lib/i18n/client'
 
 export default function SubscriptionCancelPage() {
+  const { t } = useI18n()
   const router = useRouter()
 
   return (
@@ -16,12 +18,12 @@ export default function SubscriptionCancelPage() {
             <XCircle className="h-16 w-16 text-red-500" />
           </div>
           <CardTitle className="text-2xl text-red-600">
-            支付已取消
+            {t('subscription.paymentCanceled')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-gray-600">
-            您的支付已被取消，没有产生任何费用。如有疑问，请随时联系我们。
+            {t('subscription.paymentCanceledMessage')}
           </p>
           
           <div className="space-y-2">
@@ -29,7 +31,7 @@ export default function SubscriptionCancelPage() {
               onClick={() => router.push('/subscription')}
               className="w-full"
             >
-              重新选择套餐
+              {t('subscription.retrySelectPlan')}
             </Button>
             
             <Button
@@ -37,7 +39,7 @@ export default function SubscriptionCancelPage() {
               variant="outline"
               className="w-full"
             >
-              返回首页
+              {t('subscription.returnHome')}
             </Button>
           </div>
         </CardContent>

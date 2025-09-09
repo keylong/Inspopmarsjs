@@ -5,8 +5,10 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, Loader2 } from 'lucide-react'
+import { useI18n } from '@/lib/i18n/client'
 
 export default function SubscriptionSuccessPage() {
+  const { t } = useI18n()
   const searchParams = useSearchParams()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -32,7 +34,7 @@ export default function SubscriptionSuccessPage() {
     return (
       <div className="container mx-auto py-16 flex flex-col items-center justify-center space-y-4">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        <p className="text-gray-600">正在验证支付状态...</p>
+        <p className="text-gray-600">{t('subscription.verifyingPayment')}</p>
       </div>
     )
   }
@@ -45,12 +47,12 @@ export default function SubscriptionSuccessPage() {
             <CheckCircle className="h-16 w-16 text-green-500" />
           </div>
           <CardTitle className="text-2xl text-green-600">
-            支付成功！
+            {t('subscription.paymentSuccess')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-gray-600">
-            感谢您的订阅！您的账户已成功升级，现在可以享受完整的服务了。
+            {t('subscription.thankYouSubscription')}
           </p>
           
           <div className="space-y-2">
@@ -58,7 +60,7 @@ export default function SubscriptionSuccessPage() {
               onClick={() => router.push('/subscription')}
               className="w-full"
             >
-              查看订阅详情
+              {t('subscription.viewSubscriptionDetails')}
             </Button>
             
             <Button
@@ -66,7 +68,7 @@ export default function SubscriptionSuccessPage() {
               variant="outline"
               className="w-full"
             >
-              开始使用
+              {t('subscription.startUsing')}
             </Button>
           </div>
         </CardContent>

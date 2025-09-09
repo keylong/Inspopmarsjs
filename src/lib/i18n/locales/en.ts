@@ -77,6 +77,20 @@ export default {
       passwordPlaceholder: 'Enter your password',
       confirmPasswordPlaceholder: 'Confirm your password',
     },
+    errors: {
+      invalidCredentials: 'Invalid email or password',
+      loginFailed: 'Login failed, please try again',
+      registrationFailed: 'Registration failed',
+      passwordMismatch: 'Passwords do not match',
+      passwordTooShort: 'Password must be at least 6 characters',
+      registrationSuccess: 'Registration successful! Logging you in automatically...',
+      autoLoginFailed: 'Registration successful but auto-login failed, please login manually',
+      loggingIn: 'Logging in...',
+      registering: 'Creating account...',
+      loginWithAccount: 'Sign in to your account',
+      passwordHint: '(at least 6 characters)',
+      or: 'Or'
+    }
   },
 
   // Download page
@@ -600,4 +614,222 @@ export default {
       }
     }
   },
+
+  // Download subpage translations
+  downloadPages: {
+    stories: {
+      title: 'Instagram Stories Downloader',
+      description: 'Professional Instagram Stories download tool',
+      heading: 'Instagram Stories Downloader',
+      subheading: 'Anonymous download of Instagram Stories photos and videos',
+      inputPlaceholder: 'Enter Instagram username or Stories link...',
+      features: ['Anonymous Download', 'No View Records', '24-hour Content'],
+      howToUse: 'How to Download Instagram Stories?',
+      steps: {
+        step1: 'Enter username or copy Stories link',
+        step2: 'Click download button to start processing',
+        step3: 'Select Stories content to download',
+        step4: 'Wait for processing to complete and save to device'
+      }
+    },
+    post: {
+      title: 'Instagram Post Downloader',
+      description: 'Instagram photo and video post download tool',
+      heading: 'Instagram Photo/Video Download',
+      subheading: 'High quality download of Instagram post content, supports single images, carousels and videos',
+      inputPlaceholder: 'Paste Instagram post link...',
+      features: ['HD Quality', 'No Watermark', 'Batch Download', 'Carousel Support'],
+      howToUse: 'How to Download Instagram Posts?'
+    },
+    reels: {
+      title: 'Instagram Reels Downloader',
+      description: 'Instagram Reels short video download tool',
+      heading: 'Instagram Reels Download',
+      subheading: 'Download Instagram Reels short videos while maintaining original quality',
+      inputPlaceholder: 'Paste Instagram Reels link...',
+      features: ['Short Videos', 'Original Quality', 'Fast Download', 'MP4 Format'],
+      howToUse: 'How to Download Instagram Reels?'
+    },
+    igtv: {
+      title: 'IGTV Video Downloader',
+      description: 'IGTV long video content download tool',
+      heading: 'IGTV Video Download',
+      subheading: 'Download IGTV long video content with HD format support',
+      inputPlaceholder: 'Paste IGTV video link...',
+      features: ['Long Videos', 'HD Format', 'Stable Download', 'Large File Support'],
+      howToUse: 'How to Download IGTV Videos?'
+    },
+    highlights: {
+      title: 'Highlights Downloader',
+      description: 'Instagram Highlights curated content download tool',
+      heading: 'Highlights Download',
+      subheading: 'Download user curated highlights content for permanent storage',
+      inputPlaceholder: 'Enter Instagram username...',
+      features: ['Curated Content', 'Permanent Storage', 'Batch Processing', 'Category Download'],
+      howToUse: 'How to Download Instagram Highlights?'
+    },
+    profile: {
+      title: 'User Profile Downloader',
+      description: 'Instagram user avatar and profile download tool',
+      heading: 'User Avatar Download',
+      subheading: 'Download user avatars, profile pictures and other content',
+      inputPlaceholder: 'Enter Instagram username...',
+      features: ['Avatar Download', 'Profile Pictures', 'Simple & Quick', 'HD Quality'],
+      howToUse: 'How to Download User Profiles?'
+    },
+    private: {
+      title: 'Private Content Downloader',
+      description: 'Instagram private content download tool',
+      heading: 'Private Content Download',
+      subheading: 'Download private account content (authorization required)',
+      inputPlaceholder: 'Login authorization required for private content download...',
+      features: ['Private Content', 'Authorized Access', 'Secure Download', 'User Privacy'],
+      howToUse: 'How to Download Private Content?'
+    }
+  },
+
+  // Subscription pages
+  subscription: {
+    // Page titles and descriptions
+    pageTitle: 'Subscription Management',
+    pageDescription: 'Manage your subscription plans and billing information',
+    // Current subscription section
+    currentSubscription: 'Current Subscription',
+    noSubscription: 'No Active Subscription',
+    selectPlan: 'Choose a subscription plan that suits you to get started',
+    plans: 'Subscription Plans',
+    currentPlan: 'Current Plan',
+    validUntil: 'Valid Until',
+    usageThisPeriod: 'Usage This Period',
+    unlimited: 'Unlimited',
+    times: 'times',
+    paymentMethod: 'Payment Method',
+    stripePayment: 'Stripe Payment',
+    alipayPayment: 'Alipay Payment',
+    verifyingPayment: 'Verifying payment status...',
+    paymentSuccess: 'Payment Successful!',
+    paymentCanceled: 'Payment Canceled',
+    thankYouSubscription: 'Thank you for your subscription! Your account has been successfully upgraded and you can now enjoy the full service.',
+    paymentCanceledMessage: 'Your payment has been canceled and no charges were made. If you have any questions, please feel free to contact us.',
+    viewSubscriptionDetails: 'View Subscription Details',
+    startUsing: 'Start Using',
+    retrySelectPlan: 'Select Plan Again',
+    returnHome: 'Return to Home',
+    status: {
+      active: 'Active',
+      canceled: 'Canceled',
+      expired: 'Expired',
+      pending: 'Pending'
+    },
+    errors: {
+      fetchFailed: 'Failed to fetch subscription information',
+      plansFetchFailed: 'Failed to fetch plan information',
+      checkoutFailed: 'Failed to create payment session',
+      unknownError: 'Unknown error',
+      retryLater: 'Failed to create payment session, please try again later'
+    },
+    duration: {
+      monthly: 'month',
+      yearly: 'year'
+    },
+    // Original plan content
+    title: 'Subscription Plans',
+    description: 'Choose the subscription plan that suits you',
+    heading: 'Choose Your Subscription Plan',
+    subheading: 'Unlock more advanced features and enjoy a better download experience',
+    title: 'Subscription Plans',
+    description: 'Choose the subscription plan that suits you',
+    heading: 'Choose Your Subscription Plan',
+    subheading: 'Unlock more advanced features and enjoy a better download experience',
+    plans: {
+      free: {
+        title: 'Free Plan',
+        price: '$0',
+        period: '/month',
+        features: [
+          'Daily limit of 10 downloads',
+          'Basic download functionality',
+          'Standard quality',
+          'Community support'
+        ],
+        button: 'Current Plan'
+      },
+      premium: {
+        title: 'Premium Plan',
+        price: '$4.99',
+        period: '/month',
+        features: [
+          'Unlimited downloads',
+          'HD quality guarantee',
+          'Batch download feature',
+          'Priority customer support',
+          'Ad-free experience'
+        ],
+        button: 'Upgrade to Premium',
+        popular: 'Popular'
+      },
+      pro: {
+        title: 'Pro Plan',
+        price: '$14.99',
+        period: '/month',
+        features: [
+          'All Premium features',
+          'Private content access',
+          'API interface access',
+          'Dedicated customer support',
+          'Advanced analytics'
+        ],
+        button: 'Upgrade to Pro'
+      }
+    },
+    features: {
+      title: 'Why Choose a Paid Plan?',
+      items: [
+        'Higher download limits',
+        'Better quality guarantee',
+        'Priority technical support',
+        'Continuous feature updates'
+      ]
+    }
+  },
+
+  // Batch download pages
+  batchDownload: {
+    // Page basic information
+    pageTitle: 'Batch Download',
+    pageDescription: 'Efficiently process multiple Instagram links for batch downloading',
+    placeholder: 'Add multiple Instagram links for batch download...',
+    optimizedFor: 'Batch Download',
+    features: ['Batch Processing', 'Task Queue', 'Progress Tracking'],
+    title: 'Batch Download',
+    description: 'Download multiple Instagram content at once',
+    heading: 'Batch Download Tool',
+    subheading: 'Improve efficiency by processing multiple Instagram links at once',
+    inputPlaceholder: 'Enter one Instagram link per line...',
+    addLink: 'Add Link',
+    removeLink: 'Remove',
+    startBatch: 'Start Batch Download',
+    progress: 'Progress',
+    completed: 'Completed',
+    failed: 'Failed',
+    pending: 'Pending',
+    features: [
+      'Support multiple content types',
+      'Smart error handling',
+      'Download progress tracking',
+      'Batch archive download'
+    ],
+    howToUse: 'How to Use Batch Download?',
+    steps: {
+      step1: 'Paste multiple Instagram links (one per line)',
+      step2: 'Click start batch download',
+      step3: 'Monitor download progress and status',
+      step4: 'Get archive package when download completes'
+    },
+    limits: {
+      free: 'Free users: Maximum 5 links per batch',
+      premium: 'Premium users: Maximum 50 links per batch',
+      pro: 'Pro users: Unlimited'
+    }
+  }
 } as const;

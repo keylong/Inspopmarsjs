@@ -1,14 +1,19 @@
+'use client'
+
 import { SEOLayout } from '@/components/seo/seo-layout';
 import { DownloadForm } from '@/components/download/download-form';
+import { useI18n } from '@/lib/i18n/client';
 
 export default function BatchDownloadPage() {
+  const { t } = useI18n();
+
   return (
     <SEOLayout contentType="batch">
       <DownloadForm 
-        placeholder="添加多个Instagram链接进行批量下载..."
+        placeholder={t('batchDownload.placeholder')}
         acceptedTypes={['post', 'reels', 'igtv']}
-        optimizedFor="批量下载"
-        features={['批量处理', '任务队列', '进度跟踪']}
+        optimizedFor={t('batchDownload.optimizedFor')}
+        features={t('batchDownload.features')}
         enableBatch={true}
       />
     </SEOLayout>

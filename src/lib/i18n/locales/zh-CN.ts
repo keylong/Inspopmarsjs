@@ -77,6 +77,20 @@ export default {
       passwordPlaceholder: '请输入密码',
       confirmPasswordPlaceholder: '请再次输入密码',
     },
+    errors: {
+      invalidCredentials: '邮箱或密码错误',
+      loginFailed: '登录失败，请重试',
+      registrationFailed: '注册失败',
+      passwordMismatch: '两次输入的密码不一致',
+      passwordTooShort: '密码至少需要6个字符',
+      registrationSuccess: '注册成功！正在为您自动登录...',
+      autoLoginFailed: '注册成功但自动登录失败，请手动登录',
+      loggingIn: '登录中...',
+      registering: '注册中...',
+      loginWithAccount: '登录到您的账户',
+      passwordHint: '(至少6个字符)',
+      or: '或者'
+    }
   },
 
   // Download page
@@ -600,4 +614,222 @@ export default {
       }
     }
   },
+
+  // 下载子页面翻译
+  downloadPages: {
+    stories: {
+      title: 'Instagram Stories 下载器',
+      description: '专业的 Instagram Stories 下载工具',
+      heading: 'Instagram Stories 下载器',
+      subheading: '匿名下载 Instagram Stories 图片和视频',
+      inputPlaceholder: '输入Instagram用户名或Stories链接...',
+      features: ['匿名下载', '无浏览记录', '24小时内容'],
+      howToUse: '如何下载 Instagram Stories？',
+      steps: {
+        step1: '输入用户名或复制Stories链接',
+        step2: '点击下载按钮开始处理',
+        step3: '选择要下载的Stories内容',
+        step4: '等待处理完成并保存到设备'
+      }
+    },
+    post: {
+      title: 'Instagram 帖子下载器',
+      description: 'Instagram 图片和视频帖子下载工具',
+      heading: 'Instagram 图片/视频下载',
+      subheading: '高清下载 Instagram 帖子内容，支持单图、轮播和视频',
+      inputPlaceholder: '粘贴Instagram帖子链接...',
+      features: ['高清质量', '无水印', '批量下载', '支持轮播'],
+      howToUse: '如何下载 Instagram 帖子？'
+    },
+    reels: {
+      title: 'Instagram Reels 下载器',
+      description: 'Instagram Reels 短视频下载工具',
+      heading: 'Instagram Reels 下载',
+      subheading: '下载 Instagram Reels 短视频，保持原始画质',
+      inputPlaceholder: '粘贴Instagram Reels链接...',
+      features: ['短视频', '原始质量', '快速下载', 'MP4格式'],
+      howToUse: '如何下载 Instagram Reels？'
+    },
+    igtv: {
+      title: 'IGTV 视频下载器',
+      description: 'IGTV 长视频内容下载工具',
+      heading: 'IGTV 视频下载',
+      subheading: '下载 IGTV 长视频内容，支持高清格式',
+      inputPlaceholder: '粘贴IGTV视频链接...',
+      features: ['长视频', '高清格式', '稳定下载', '大文件支持'],
+      howToUse: '如何下载 IGTV 视频？'
+    },
+    highlights: {
+      title: 'Highlights 精选下载器',
+      description: 'Instagram Highlights 精选内容下载工具',
+      heading: 'Highlights 精选下载',
+      subheading: '下载用户精选集锦内容，永久保存',
+      inputPlaceholder: '输入Instagram用户名...',
+      features: ['精选内容', '永久保存', '批量处理', '分类下载'],
+      howToUse: '如何下载 Instagram Highlights？'
+    },
+    profile: {
+      title: '用户资料下载器',
+      description: 'Instagram 用户头像和资料下载工具',
+      heading: '用户头像下载',
+      subheading: '下载用户头像、个人资料图片等内容',
+      inputPlaceholder: '输入Instagram用户名...',
+      features: ['头像下载', '资料图片', '简单快捷', '高清质量'],
+      howToUse: '如何下载用户资料？'
+    },
+    private: {
+      title: '私密内容下载器',
+      description: 'Instagram 私密内容下载工具',
+      heading: '私密内容下载',
+      subheading: '下载私密账户的内容（需要授权）',
+      inputPlaceholder: '需要登录授权后下载私密内容...',
+      features: ['私密内容', '授权访问', '安全下载', '用户隐私'],
+      howToUse: '如何下载私密内容？'
+    }
+  },
+
+  // 订阅页面
+  subscription: {
+    // 页面标题和描述
+    pageTitle: '订阅管理',
+    pageDescription: '管理您的订阅计划和账单信息',
+    // 当前订阅部分
+    currentSubscription: '当前订阅',
+    noSubscription: '暂无有效订阅',
+    selectPlan: '选择适合您的订阅套餐开始使用',
+    plans: '订阅套餐',
+    currentPlan: '当前套餐',
+    validUntil: '有效期至',
+    usageThisPeriod: '本周期使用',
+    unlimited: '无限制',
+    times: '次',
+    paymentMethod: '支付方式',
+    stripePayment: 'Stripe 支付',
+    alipayPayment: '支付宝支付',
+    verifyingPayment: '正在验证支付状态...',
+    paymentSuccess: '支付成功！',
+    paymentCanceled: '支付已取消',
+    thankYouSubscription: '感谢您的订阅！您的账户已成功升级，现在可以享受完整的服务了。',
+    paymentCanceledMessage: '您的支付已被取消，没有产生任何费用。如有疑问，请随时联系我们。',
+    viewSubscriptionDetails: '查看订阅详情',
+    startUsing: '开始使用',
+    retrySelectPlan: '重新选择套餐',
+    returnHome: '返回首页',
+    status: {
+      active: '激活',
+      canceled: '已取消',
+      expired: '已过期',
+      pending: '待支付'
+    },
+    errors: {
+      fetchFailed: '获取订阅信息失败',
+      plansFetchFailed: '获取套餐信息失败',
+      checkoutFailed: '创建支付会话失败',
+      unknownError: '未知错误',
+      retryLater: '创建支付会话失败，请稍后重试'
+    },
+    duration: {
+      monthly: '月',
+      yearly: '年'
+    },
+    // 原有的计划内容
+    title: '订阅计划',
+    description: '选择适合您的订阅计划',
+    heading: '选择您的订阅计划',
+    subheading: '解锁更多高级功能，享受更好的下载体验',
+    title: '订阅计划',
+    description: '选择适合您的订阅计划',
+    heading: '选择您的订阅计划',
+    subheading: '解锁更多高级功能，享受更好的下载体验',
+    plans: {
+      free: {
+        title: '免费版',
+        price: '¥0',
+        period: '/月',
+        features: [
+          '每日限制下载 10 次',
+          '基础下载功能',
+          '标准画质',
+          '社区支持'
+        ],
+        button: '当前计划'
+      },
+      premium: {
+        title: '高级版',
+        price: '¥29',
+        period: '/月',
+        features: [
+          '无限制下载',
+          '高清画质保证',
+          '批量下载功能',
+          '优先客服支持',
+          '无广告体验'
+        ],
+        button: '升级到高级版',
+        popular: '推荐'
+      },
+      pro: {
+        title: '专业版',
+        price: '¥99',
+        period: '/月',
+        features: [
+          '高级版所有功能',
+          '私密内容访问',
+          'API 接口访问',
+          '专属客服支持',
+          '高级统计功能'
+        ],
+        button: '升级到专业版'
+      }
+    },
+    features: {
+      title: '为什么选择付费计划？',
+      items: [
+        '更高的下载次数限制',
+        '更好的下载质量保证',
+        '优先技术支持',
+        '持续的功能更新'
+      ]
+    }
+  },
+
+  // 批量下载页面
+  batchDownload: {
+    // 页面基础信息
+    pageTitle: '批量下载',
+    pageDescription: '高效处理多个Instagram链接，一次性完成批量下载',
+    placeholder: '添加多个Instagram链接进行批量下载...',
+    optimizedFor: '批量下载',
+    features: ['批量处理', '任务队列', '进度跟踪'],
+    title: '批量下载',
+    description: '一次下载多个Instagram内容',
+    heading: '批量下载工具',
+    subheading: '提高效率，一次处理多个Instagram链接',
+    inputPlaceholder: '每行输入一个Instagram链接...',
+    addLink: '添加链接',
+    removeLink: '删除',
+    startBatch: '开始批量下载',
+    progress: '进度',
+    completed: '已完成',
+    failed: '失败',
+    pending: '等待中',
+    features: [
+      '支持多种内容类型',
+      '智能错误处理',
+      '下载进度跟踪',
+      '批量压缩包下载'
+    ],
+    howToUse: '如何使用批量下载？',
+    steps: {
+      step1: '粘贴多个Instagram链接（每行一个）',
+      step2: '点击开始批量下载',
+      step3: '查看下载进度和状态',
+      step4: '下载完成后获取压缩包'
+    },
+    limits: {
+      free: '免费用户：每次最多5个链接',
+      premium: '高级用户：每次最多50个链接',
+      pro: '专业用户：无限制'
+    }
+  }
 } as const;
