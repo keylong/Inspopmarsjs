@@ -99,13 +99,13 @@ export function ResultDisplay({
   // 轮播导航
   const nextMedia = () => {
     setCurrentMediaIndex((prev) => 
-      prev >= data.media.length - 1 ? 0 : prev + 1
+      prev >= (data?.media.length || 0) - 1 ? 0 : prev + 1
     );
   };
 
   const prevMedia = () => {
     setCurrentMediaIndex((prev) => 
-      prev <= 0 ? data.media.length - 1 : prev - 1
+      prev <= 0 ? (data?.media.length || 0) - 1 : prev - 1
     );
   };
 
@@ -115,12 +115,12 @@ export function ResultDisplay({
   // 获取内容类型标签
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'post': return t?.download?.result?.post || '帖子';
-      case 'story': return t?.download?.result?.story || '故事';
-      case 'reel': return t?.download?.result?.reel || 'Reels';
-      case 'igtv': return t?.download?.result?.igtv || 'IGTV';
-      case 'highlight': return t?.download?.result?.highlight || '精彩时刻';
-      default: return t?.download?.result?.content || '内容';
+      case 'post': return '帖子';
+      case 'story': return '故事';
+      case 'reel': return 'Reels';
+      case 'igtv': return 'IGTV';
+      case 'highlight': return '精彩时刻';
+      default: return '内容';
     }
   };
 
@@ -136,15 +136,15 @@ export function ResultDisplay({
               <AlertCircle className="w-16 h-16 text-red-500" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t?.download?.result?.downloadFailed || '下载失败'}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">下载失败</h3>
               <p className="text-gray-600 mb-4">{errorMessage}</p>
               {errorCode && (
                 <Badge variant="destructive" className="mb-4">
-                  {t?.download?.result?.errorCode || '错误代码'}: {errorCode}
+                  错误代码: {errorCode}
                 </Badge>
               )}
               <Button onClick={onRetry} variant="outline">
-                {t?.download?.result?.retryDownload || '重试下载'}
+                重试下载
               </Button>
             </div>
           </div>
@@ -168,7 +168,7 @@ export function ResultDisplay({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {getMediaIcon(data.media[0]?.type || 'image')}
-            {t?.download?.result?.completed || '下载完成'} - {getTypeLabel(data.type)}
+            下载完成 - {getTypeLabel(data.type)}
           </CardTitle>
         </CardHeader>
         
@@ -189,11 +189,11 @@ export function ResultDisplay({
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Package className="w-4 h-4" />
-                <span>{data.media.length} {t?.download?.result?.mediaFiles || '个媒体文件'}</span>
+                <span>{data.media.length} 个媒体文件</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <FileText className="w-4 h-4" />
-                <span>{t?.download?.result?.totalSize || '总大小'}: {formatFileSize(downloadItems.reduce((acc, item) => acc + (item.resolutions[0]?.size || 0), 0))}</span>
+                <span>总大小: {formatFileSize(downloadItems.reduce((acc, item) => acc + (item.resolutions[0]?.size || 0), 0))}</span>
               </div>
             </div>
           </div>
@@ -234,11 +234,11 @@ export function ResultDisplay({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>{t?.download?.result?.mediaDownload || '媒体下载'} ({downloadItems.length} 项)</span>
+              <span>媒体下载 ({downloadItems.length} 项)</span>
               <div className="flex items-center gap-2">
                 {downloadItems.length > 1 && (
                   <Badge variant="secondary">
-                    {data.type === 'carousel' ? (t?.download?.result?.carousel || '轮播') : (t?.download?.result?.multiMedia || '多媒体')}
+                    {data.is_carousel ? '轮播' : '多媒体'}
                   </Badge>
                 )}
               </div>
@@ -254,17 +254,13 @@ export function ResultDisplay({
                   index={index}
                   onDownload={(resolution) => {
                     // 构造下载项
-                    const downloadItem = {
-                      url: resolution.url,
-                      filename: `${item.filename}_${resolution.label.replace(/\s+/g, '_')}.${item.type === 'video' ? 'mp4' : 'jpg'}`,
-                      size: resolution.size,
+                    const downloadItem: DownloadItem = {
+                      mediaId: item.mediaId,
+                      filename: `${item.filename}_${resolution.label.replace(/\s+/g, '_')}`,
                       type: item.type,
-                      resolution: {
-                        width: resolution.width,
-                        height: resolution.height,
-                        label: resolution.label
-                      },
-                      mediaId: item.mediaId
+                      resolutions: [resolution],
+                      ...(item.thumbnail ? { thumbnail: item.thumbnail } : {}),
+                      defaultResolution: resolution.label
                     };
                     onSingleDownload?.(downloadItem);
                   }}
@@ -286,11 +282,11 @@ export function ResultDisplay({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-600">
-                共 {downloadItems.length} {t?.download?.result?.downloadOptions || '个下载选项，总大小约'} {formatFileSize(downloadItems.reduce((acc, item) => acc + (item.resolutions[0]?.size || 0), 0))}
+                共 {downloadItems.length} 个下载选项，总大小约 {formatFileSize(downloadItems.reduce((acc, item) => acc + (item.resolutions[0]?.size || 0), 0))}
               </div>
               <Button onClick={onDownloadAll} className="flex items-center gap-2">
                 <Package className="w-4 h-4" />
-                {t?.download?.result?.downloadAll || '下载全部'}
+                下载全部
               </Button>
             </div>
           </CardContent>
@@ -335,12 +331,13 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
   const currentResolution = item.resolutions.find(r => r.label === selectedResolution) || item.resolutions[0];
   
   const copyToClipboard = async () => {
+    if (!currentResolution) return;
     try {
       await navigator.clipboard.writeText(currentResolution.url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error(t?.download?.result?.copyFailed || '复制失败:', err);
+      console.error('复制失败:', err);
     }
   };
 
@@ -354,8 +351,8 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
       {/* 图片预览 */}
       <div className="aspect-square relative overflow-hidden bg-gray-100">
         <Image
-          src={item.thumbnail}
-          alt={`${t?.download?.result?.content || '媒体'} ${index + 1}`}
+          src={item.thumbnail || '/placeholder-image.jpg'}
+          alt={`媒体 ${index + 1}`}
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -376,12 +373,12 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
             {item.type === 'video' ? (
               <>
                 <Video className="w-3 h-3 mr-1" />
-                {t?.download?.result?.video || '视频'}
+                视频
               </>
             ) : (
               <>
                 <ImageIcon className="w-3 h-3 mr-1" />
-                {t?.download?.result?.image || '图片'}
+                图片
               </>
             )}
           </Badge>
@@ -400,17 +397,17 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
         {/* 标题 */}
         <div>
           <h3 className="font-medium text-gray-900 mb-1">
-            {item.type === 'video' ? (t?.download?.result?.videoContent || '视频内容') : (t?.download?.result?.imageContent || '图片内容')}
+            {item.type === 'video' ? '视频内容' : '图片内容'}
           </h3>
           <p className="text-sm text-gray-500">
-            {t?.download?.result?.content || '媒体'} {index + 1} • {item.resolutions.length} {t?.download?.result?.resolutions || '种分辨率'}
+            媒体 {index + 1} • {item.resolutions.length} 种分辨率
           </p>
         </div>
 
         {/* 分辨率选择器 */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t?.download?.result?.selectResolution || '选择分辨率'}:
+            选择分辨率:
           </label>
           <div className="flex flex-wrap gap-2">
             {item.resolutions.map((resolution, idx) => (
@@ -423,15 +420,17 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
                     : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
                 }`}
               >
-{idx === 0 ? (t?.download?.result?.original || '原始') : resolution.label}
+{idx === 0 ? '原始' : resolution.label}
               </button>
             ))}
           </div>
           
           {/* 当前选择的分辨率信息 */}
-          <div className="mt-2 text-xs text-gray-500">
-            {currentResolution.width} × {currentResolution.height} • {formatFileSize(currentResolution.size)}
-          </div>
+          {currentResolution && (
+            <div className="mt-2 text-xs text-gray-500">
+              {currentResolution.width} × {currentResolution.height} • {formatFileSize(currentResolution.size)}
+            </div>
+          )}
         </div>
 
         {/* 下载和预览按钮 */}
@@ -443,16 +442,17 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
             className="flex-1 flex items-center gap-2"
           >
             <Eye className="w-4 h-4" />
-            {t?.download?.result?.preview || '预览'}
+            预览
           </Button>
           
           <Button 
             size="sm" 
-            onClick={() => onDownload(currentResolution)}
+            onClick={() => currentResolution && onDownload(currentResolution)}
             className="flex-1 bg-green-500 hover:bg-green-600 text-white flex items-center gap-2"
+            disabled={!currentResolution}
           >
             <Download className="w-4 h-4" />
-            {t?.common?.download || '下载'}
+            下载
           </Button>
           
           <Button

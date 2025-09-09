@@ -102,7 +102,7 @@ export const trackWebVitals = () => {
         
         // First Input Delay
         if (entry.entryType === 'first-input') {
-          const fid = Math.round(entry.processingStart - entry.startTime);
+          const fid = Math.round((entry as any).processingStart - entry.startTime);
           trackPerformance('fid', fid);
         }
       }

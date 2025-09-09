@@ -297,4 +297,4 @@ export class CacheInvalidator {
 }
 
 // 导出类型和工具函数
-export type { CacheOptions, CacheStats, CacheOperationResult };
+export type { CacheOptions };

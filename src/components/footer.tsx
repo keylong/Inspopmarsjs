@@ -37,8 +37,8 @@ export function Footer() {
   };
 
   // 使用翻译或备用内容
-  const footer = t?.footer || fallbackFooter;
-  const nav = t?.nav || {
+  const footer = fallbackFooter;
+  const nav = {
     home: '首页',
     download: '下载',
     about: '关于',

@@ -5,7 +5,7 @@ import { locales, getLocaleFromCountryCode, isValidLocale } from './lib/i18n/con
 function getLocaleFromPathname(pathname: string): string | undefined {
   const segments = pathname.split('/');
   const potentialLocale = segments[1];
-  return isValidLocale(potentialLocale) ? potentialLocale : undefined;
+  return potentialLocale && isValidLocale(potentialLocale) ? potentialLocale : undefined;
 }
 
 // 辅助函数：从请求中检测首选语言
@@ -23,14 +23,15 @@ function detectPreferredLocale(request: NextRequest): string {
   }
 
   // 3. 地理位置检测（Vercel Edge Function提供）
-  const country = request.geo?.country || 'US';
+  const country = (request as any).geo?.country || 'US';
   const geoLocale = getLocaleFromCountryCode(country);
   
   // 4. Accept-Language header检测
   const acceptLanguage = request.headers.get('accept-language');
   if (acceptLanguage) {
     for (const locale of locales) {
-      if (acceptLanguage.includes(locale) || acceptLanguage.includes(locale.split('-')[0])) {
+      const langCode = locale.split('-')[0];
+      if (acceptLanguage.includes(locale) || (langCode && acceptLanguage.includes(langCode))) {
         return locale;
       }
     }

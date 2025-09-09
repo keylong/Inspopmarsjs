@@ -192,7 +192,7 @@ export async function updateUserSubscription(id: string, updates: Partial<Omit<U
     ...subscriptions[subscriptionIndex],
     ...updates,
     updatedAt: new Date().toISOString(),
-  }
+  } as UserSubscription
 
   await writeUserSubscriptions(subscriptions)
   return subscriptions[subscriptionIndex]
@@ -250,7 +250,7 @@ export async function updatePaymentOrder(id: string, updates: Partial<Omit<Payme
     ...orders[orderIndex],
     ...updates,
     updatedAt: new Date().toISOString(),
-  }
+  } as PaymentOrder
 
   await writePaymentOrders(orders)
   return orders[orderIndex]
@@ -316,7 +316,7 @@ export async function createOrUpdateUsageStats(userId: string, subscriptionId: s
         ...stats[existingIndex],
         downloadCount,
         updatedAt: now,
-      }
+      } as UsageStats
       console.log(`更新使用统计成功: ${userId} - ${subscriptionId}`);
     } else {
       // 创建新记录
@@ -333,7 +333,7 @@ export async function createOrUpdateUsageStats(userId: string, subscriptionId: s
     }
 
     await writeUsageStats(stats)
-    return stats[existingIndex >= 0 ? existingIndex : stats.length - 1]
+    return stats[existingIndex >= 0 ? existingIndex : stats.length - 1]!
   } catch (error) {
     console.error('创建或更新使用统计失败:', error);
     throw new Error(`使用统计操作失败: ${error instanceof Error ? error.message : String(error)}`);

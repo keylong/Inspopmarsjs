@@ -22,6 +22,8 @@ export function LanguageSwitcher({
   const t = useI18n();
 
   const handleLocaleChange = (newLocale: Locale) => {
+    if (!pathname) return;
+    
     // 移除当前语言代码并添加新的语言代码
     const segments = pathname.split('/');
     segments[1] = newLocale; // 替换语言代码
@@ -44,7 +46,7 @@ export function LanguageSwitcher({
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center gap-1 px-2 py-1 text-sm rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          aria-label={t?.common?.language || '语言'}
+          aria-label="语言"
         >
           <Globe className="w-4 h-4" />
           <span className="hidden sm:inline">{currentLocaleFlag}</span>
@@ -89,7 +91,7 @@ export function LanguageSwitcher({
         className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        aria-label={t?.common?.language || '语言'}
+        aria-label="语言"
       >
         <Globe className="w-4 h-4" />
         <span className="flex items-center gap-1">

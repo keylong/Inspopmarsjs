@@ -743,8 +743,8 @@ export default {
     verifyingPayment: '支払状況確認中...',
     paymentSuccess: '支払い成功！',
     paymentCanceled: '支払いキャンセル',
-    thankYouSubscription: 'サブスクリプションありがとうございます！アカウントが正常にアップグレードされ、フルサービスをご利用いただけます。',
     paymentCanceledMessage: '支払いがキャンセルされ、料金は発生しませんでした。ご質問がございましたら、お気軽にお問い合わせください。',
+    thankYouSubscription: 'サブスクリプションありがとうございます！アカウントが正常にアップグレードされ、フルサービスをご利用いただけます。',
     viewSubscriptionDetails: 'サブスクリプション詳細表示',
     startUsing: '使用開始',
     retrySelectPlan: 'プラン再選択',
@@ -766,11 +766,52 @@ export default {
       monthly: 'ヶ月',
       yearly: '年'
     },
-    // 元のプラン内容
+    // プラン内容
     title: 'サブスクリプションプラン',
     description: '適切なサブスクリプションプランを選択',
     heading: 'サブスクリプションプランを選択',
     subheading: 'より多くの高度な機能をアンロックし、より良いダウンロード体験をお楽しみください',
+    planDetails: {
+      free: {
+        title: '無料プラン',
+        price: '$0',
+        period: '/月',
+        features: [
+          '毎日ダウンロード制限 10 回',
+          '基本ダウンロード機能',
+          '標準品質',
+          'コミュニティサポート'
+        ],
+        button: '現在のプラン'
+      },
+      premium: {
+        title: 'プレミアムプラン',
+        price: '$4.99',
+        period: '/月',
+        features: [
+          '無制限ダウンロード',
+          'HD品質保証',
+          '一括ダウンロード機能',
+          '優先サポート',
+          '広告なし体験'
+        ],
+        button: 'プレミアムにアップグレード',
+        popular: '人気'
+      },
+      pro: {
+        title: 'プロプラン',
+        price: '$14.99',
+        period: '/月',
+        features: [
+          'プレミアムの全機能',
+          '非公開コンテンツアクセス',
+          'APIインターフェースアクセス',
+          '専用サポート',
+          '高級分析機能'
+        ],
+        button: 'プロにアップグレード'
+      }
+    },
     features: {
       title: '有料プランを選択する理由',
       items: [
@@ -789,7 +830,7 @@ export default {
     pageDescription: '複数の Instagram リンクを効率的に処理して一括ダウンロード',
     placeholder: '一括ダウンロード用に複数の Instagram リンクを追加...',
     optimizedFor: '一括ダウンロード',
-    features: {
+    featureLabels: {
         0: '一括処理',
         1: 'タスクキュー',
         2: '進行状況追跡'
@@ -818,5 +859,6 @@ export default {
       premium: 'プレミアムユーザー：一括あたり最大50リンク',
       pro: 'プロユーザー：無制限'
     }
-  }
+  },
+
 } as const;

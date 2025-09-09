@@ -743,8 +743,8 @@ export default {
     verifyingPayment: '正在驗證付款狀態...',
     paymentSuccess: '付款成功！',
     paymentCanceled: '付款已取消',
-    thankYouSubscription: '感謝您的訂閱！您的帳戶已成功升級，現在可以享受完整的服務。',
     paymentCanceledMessage: '您的付款已被取消，未產生任何費用。如有問題，請隨時聯絡我們。',
+    thankYouSubscription: '感謝您的訂閱！您的帳戶已成功升級，現在可以享受完整的服務。',
     viewSubscriptionDetails: '查看訂閱詳情',
     startUsing: '開始使用',
     retrySelectPlan: '重新選擇計劃',
@@ -766,11 +766,52 @@ export default {
       monthly: '個月',
       yearly: '年'
     },
-    // 原始計劃內容
+    // 計劃內容
     title: '訂閱計劃',
     description: '選擇適合您的訂閱計劃',
     heading: '選擇您的訂閱計劃',
     subheading: '解鎖更多進階功能，享受更好的下載體驗',
+    planDetails: {
+      free: {
+        title: '免費計劃',
+        price: '$0',
+        period: '/月',
+        features: [
+          '每日限制下載 10 次',
+          '基礎下載功能',
+          '標準品質',
+          '社群支援'
+        ],
+        button: '當前計劃'
+      },
+      premium: {
+        title: '高級計劃',
+        price: '$4.99',
+        period: '/月',
+        features: [
+          '無限制下載',
+          '高清品質保證',
+          '批量下載功能',
+          '優先客服支援',
+          '無廣告體驗'
+        ],
+        button: '升級到高級版',
+        popular: '推薦'
+      },
+      pro: {
+        title: '專業計劃',
+        price: '$14.99',
+        period: '/月',
+        features: [
+          '高級版所有功能',
+          '私人內容存取',
+          'API 介面存取',
+          '專屬客服支援',
+          '高級分析功能'
+        ],
+        button: '升級到專業版'
+      }
+    },
     features: {
       title: '為什麼選擇付費計劃？',
       items: [
@@ -789,7 +830,7 @@ export default {
     pageDescription: '高效處理多個 Instagram 連結進行批量下載',
     placeholder: '添加多個 Instagram 連結進行批量下載...',
     optimizedFor: '批量下載',
-    features: {
+    featureLabels: {
         0: '批量處理',
         1: '任務佇列',
         2: '進度追蹤'
@@ -818,5 +859,6 @@ export default {
       premium: '高級用戶：每批最多 50 個連結',
       pro: '專業用戶：無限制'
     }
-  }
+  },
+
 } as const;

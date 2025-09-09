@@ -14,7 +14,7 @@ import { AlipayOrderParams, AlipayNotifyParams } from '@/types/payment'
 import crypto from 'crypto'
 
 // 初始化支付宝 SDK
-const alipaySdk = new AlipaySdk({
+const alipaySdk = new (AlipaySdk as any)({
   appId: paymentConfig.alipay.appId,
   privateKey: paymentConfig.alipay.privateKey,
   alipayPublicKey: paymentConfig.alipay.publicKey,

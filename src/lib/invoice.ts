@@ -91,7 +91,7 @@ export async function createInvoice(orderId: string): Promise<Invoice> {
     status: 'paid',
     issuedAt: now.toISOString(),
     dueAt: now.toISOString(), // 已支付，所以到期日等于开票日
-    paidAt: order.paidAt,
+    ...(order.paidAt && { paidAt: order.paidAt }),
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
   }

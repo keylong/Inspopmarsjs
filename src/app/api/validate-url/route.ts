@@ -33,13 +33,19 @@ function validateInstagramURL(url: string): URLValidationResult {
         case 'post':
         case 'reel':
         case 'igtv':
-          result.shortcode = match[2];
+          if (match[2]) {
+            result.shortcode = match[2];
+          }
           break;
         case 'story':
-          result.username = match[2];
+          if (match[2]) {
+            result.username = match[2];
+          }
           break;
         case 'profile':
-          result.username = match[2];
+          if (match[2]) {
+            result.username = match[2];
+          }
           break;
       }
 

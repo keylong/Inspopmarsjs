@@ -113,7 +113,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: route.changeFrequency,
       priority: route.priority,
       alternates: {
-        canonical: `${baseUrl}/zh-CN${route.path}`,
         languages: Object.fromEntries(
           locales.map((l) => [l, `${baseUrl}/${l}${route.path}`])
         ),

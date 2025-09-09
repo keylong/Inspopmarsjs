@@ -8,7 +8,7 @@ import { CheckCircle, Loader2 } from 'lucide-react'
 import { useI18n } from '@/lib/i18n/client'
 
 export default function SubscriptionSuccessPage() {
-  const { t } = useI18n()
+  const t = useI18n()
   const searchParams = useSearchParams()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -16,8 +16,8 @@ export default function SubscriptionSuccessPage() {
 
   useEffect(() => {
     // 验证支付是否成功
-    const sessionId = searchParams.get('session_id')
-    const orderId = searchParams.get('order_id')
+    const sessionId = searchParams?.get('session_id')
+    const orderId = searchParams?.get('order_id')
     
     if (sessionId || orderId) {
       // 这里可以调用API验证支付状态

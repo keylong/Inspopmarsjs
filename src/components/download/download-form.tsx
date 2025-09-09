@@ -38,15 +38,15 @@ import { useI18n } from '@/lib/i18n/client';
 const createDownloadFormSchema = (t: any) => z.object({
   url: z
     .string()
-    .min(1, t?.download?.form?.urlRequired || '请输入 Instagram 链接')
-    .url(t?.download?.form?.urlInvalid || '请输入有效的 URL')
+    .min(1, '请输入 Instagram 链接')
+    .url('请输入有效的 URL')
     .refine(
       (url) => url.includes('instagram.com'),
-      t?.download?.form?.urlInvalidInstagram || '请输入有效的 Instagram 链接'
+      '请输入有效的 Instagram 链接'
     ),
-  type: z.enum(['auto', 'post', 'story', 'highlight', 'profile']).default('auto'),
-  quality: z.enum(['original', 'hd', 'sd']).default('original'),
-  format: z.enum(['individual', 'zip']).default('individual'),
+  type: z.enum(['auto', 'post', 'story', 'highlight', 'profile']),
+  quality: z.enum(['original', 'hd', 'sd']),
+  format: z.enum(['individual', 'zip']),
 });
 
 // FormData类型将在组件内部定义
@@ -125,7 +125,7 @@ export function DownloadForm({
         setValidation({ isValid: false, error: result.error?.message });
       }
     } catch (err) {
-      setValidation({ isValid: false, error: t?.download?.form?.urlValidationFailed || 'URL验证失败' });
+      setValidation({ isValid: false, error: 'URL验证失败' });
     }
   };
 
@@ -138,7 +138,7 @@ export function DownloadForm({
       
       onDownloadComplete?.(result);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : (t?.download?.form?.downloadFailed || '下载失败');
+      const errorMessage = err instanceof Error ? err.message : '下载失败';
       onDownloadError?.(errorMessage);
     }
   };
@@ -156,13 +156,13 @@ export function DownloadForm({
 
   const getContentTypeLabel = (type?: string) => {
     switch (type) {
-      case 'post': return t?.download?.result?.post || '帖子';
-      case 'story': return t?.download?.result?.story || '故事';
-      case 'reel': return t?.download?.result?.reel || 'Reels';
-      case 'igtv': return t?.download?.result?.igtv || 'IGTV';
-      case 'highlight': return t?.download?.result?.highlight || '精彩时刻';
-      case 'profile': return t?.download?.form?.profileType || '个人资料';
-      default: return t?.download?.form?.unknownType || '未知类型';
+      case 'post': return '帖子';
+      case 'story': return '故事';
+      case 'reel': return 'Reels';
+      case 'igtv': return 'IGTV';
+      case 'highlight': return '精彩时刻';
+      case 'profile': return '个人资料';
+      default: return '未知类型';
     }
   };
 
@@ -171,7 +171,7 @@ export function DownloadForm({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-2xl">
           <Download className="w-6 h-6 text-primary" />
-          {optimizedFor ? `${optimizedFor}${t?.download?.form?.optimizedTool || '工具'}` : (t?.download?.form?.contentDownloader || 'Instagram 内容下载器')}
+          {optimizedFor ? `${optimizedFor}工具` : 'Instagram 内容下载器'}
         </CardTitle>
         {features.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
@@ -188,7 +188,7 @@ export function DownloadForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* URL 输入框 */}
           <div className="space-y-2">
-            <Label htmlFor="url">{t?.download?.form?.urlLabel || 'Instagram 链接'}</Label>
+            <Label htmlFor="url">Instagram 链接</Label>
             <div className="relative">
               <Input
                 id="url"
@@ -223,7 +223,7 @@ export function DownloadForm({
                 className="flex items-center gap-2 text-sm text-green-600"
               >
                 {getContentTypeIcon(validation.type)}
-                <span>{t?.download?.form?.detected || '检测到'}: {getContentTypeLabel(validation.type)}</span>
+                <span>检测到: {getContentTypeLabel(validation.type)}</span>
                 {validation.username && (
                   <Badge variant="secondary">@{validation.username}</Badge>
                 )}
@@ -244,7 +244,7 @@ export function DownloadForm({
               className="flex items-center gap-2"
             >
               <Settings className="w-4 h-4" />
-              {t?.download?.form?.advancedOptions || '高级选项'}
+              高级选项
             </Button>
 
             {showAdvanced && (
@@ -256,7 +256,7 @@ export function DownloadForm({
               >
                 {/* 内容类型 */}
                 <div className="space-y-2">
-                  <Label htmlFor="type">{t?.download?.form?.contentType || '内容类型'}</Label>
+                  <Label htmlFor="type">内容类型</Label>
                   <Select
                     value={watch('type')}
                     onValueChange={(value) => setValue('type', value as any)}
@@ -265,18 +265,18 @@ export function DownloadForm({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="auto">{t?.download?.form?.autoDetect || '自动检测'}</SelectItem>
-                      <SelectItem value="post">{t?.download?.result?.post || '帖子'}</SelectItem>
-                      <SelectItem value="story">{t?.download?.result?.story || '故事'}</SelectItem>
-                      <SelectItem value="highlight">{t?.download?.result?.highlight || '精彩时刻'}</SelectItem>
-                      <SelectItem value="profile">{t?.download?.form?.profileType || '个人资料'}</SelectItem>
+                      <SelectItem value="auto">自动检测</SelectItem>
+                      <SelectItem value="post">帖子</SelectItem>
+                      <SelectItem value="story">故事</SelectItem>
+                      <SelectItem value="highlight">精彩时刻</SelectItem>
+                      <SelectItem value="profile">个人资料</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* 画质选择 */}
                 <div className="space-y-2">
-                  <Label htmlFor="quality">{t?.download?.form?.quality || '画质'}</Label>
+                  <Label htmlFor="quality">画质</Label>
                   <Select
                     value={watch('quality')}
                     onValueChange={(value) => setValue('quality', value as any)}
@@ -285,16 +285,16 @@ export function DownloadForm({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="original">{t?.download?.form?.originalQuality || '原画质'}</SelectItem>
-                      <SelectItem value="hd">{t?.download?.form?.hdQuality || '高清'}</SelectItem>
-                      <SelectItem value="sd">{t?.download?.form?.sdQuality || '标清'}</SelectItem>
+                      <SelectItem value="original">原画质</SelectItem>
+                      <SelectItem value="hd">高清</SelectItem>
+                      <SelectItem value="sd">标清</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* 下载格式 */}
                 <div className="space-y-2">
-                  <Label htmlFor="format">{t?.download?.form?.downloadFormat || '下载格式'}</Label>
+                  <Label htmlFor="format">下载格式</Label>
                   <Select
                     value={watch('format')}
                     onValueChange={(value) => setValue('format', value as any)}
@@ -303,8 +303,8 @@ export function DownloadForm({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="individual">{t?.download?.form?.individualFiles || '单独文件'}</SelectItem>
-                      <SelectItem value="zip">{t?.download?.form?.zipArchive || 'ZIP 压缩包'}</SelectItem>
+                      <SelectItem value="individual">单独文件</SelectItem>
+                      <SelectItem value="zip">ZIP 压缩包</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -314,14 +314,14 @@ export function DownloadForm({
 
           {/* 支持的格式说明 */}
           <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
-            <p className="font-medium mb-1">{t?.download?.form?.supportedTypes || '支持的内容类型：'}</p>
+            <p className="font-medium mb-1">支持的内容类型：</p>
             <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">{t?.download?.form?.posts || '📷 帖子'}</Badge>
-              <Badge variant="secondary">{t?.download?.form?.videos || '📹 视频'}</Badge>
+              <Badge variant="secondary">📷 帖子</Badge>
+              <Badge variant="secondary">📹 视频</Badge>
               <Badge variant="secondary">🎬 Reels</Badge>
               <Badge variant="secondary">📺 IGTV</Badge>
-              <Badge variant="secondary">{t?.download?.form?.stories2 || '⭐ 故事'}</Badge>
-              <Badge variant="secondary">{t?.download?.form?.highlights2 || '✨ 精彩时刻'}</Badge>
+              <Badge variant="secondary">⭐ 故事</Badge>
+              <Badge variant="secondary">✨ 精彩时刻</Badge>
             </div>
           </div>
 
@@ -335,12 +335,12 @@ export function DownloadForm({
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                {t?.download?.form?.downloading || '下载中...'}
+                下载中...
               </>
             ) : (
               <>
                 <Download className="w-4 h-4 mr-2" />
-                {t?.download?.form?.startDownload || '开始下载'}
+                开始下载
               </>
             )}
           </Button>
@@ -354,7 +354,7 @@ export function DownloadForm({
             >
               <div className="flex items-center gap-2">
                 <AlertCircle className="w-4 h-4" />
-                <span className="font-medium">{t?.download?.form?.downloadFailed || '下载失败'}</span>
+                <span className="font-medium">下载失败</span>
               </div>
               <p className="mt-1">{error.message}</p>
             </motion.div>

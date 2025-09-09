@@ -57,7 +57,6 @@ export function StructuredData({ contentType, breadcrumbs }: StructuredDataProps
     url: `${baseUrl}${config.canonicalPath}`,
     applicationCategory: 'UtilitiesApplication',
     operatingSystem: 'Web Browser',
-    browserRequirements: 'Requires JavaScript. Requires HTML5.',
     featureList: config.features,
     offers: {
       '@type': 'Offer',

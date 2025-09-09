@@ -743,8 +743,8 @@ export default {
     verifyingPayment: '결제 상태 확인 중...',
     paymentSuccess: '결제 성공!',
     paymentCanceled: '결제 취소됨',
-    thankYouSubscription: '구독해 주셔서 감사합니다! 계정이 성공적으로 업그레이드되었으며 이제 전체 서비스를 이용할 수 있습니다.',
     paymentCanceledMessage: '결제가 취소되었으며 요금이 청구되지 않았습니다. 궁금한 점이 있으시면 언제든지 문의해 주세요.',
+    thankYouSubscription: '구독해 주셔서 감사합니다! 계정이 성공적으로 업그레이드되었으며 이제 전체 서비스를 이용할 수 있습니다.',
     viewSubscriptionDetails: '구독 세부 정보 보기',
     startUsing: '사용 시작',
     retrySelectPlan: '계획 다시 선택',
@@ -766,11 +766,52 @@ export default {
       monthly: '월',
       yearly: '년'
     },
-    // 원래 계획 내용
+    // 계획 내용
     title: '구독 계획',
     description: '적합한 구독 계획을 선택하세요',
     heading: '구독 계획을 선택하세요',
     subheading: '더 많은 고급 기능을 잠금 해제하고 더 나은 다운로드 경험을 즐기세요',
+    planDetails: {
+      free: {
+        title: '무료 계획',
+        price: '$0',
+        period: '/월',
+        features: [
+          '일일 다운로드 제한 10회',
+          '기본 다운로드 기능',
+          '표준 품질',
+          '커뮤니티 지원'
+        ],
+        button: '현재 계획'
+      },
+      premium: {
+        title: '프리미엄 계획',
+        price: '$4.99',
+        period: '/월',
+        features: [
+          '무제한 다운로드',
+          'HD 품질 보장',
+          '일괄 다운로드 기능',
+          '우선 고객 지원',
+          '광고 없는 경험'
+        ],
+        button: '프리미엄으로 업그레이드',
+        popular: '인기'
+      },
+      pro: {
+        title: '프로 계획',
+        price: '$14.99',
+        period: '/월',
+        features: [
+          '모든 프리미엄 기능',
+          '비공개 콘텐츠 액세스',
+          'API 인터페이스 액세스',
+          '전용 고객 지원',
+          '고급 분석 기능'
+        ],
+        button: '프로로 업그레이드'
+      }
+    },
     features: {
       title: '유료 계획을 선택하는 이유는?',
       items: [
@@ -789,7 +830,7 @@ export default {
     pageDescription: '여러 Instagram 링크를 효율적으로 처리하여 일괄 다운로드',
     placeholder: '일괄 다운로드를 위해 여러 Instagram 링크를 추가하세요...',
     optimizedFor: '일괄 다운로드',
-    features: {
+    featureLabels: {
         0: '일괄 처리',
         1: '작업 대기열',
         2: '진행 상황 추적'
@@ -818,5 +859,6 @@ export default {
       premium: '프리미엄 사용자: 일괄당 최대 50개 링크',
       pro: '프로 사용자: 무제한'
     }
-  }
+  },
+
 } as const;

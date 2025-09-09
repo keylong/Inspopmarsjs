@@ -743,8 +743,8 @@ export default {
     verifyingPayment: 'Verificando estado de pago...',
     paymentSuccess: '¡Pago Exitoso!',
     paymentCanceled: 'Pago Cancelado',
-    thankYouSubscription: '¡Gracias por tu suscripción! Tu cuenta ha sido actualizada exitosamente y ahora puedes disfrutar del servicio completo.',
     paymentCanceledMessage: 'Tu pago ha sido cancelado y no se han realizado cargos. Si tienes preguntas, no dudes en contactarnos.',
+    thankYouSubscription: '¡Gracias por tu suscripción! Tu cuenta ha sido actualizada exitosamente y ahora puedes disfrutar del servicio completo.',
     viewSubscriptionDetails: 'Ver Detalles de Suscripción',
     startUsing: 'Comenzar a Usar',
     retrySelectPlan: 'Seleccionar Plan de Nuevo',
@@ -766,11 +766,52 @@ export default {
       monthly: 'mes',
       yearly: 'año'
     },
-    // Contenido de plan original
+    // Contenido del plan
     title: 'Planes de Suscripción',
     description: 'Elige el plan de suscripción que te convenga',
     heading: 'Elige tu Plan de Suscripción',
     subheading: 'Desbloquea más funciones avanzadas y disfruta de una mejor experiencia de descarga',
+    planDetails: {
+      free: {
+        title: 'Plan Gratuito',
+        price: '$0',
+        period: '/mes',
+        features: [
+          'Límite diario de 10 descargas',
+          'Funcionalidad básica de descarga',
+          'Calidad estándar',
+          'Soporte de la comunidad'
+        ],
+        button: 'Plan Actual'
+      },
+      premium: {
+        title: 'Plan Premium',
+        price: '$4.99',
+        period: '/mes',
+        features: [
+          'Descargas ilimitadas',
+          'Garantía de calidad HD',
+          'Función de descarga en lote',
+          'Soporte prioritario al cliente',
+          'Experiencia sin anuncios'
+        ],
+        button: 'Actualizar a Premium',
+        popular: 'Popular'
+      },
+      pro: {
+        title: 'Plan Pro',
+        price: '$14.99',
+        period: '/mes',
+        features: [
+          'Todas las funciones Premium',
+          'Acceso a contenido privado',
+          'Acceso a interfaz API',
+          'Soporte dedicado al cliente',
+          'Análisis avanzados'
+        ],
+        button: 'Actualizar a Pro'
+      }
+    },
     features: {
       title: '¿Por Qué Elegir un Plan de Pago?',
       items: [
@@ -789,7 +830,7 @@ export default {
     pageDescription: 'Procesa eficientemente múltiples enlaces de Instagram para descarga en lote',
     placeholder: 'Agregar múltiples enlaces de Instagram para descarga en lote...',
     optimizedFor: 'Descarga en Lote',
-    features: {
+    featureLabels: {
         0: 'Procesamiento en Lote',
         1: 'Cola de Tareas',
         2: 'Seguimiento de Progreso'
@@ -818,5 +859,6 @@ export default {
       premium: 'Usuarios premium: Máximo 50 enlaces por lote',
       pro: 'Usuarios pro: Ilimitado'
     }
-  }
+  },
+
 } as const;

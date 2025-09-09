@@ -47,9 +47,9 @@ export interface InstagramPost {
 
 export interface DownloadFormData {
   url: string;
-  type?: 'auto' | 'post' | 'story' | 'highlight' | 'profile';
-  quality?: 'original' | 'hd' | 'sd';
-  format?: 'individual' | 'zip';
+  type: 'auto' | 'post' | 'story' | 'highlight' | 'profile';
+  quality: 'original' | 'hd' | 'sd';
+  format: 'individual' | 'zip';
 }
 
 export interface DownloadProgress {
@@ -101,6 +101,8 @@ export interface APIResponse<T = any> {
   meta?: {
     timestamp: string;
     requestId: string;
+    cached?: boolean;
+    cacheHit?: boolean;
   };
 }
 

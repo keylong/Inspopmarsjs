@@ -4,8 +4,11 @@
 
 import * as Sentry from '@sentry/nextjs';
 
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+
+if (dsn) {
+  Sentry.init({
+    dsn,
   
   // Define how likely traces are sampled. Adjust this value in production.
   tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
@@ -20,9 +23,6 @@ Sentry.init({
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: process.env.NODE_ENV === 'development',
-
-  // Capture console errors
-  captureConsoleErrors: true,
 
   // Additional configuration
   environment: process.env.NODE_ENV || 'development',
@@ -74,7 +74,10 @@ Sentry.init({
       blockAllMedia: true,
     }),
   ],
-});
+  });
 
-// Export router transition instrumentation for Next.js
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+  // Export router transition instrumentation for Next.js
+  // Note: These exports are conditional based on Sentry initialization
+}
+
+export const onRouterTransitionStart = dsn ? Sentry.captureRouterTransitionStart : undefined;

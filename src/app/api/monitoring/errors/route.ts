@@ -33,15 +33,20 @@ export async function POST(request: NextRequest) {
     errorStorage.push(errorData);
     
     // 同时发送到 Sentry
-    Sentry.captureException(new Error(errorData.message), {
+    const sentryContext: any = {
       extra: {
         stack: errorData.stack,
         url: errorData.url,
         userAgent: errorData.userAgent,
         context: errorData.context,
       },
-      user: errorData.userId ? { id: errorData.userId } : undefined,
-    });
+    };
+    
+    if (errorData.userId) {
+      sentryContext.user = { id: errorData.userId };
+    }
+    
+    Sentry.captureException(new Error(errorData.message), sentryContext);
     
     // 记录错误指标
     await fetch(`${request.nextUrl.origin}/api/monitoring/stats`, {
@@ -156,7 +161,7 @@ function getErrorsByHour(errors: ErrorReport[]): Record<string, number> {
   errors.forEach(error => {
     const hour = error.timestamp.substring(0, 13);
     if (hourlyStats.hasOwnProperty(hour)) {
-      hourlyStats[hour]++;
+      hourlyStats[hour] = (hourlyStats[hour] || 0) + 1;
     }
   });
   

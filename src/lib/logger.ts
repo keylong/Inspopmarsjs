@@ -52,15 +52,19 @@ class Logger {
     context?: Record<string, any>,
     error?: Error
   ): LogEntry {
+    const userId = this.getCurrentUserId();
+    const sessionId = this.getSessionId();
+    const requestId = this.getRequestId();
+    
     return {
       timestamp: new Date().toISOString(),
       level,
       message,
-      context,
-      error,
-      userId: this.getCurrentUserId(),
-      sessionId: this.getSessionId(),
-      requestId: this.getRequestId(),
+      ...(context && { context }),
+      ...(error && { error }),
+      ...(userId && { userId }),
+      ...(sessionId && { sessionId }),
+      ...(requestId && { requestId }),
     };
   }
 

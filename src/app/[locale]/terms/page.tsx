@@ -53,8 +53,6 @@ export async function generateMetadata({
       locale: locale,
       type: 'website',
       url: canonicalUrl,
-      publishedTime: '2024-01-01T00:00:00Z',
-      modifiedTime: '2024-09-09T00:00:00Z',
     },
     twitter: {
       card: 'summary_large_image',

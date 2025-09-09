@@ -3,8 +3,11 @@ export async function register() {
     // 服务器端 Sentry 配置
     const Sentry = await import('@sentry/nextjs');
     
-    Sentry.init({
-      dsn: process.env.SENTRY_DSN,
+    const dsn = process.env.SENTRY_DSN;
+    
+    if (dsn) {
+      Sentry.init({
+        dsn,
       
       // Define how likely traces are sampled. Adjust this value in production.
       tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
@@ -47,15 +50,19 @@ export async function register() {
           component: 'server',
         },
       },
-    });
+      });
+    }
   }
 
   if (process.env.NEXT_RUNTIME === 'edge') {
     // Edge runtime Sentry 配置
     const Sentry = await import('@sentry/nextjs');
     
-    Sentry.init({
-      dsn: process.env.SENTRY_DSN,
+    const dsn = process.env.SENTRY_DSN;
+    
+    if (dsn) {
+      Sentry.init({
+        dsn,
       
       // Define how likely traces are sampled. Adjust this value in production.
       tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
@@ -85,7 +92,8 @@ export async function register() {
           component: 'edge',
         },
       },
-    });
+      });
+    }
   }
 }
 
@@ -93,6 +101,10 @@ export async function register() {
 export const onRequestError = async (error: unknown, request: any) => {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     const Sentry = await import('@sentry/nextjs');
-    Sentry.captureRequestError(error, request);
+    Sentry.captureRequestError(error, request, {
+      routerKind: 'Pages',
+      routePath: request.url || '/',
+      routeType: 'route'
+    });
   }
 };

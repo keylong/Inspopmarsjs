@@ -100,7 +100,7 @@ export function addProxyToInstagramData(data: any): any {
     // 处理不同分辨率的图片资源
     if (processedData.display_resources && Array.isArray(processedData.display_resources)) {
       processedData.display_resources = processedData.display_resources
-        .filter(resource => resource && typeof resource === 'object')
+        .filter((resource: any) => resource && typeof resource === 'object')
         .map((resource: any) => ({
           ...resource,
           src: getProxyImageUrl(resource.src)
@@ -110,7 +110,7 @@ export function addProxyToInstagramData(data: any): any {
     // 处理轮播图片
     if (processedData.edge_sidecar_to_children?.edges && Array.isArray(processedData.edge_sidecar_to_children.edges)) {
       processedData.edge_sidecar_to_children.edges = processedData.edge_sidecar_to_children.edges
-        .filter(edge => edge?.node)
+        .filter((edge: any) => edge?.node)
         .map((edge: any) => ({
           ...edge,
           node: {
@@ -118,7 +118,7 @@ export function addProxyToInstagramData(data: any): any {
             display_url: getProxyImageUrl(edge.node.display_url),
             display_resources: Array.isArray(edge.node.display_resources) 
               ? edge.node.display_resources
-                  .filter(resource => resource && typeof resource === 'object')
+                  .filter((resource: any) => resource && typeof resource === 'object')
                   .map((resource: any) => ({
                     ...resource,
                     src: getProxyImageUrl(resource.src)
@@ -131,7 +131,7 @@ export function addProxyToInstagramData(data: any): any {
     // 处理carousel_media数组（备用格式）
     if (processedData.carousel_media && Array.isArray(processedData.carousel_media)) {
       processedData.carousel_media = processedData.carousel_media
-        .filter(media => media && typeof media === 'object')
+        .filter((media: any) => media && typeof media === 'object')
         .map((media: any) => ({
           ...media,
           display_url: getProxyImageUrl(media.display_url),
@@ -147,14 +147,14 @@ export function addProxyToInstagramData(data: any): any {
     // 处理media数组（标准化后的数据结构）
     if (processedData.media && Array.isArray(processedData.media)) {
       processedData.media = processedData.media
-        .filter(media => media && typeof media === 'object')
+        .filter((media: any) => media && typeof media === 'object')
         .map((media: any) => ({
           ...media,
           url: getProxyImageUrl(media.url),
           thumbnail: getProxyImageUrl(media.thumbnail),
           display_resources: Array.isArray(media.display_resources)
             ? media.display_resources
-                .filter(resource => resource && typeof resource === 'object')
+                .filter((resource: any) => resource && typeof resource === 'object')
                 .map((resource: any) => ({
                   ...resource,
                   src: getProxyImageUrl(resource.src)

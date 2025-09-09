@@ -7,7 +7,7 @@ import { compare } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as any,
   providers: [
     // 邮箱密码登录
     CredentialsProvider({
@@ -36,8 +36,8 @@ export const authOptions: NextAuthOptions = {
 
         return {
           id: user.id,
-          email: user.email,
-          name: user.name,
+          email: user.email || '',
+          name: user.name || '',
           image: user.image || '',
         }
       }

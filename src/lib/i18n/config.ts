@@ -66,7 +66,7 @@ export const geoLocaleMapping: Record<string, Locale> = {
 };
 
 export function getLocaleFromCountryCode(countryCode: string): Locale {
-  return geoLocaleMapping[countryCode] || geoLocaleMapping.default;
+  return (geoLocaleMapping[countryCode] || geoLocaleMapping.default) as Locale;
 }
 
 export function isValidLocale(locale: string): locale is Locale {

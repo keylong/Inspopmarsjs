@@ -13,7 +13,7 @@ import { StripeCheckoutSession } from '@/types/payment'
 
 // 初始化 Stripe
 const stripe = new Stripe(paymentConfig.stripe.secretKey, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-08-27.basil',
 })
 
 /**

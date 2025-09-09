@@ -58,10 +58,6 @@ export const baseSEOConfig: NextSeoProps = {
       name: 'robots',
       content: 'index, follow',
     },
-    {
-      httpEquiv: 'Content-Language',
-      content: 'zh-CN',
-    },
   ],
 };
 

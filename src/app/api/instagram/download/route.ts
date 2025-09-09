@@ -6,9 +6,10 @@ import { InstagramDownloader } from '@/lib/api/instagram';
  * 核心下载端点 - 解析Instagram URL并获取下载信息
  */
 export async function POST(request: NextRequest) {
+  let url = 'unknown';
   try {
     const body = await request.json();
-    const { url } = body;
+    ({ url } = body);
 
     // 验证输入
     if (!url || typeof url !== 'string') {
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
       const response = {
         success: true,
         data: result.data,
-        downloads: result.downloads || [],
+        downloads: (result as any).downloads || [],
         meta: {
           mode: result._mode || 'unknown',
           timestamp: new Date().toISOString(),

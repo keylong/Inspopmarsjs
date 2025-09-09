@@ -48,7 +48,7 @@ export async function GET(
     const pdfBuffer = await fs.readFile(pdfPath)
     
     // 返回PDF文件
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

@@ -316,7 +316,10 @@ export function MediaPreviewModal({
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => onDownload?.(getCurrentMediaDownloads()[0])}
+                  onClick={() => {
+                    const firstItem = getCurrentMediaDownloads()[0];
+                    if (firstItem) onDownload?.(firstItem);
+                  }}
                   className="flex items-center gap-2"
                 >
                   <Download className="w-4 h-4" />

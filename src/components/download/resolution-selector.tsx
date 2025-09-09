@@ -43,9 +43,9 @@ export function ResolutionSelector({
   
   // 按分辨率排序（从高到低）
   const sortedDownloads = mediaDownloads.sort((a, b) => {
-    const aPixels = (a.resolution?.width || 0) * (a.resolution?.height || 0);
-    const bPixels = (b.resolution?.width || 0) * (b.resolution?.height || 0);
-    return bPixels - aPixels;
+    const aMaxPixels = Math.max(...a.resolutions.map(r => r.width * r.height), 0);
+    const bMaxPixels = Math.max(...b.resolutions.map(r => r.width * r.height), 0);
+    return bMaxPixels - aMaxPixels;
   });
 
   const toggleSelection = (itemUrl: string) => {
@@ -62,12 +62,12 @@ export function ResolutionSelector({
     if (selectedItems.size === sortedDownloads.length) {
       setSelectedItems(new Set());
     } else {
-      setSelectedItems(new Set(sortedDownloads.map(item => item.url)));
+      setSelectedItems(new Set(sortedDownloads.map(item => item.mediaId)));
     }
   };
 
   const handleDownloadSelected = () => {
-    const selected = sortedDownloads.filter(item => selectedItems.has(item.url));
+    const selected = sortedDownloads.filter(item => selectedItems.has(item.mediaId));
     if (selected.length > 0) {
       onDownload(selected);
     }
@@ -106,16 +106,16 @@ export function ResolutionSelector({
               )}
               <div>
                 <p className="font-medium">
-                  {item.resolution?.width} × {item.resolution?.height}
+                  {item?.resolutions[0]?.width} × {item?.resolutions[0]?.height}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {item.resolution?.label} • {formatFileSize(item.size)}
+                  {item?.resolutions[0]?.label} • {formatFileSize(item?.resolutions[0]?.size || 0)}
                 </p>
               </div>
             </div>
             <Button
               size="sm"
-              onClick={() => onSingleDownload?.(item)}
+              onClick={() => item && onSingleDownload?.(item)}
               className="flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
@@ -192,7 +192,7 @@ export function ResolutionSelector({
               <div className="space-y-2">
                 {sortedDownloads.map((item, index) => (
                   <motion.div
-                    key={item.url}
+                    key={item.mediaId}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
@@ -200,27 +200,27 @@ export function ResolutionSelector({
                   >
                     <label className="flex items-center gap-3 cursor-pointer flex-1">
                       <Checkbox
-                        checked={selectedItems.has(item.url)}
-                        onCheckedChange={() => toggleSelection(item.url)}
+                        checked={selectedItems.has(item.mediaId)}
+                        onCheckedChange={() => toggleSelection(item.mediaId)}
                       />
                       
                       <div className="flex items-center gap-2">
-                        {getDeviceIcon(item.resolution?.width || 0, item.resolution?.height || 0)}
+                        {getDeviceIcon(item.resolutions[0]?.width || 0, item.resolutions[0]?.height || 0)}
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="font-medium">
-                              {item.resolution?.width} × {item.resolution?.height}
+                              {item.resolutions[0]?.width} × {item.resolutions[0]?.height}
                             </span>
                             <Badge 
                               variant={index === 0 ? "default" : "secondary"} 
                               className="text-xs"
                             >
-                              {item.resolution?.label}
+                              {item.resolutions[0]?.label}
                             </Badge>
                           </div>
                           <div className="flex items-center gap-2 text-xs text-gray-500">
                             <FileText className="w-3 h-3" />
-                            <span>{formatFileSize(item.size)}</span>
+                            <span>{formatFileSize(item.resolutions[0]?.size || 0)}</span>
                             <span>•</span>
                             <span>{item.type === 'video' ? '视频' : '图片'}</span>
                           </div>
@@ -231,7 +231,7 @@ export function ResolutionSelector({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => onSingleDownload?.(item)}
+                      onClick={() => item && onSingleDownload?.(item)}
                       className="ml-2"
                     >
                       <Download className="w-4 h-4" />
@@ -249,15 +249,15 @@ export function ResolutionSelector({
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <span>最高质量: </span>
               <span className="font-medium">
-                {sortedDownloads[0]?.resolution?.width} × {sortedDownloads[0]?.resolution?.height}
+                {sortedDownloads[0]?.resolutions[0]?.width} × {sortedDownloads[0]?.resolutions[0]?.height}
               </span>
               <Badge variant="secondary" className="text-xs">
-                {sortedDownloads[0]?.resolution?.label}
+                {sortedDownloads[0]?.resolutions[0]?.label}
               </Badge>
             </div>
             <Button
               size="sm"
-              onClick={() => onSingleDownload?.(sortedDownloads[0])}
+              onClick={() => sortedDownloads[0] && onSingleDownload?.(sortedDownloads[0])}
               variant="outline"
             >
               <Download className="w-4 h-4 mr-1" />

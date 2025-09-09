@@ -743,8 +743,8 @@ export default {
     verifyingPayment: 'Verifying payment status...',
     paymentSuccess: 'Payment Successful!',
     paymentCanceled: 'Payment Canceled',
-    thankYouSubscription: 'Thank you for your subscription! Your account has been successfully upgraded and you can now enjoy the full service.',
     paymentCanceledMessage: 'Your payment has been canceled and no charges were made. If you have any questions, please feel free to contact us.',
+    thankYouSubscription: 'Thank you for your subscription! Your account has been successfully upgraded and you can now enjoy the full service.',
     viewSubscriptionDetails: 'View Subscription Details',
     startUsing: 'Start Using',
     retrySelectPlan: 'Select Plan Again',
@@ -766,16 +766,12 @@ export default {
       monthly: 'month',
       yearly: 'year'
     },
-    // Original plan content
+    // Plan content
     title: 'Subscription Plans',
     description: 'Choose the subscription plan that suits you',
     heading: 'Choose Your Subscription Plan',
     subheading: 'Unlock more advanced features and enjoy a better download experience',
-    title: 'Subscription Plans',
-    description: 'Choose the subscription plan that suits you',
-    heading: 'Choose Your Subscription Plan',
-    subheading: 'Unlock more advanced features and enjoy a better download experience',
-    plans: {
+    planDetails: {
       free: {
         title: 'Free Plan',
         price: '$0',
@@ -834,7 +830,7 @@ export default {
     pageDescription: 'Efficiently process multiple Instagram links for batch downloading',
     placeholder: 'Add multiple Instagram links for batch download...',
     optimizedFor: 'Batch Download',
-    features: {
+    featureLabels: {
       0: 'Batch Processing',
       1: 'Task Queue',
       2: 'Progress Tracking'
@@ -869,5 +865,6 @@ export default {
       premium: 'Premium users: Maximum 50 links per batch',
       pro: 'Pro users: Unlimited'
     }
-  }
+  },
+
 } as const;

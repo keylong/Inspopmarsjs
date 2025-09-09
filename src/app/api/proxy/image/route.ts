@@ -67,7 +67,7 @@ async function proxyImage(imageUrl: string): Promise<NextResponse> {
     console.log('代理请求图片:', decodedUrl);
 
     // 请求Instagram图片，添加重试机制
-    let response: Response;
+    let response: Response | null = null;
     let attempts = 0;
     const maxAttempts = 3;
     
@@ -106,8 +106,8 @@ async function proxyImage(imageUrl: string): Promise<NextResponse> {
       }
     }
 
-    if (!response.ok) {
-      console.error(`图片请求失败: ${response.status} ${response.statusText}`);
+    if (!response || !response.ok) {
+      console.error(`图片请求失败: ${response ? `${response.status} ${response.statusText}` : '无响应'}`);
       
       // 生成占位图作为fallback
       const placeholderSvg = `
@@ -117,7 +117,7 @@ async function proxyImage(imageUrl: string): Promise<NextResponse> {
             图片加载失败
           </text>
           <text x="50%" y="55%" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7280">
-            错误代码: ${response.status}
+            错误代码: ${response?.status || '未知'}
           </text>
         </svg>
       `;

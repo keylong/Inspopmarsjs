@@ -743,8 +743,8 @@ export default {
     verifyingPayment: '正在验证支付状态...',
     paymentSuccess: '支付成功！',
     paymentCanceled: '支付已取消',
-    thankYouSubscription: '感谢您的订阅！您的账户已成功升级，现在可以享受完整的服务了。',
     paymentCanceledMessage: '您的支付已被取消，没有产生任何费用。如有疑问，请随时联系我们。',
+    thankYouSubscription: '感谢您的订阅！您的账户已成功升级，现在可以享受完整的服务了。',
     viewSubscriptionDetails: '查看订阅详情',
     startUsing: '开始使用',
     retrySelectPlan: '重新选择套餐',
@@ -766,16 +766,12 @@ export default {
       monthly: '月',
       yearly: '年'
     },
-    // 原有的计划内容
+    // 计划内容
     title: '订阅计划',
     description: '选择适合您的订阅计划',
     heading: '选择您的订阅计划',
     subheading: '解锁更多高级功能，享受更好的下载体验',
-    title: '订阅计划',
-    description: '选择适合您的订阅计划',
-    heading: '选择您的订阅计划',
-    subheading: '解锁更多高级功能，享受更好的下载体验',
-    plans: {
+    planDetails: {
       free: {
         title: '免费版',
         price: '¥0',
@@ -834,7 +830,7 @@ export default {
     pageDescription: '高效处理多个Instagram链接，一次性完成批量下载',
     placeholder: '添加多个Instagram链接进行批量下载...',
     optimizedFor: '批量下载',
-    features: {
+    featureLabels: {
         0: '批量处理',
         1: '任务队列',
         2: '进度跟踪'
@@ -869,5 +865,6 @@ export default {
       premium: '高级用户：每次最多50个链接',
       pro: '专业用户：无限制'
     }
-  }
+  },
+
 } as const;

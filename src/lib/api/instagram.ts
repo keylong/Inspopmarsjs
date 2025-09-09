@@ -549,7 +549,6 @@ export class InstagramDownloader {
           requestId
         },
         status: 200,
-        downloads: downloadItems,
         _mode: 'real-api-only'
       };
 

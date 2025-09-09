@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const enhancedEntry: LogEntry = {
       ...logEntry,
       timestamp: new Date().toISOString(), // 使用服务器时间
-      requestId: request.headers.get('x-request-id') || undefined,
+      requestId: request.headers.get('x-request-id') || crypto.randomUUID(),
     };
     
     // 存储日志
