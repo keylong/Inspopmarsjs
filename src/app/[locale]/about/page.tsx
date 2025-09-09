@@ -19,8 +19,8 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
-                {t('about.features.items').map((item: string, index: number) => (
-                  <li key={index}>• {item}</li>
+                {[0, 1, 2, 3, 4, 5].map((index) => (
+                  <li key={index}>• {t(`about.features.items.${index}` as any)}</li>
                 ))}
               </ul>
             </CardContent>
@@ -32,8 +32,8 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
-                {t('about.contentTypes.items').map((item: string, index: number) => (
-                  <li key={index}>• {item}</li>
+                {[0, 1, 2, 3, 4, 5].map((index) => (
+                  <li key={index}>• {t(`about.contentTypes.items.${index}` as any)}</li>
                 ))}
               </ul>
             </CardContent>
