@@ -2,7 +2,6 @@
   "version": 2,
   "name": "inspopmars-instagram-downloader",
   "alias": ["ins.popmars.com", "www.ins.popmars.com"],
-  "regions": ["hkg1", "sin1", "icn1"],
   "env": {
     "NODE_ENV": "production",
     "NEXT_PUBLIC_SITE_URL": "https://ins.popmars.com",
