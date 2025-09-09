@@ -88,9 +88,9 @@ export default function InstagramReelsDownloadPage() {
 
             {/* 特性标签 */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {t('downloadPages.reels.features').map((feature: string, index: number) => (
+              {[0, 1, 2, 3].map((index: number) => (
                 <span key={index} className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
-                  {feature}
+                  {t(`downloadPages.reels.features.${index}` as any)}
                 </span>
               ))}
             </div>
@@ -204,28 +204,28 @@ export default function InstagramReelsDownloadPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-red-500 mb-3"><Play /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.reels.features')[0]}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.reels.features.0' as any)}</h3>
               <p className="text-gray-600 text-sm">
                 专为 Instagram Reels 优化的下载器，支持各种分辨率。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-red-500 mb-3">🎯</div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.reels.features')[1]}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.reels.features.1' as any)}</h3>
               <p className="text-gray-600 text-sm">
                 保持视频原始质量，不压缩，不降低画质。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-red-500 mb-3"><Zap /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.reels.features')[2]}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.reels.features.2' as any)}</h3>
               <p className="text-gray-600 text-sm">
                 优化的下载算法，确保快速获取视频内容。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-red-500 mb-3"><FileVideo /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.reels.features')[3]}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('downloadPages.reels.features.3' as any)}</h3>
               <p className="text-gray-600 text-sm">
                 下载为标准 MP4 格式，兼容所有设备和播放器。
               </p>
