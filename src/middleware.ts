@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { locales, defaultLocale, getLocaleFromCountryCode, isValidLocale } from './lib/i18n/config';
+import { locales, getLocaleFromCountryCode, isValidLocale } from './lib/i18n/config';
 
 // 辅助函数：从路径中提取语言代码
 function getLocaleFromPathname(pathname: string): string | undefined {
@@ -117,10 +117,15 @@ export const config = {
     /*
      * 匹配所有路径，除了：
      * - api/auth (Stack Auth API routes)
+     * - api/proxy (图片代理API)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - 其他静态资源文件
      */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api/auth|api/proxy|_next/static|_next/image|favicon.ico|.*\\..*).*)',
   ],
-}
+};
+
+// 导出类型供其他模块使用
+// export type { SupportedLocale, DetectionMethod, LocaleDetectionResult, MiddlewareContext };

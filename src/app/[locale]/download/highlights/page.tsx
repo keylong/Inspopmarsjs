@@ -7,9 +7,8 @@ import { useI18n } from '@/lib/i18n/client';
 export default function InstagramHighlightsDownloadPage() {
   const t = useI18n();
 
-  // 将features对象转换为数组
-  const featuresData = (t as any)('downloadPages.highlights.features');
-  const features = typeof featuresData === 'object' ? Object.values(featuresData) as string[] : ['Curated Content', 'Permanent Storage', 'Batch Processing'];
+  // 使用硬编码的中文特性描述
+  const features = ['精选内容', '永久保存', '批量处理'];
 
   return (
     <SEOLayout contentType="highlights">

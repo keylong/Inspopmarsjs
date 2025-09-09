@@ -89,7 +89,7 @@ export function standardizePostData(rawPost: any): InstagramPost {
     media: allMedia,
     type: rawPost.type || determinePostType(rawPost),
     is_carousel: allMedia.length > 1,
-    carousel_media: allMedia.length > 1 ? allMedia : undefined,
+    carousel_media: allMedia.length > 1 ? allMedia : [],
     edge_sidecar_to_children: rawPost.edge_sidecar_to_children
   };
 }
@@ -136,7 +136,7 @@ export function addProxyToInstagramData(post: InstagramPost): InstagramPost {
     display_resources: media.display_resources?.map(resource => ({
       ...resource,
       src: addProxyToImageUrl(resource.src)
-    }))
+    })) || []
   }));
   
   return processedPost;
@@ -164,7 +164,7 @@ export function generateDownloadItems(post: InstagramPost): DownloadItem[] {
           width: resource.config_width,
           height: resource.config_height,
           label: resource.label || getResolutionLabel(resource.config_width, resource.config_height),
-          size: estimateFileSize(resource.config_width, resource.config_height, media.is_video)
+          size: estimateFileSize(resource.config_width, resource.config_height, media.is_video || false)
         });
       });
     } else {
@@ -174,7 +174,7 @@ export function generateDownloadItems(post: InstagramPost): DownloadItem[] {
         width: media.width,
         height: media.height,
         label: '原图',
-        size: estimateFileSize(media.width, media.height, media.is_video)
+        size: estimateFileSize(media.width, media.height, media.is_video || false)
       });
     }
     
@@ -182,7 +182,7 @@ export function generateDownloadItems(post: InstagramPost): DownloadItem[] {
     const baseFilename = generateBaseFilename(media, mediaIndex);
     
     // 确定默认分辨率（通常选择最高质量）
-    const defaultResolution = resolutions.length > 0 ? resolutions[0].label : '原图';
+    const defaultResolution = resolutions.length > 0 ? (resolutions[0]?.label || '原图') : '原图';
     
     // 创建下载项
     downloadItems.push({
@@ -229,11 +229,16 @@ function getResolutionLabel(width: number, height: number): string {
 /**
  * 生成基础文件名（不包含分辨率后缀）
  */
-function generateBaseFilename(media: any, index?: number): string {
+function generateBaseFilename(media: InstagramMedia, index?: number): string {
   const timestamp = Date.now();
-  const indexSuffix = typeof index === 'number' ? `_${index + 1}` : '';
+  const indexSuffix = typeof index === 'number' && index >= 0 ? `_${index + 1}` : '';
   
-  if (media.is_video || media.video_url) {
+  // 验证media对象
+  if (!media || typeof media !== 'object') {
+    return `instagram_unknown_${timestamp}${indexSuffix}`;
+  }
+  
+  if (media.is_video || media.video_url || media.type === 'video') {
     return `instagram_video_${timestamp}${indexSuffix}`;
   }
   return `instagram_image_${timestamp}${indexSuffix}`;
@@ -242,43 +247,78 @@ function generateBaseFilename(media: any, index?: number): string {
 /**
  * 生成包含分辨率信息的完整文件名
  */
-function generateFilename(media: any, label?: string, index?: number): string {
-  const baseFilename = generateBaseFilename(media, index);
-  const labelSuffix = label && label !== '原始质量' ? `_${label.replace(/\s+/g, '_')}` : '';
-  const extension = (media.is_video || media.video_url) ? '.mp4' : '.jpg';
+function generateFilename(media: InstagramMedia, label?: string, index?: number): string {
+  if (!media || typeof media !== 'object') {
+    const timestamp = Date.now();
+    return `instagram_unknown_${timestamp}.jpg`;
+  }
   
-  return `${baseFilename}${labelSuffix}${extension}`;
+  const baseFilename = generateBaseFilename(media, index);
+  const cleanLabel = label && typeof label === 'string' && label !== '原始质量' 
+    ? `_${label.replace(/[\s\W]+/g, '_').replace(/^_+|_+$/g, '')}` 
+    : '';
+  
+  const extension = (media.is_video || media.video_url || media.type === 'video') ? '.mp4' : '.jpg';
+  
+  return `${baseFilename}${cleanLabel}${extension}`;
 }
 
 /**
  * 为图片代理创建 POST 请求的工具函数
  */
-export function createImageProxyPostRequest(imageUrl: string): Promise<string> {
-  return fetch('/api/proxy/image', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ url: imageUrl }),
-  })
-  .then(response => {
-    if (response.ok) {
-      return response.blob();
+export async function createImageProxyPostRequest(imageUrl: string): Promise<string> {
+  if (!imageUrl || typeof imageUrl !== 'string') {
+    throw new Error('无效的图片URL');
+  }
+  
+  try {
+    const response = await fetch('/api/proxy/image', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: imageUrl.trim() }),
+      // 添加超时控制
+      signal: AbortSignal.timeout(30000), // 30秒超时
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unknown error');
+      throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
     }
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-  })
-  .then(blob => URL.createObjectURL(blob));
+    
+    const blob = await response.blob();
+    
+    // 验证blob类型
+    if (!blob.type.startsWith('image/')) {
+      throw new Error(`接收到非图片类型: ${blob.type}`);
+    }
+    
+    return URL.createObjectURL(blob);
+  } catch (error) {
+    console.error('图片代理POST请求失败:', error);
+    throw error;
+  }
 }
 
 /**
  * 检查 URL 是否需要使用 POST 方式代理
  */
 export function shouldUsePostProxy(imageUrl: string): boolean {
-  if (!imageUrl) return false;
+  if (!imageUrl || typeof imageUrl !== 'string') {
+    return false;
+  }
   
-  const encodedUrl = encodeURIComponent(imageUrl);
-  // 如果编码后的 URL 超过 1500 字符，建议使用 POST
-  return encodedUrl.length > 1500;
+  try {
+    const encodedUrl = encodeURIComponent(imageUrl);
+    // 如果编码后的 URL 超过 1500 字符，建议使用 POST
+    // 同时检查URL的复杂度
+    const hasComplexParams = imageUrl.includes('?') && imageUrl.split('&').length > 5;
+    return encodedUrl.length > 1500 || hasComplexParams;
+  } catch (error) {
+    console.warn('URL编码检查失败:', error);
+    return false;
+  }
 }
 
 /**
@@ -299,15 +339,42 @@ function extractOriginalUrl(proxyUrl: string): string {
 }
 
 function estimateFileSize(width: number, height: number, isVideo: boolean): number {
-  const pixels = width * height;
+  // 输入验证
+  const validWidth = typeof width === 'number' && width > 0 ? width : 1080;
+  const validHeight = typeof height === 'number' && height > 0 ? height : 1080;
+  
+  const pixels = validWidth * validHeight;
+  
   if (isVideo) {
-    // 视频估算：每秒约1MB，假设15秒视频
-    return Math.floor(pixels / 1000000 * 15 * 1024 * 1024);
+    // 视频估算：根据分辨率调整码率
+    // 1080p: ~2MB/s, 720p: ~1MB/s, 480p: ~0.5MB/s
+    let bitrateMultiplier = 1;
+    if (pixels >= 1920 * 1080) {
+      bitrateMultiplier = 2;
+    } else if (pixels >= 1280 * 720) {
+      bitrateMultiplier = 1;
+    } else {
+      bitrateMultiplier = 0.5;
+    }
+    
+    // 假设15秒视频
+    return Math.floor(bitrateMultiplier * 15 * 1024 * 1024);
   }
+  
   // 图片估算：高质量JPEG压缩
-  return Math.floor(pixels * 0.3); // 约0.3字节每像素
+  // 根据分辨率调整压缩比例
+  let compressionRatio = 0.3; // 默认0.3字节每像素
+  if (pixels >= 1920 * 1080) {
+    compressionRatio = 0.4; // 高分辨率图片压缩比略低
+  } else if (pixels <= 640 * 640) {
+    compressionRatio = 0.2; // 低分辨率图片压缩比更高
+  }
+  
+  return Math.floor(pixels * compressionRatio);
 }
 
 function generateRandomId(): string {
-  return Math.random().toString(36).substr(2, 9);
+  const timestamp = Date.now().toString(36);
+  const randomPart = Math.random().toString(36).substr(2, 9);
+  return `${timestamp}_${randomPart}`;
 }

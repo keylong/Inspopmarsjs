@@ -9,10 +9,15 @@
  */
 
 import { PrismaClient } from '@prisma/client'
-import { stackServerApp } from '@stackframe/stack'
+import { StackServerApp } from '@stackframe/stack'
 
 const prisma = new PrismaClient()
-const stackApp = stackServerApp()
+const stackApp = new StackServerApp({
+  tokenStore: 'nextjs-cookie', // 或者其他适当的配置
+  urls: {
+    home: process.env.NEXTAUTH_URL || 'http://localhost:3000',
+  },
+})
 
 async function migrateUsers() {
   console.log('🚀 开始迁移用户数据到 Neon Auth...')
@@ -55,8 +60,8 @@ async function migrateUsers() {
           const stackUser = await stackApp.createUser({
             primaryEmail: user.email,
             primaryEmailVerified: !!user.emailVerified,
-            displayName: user.name || undefined,
-            profileImageUrl: user.image || undefined,
+            displayName: user.name || '',
+            // profileImageUrl: user.image || undefined, // 可能不支持此属性
             clientMetadata: {
               migratedFrom: 'nextauth',
               originalId: user.id,

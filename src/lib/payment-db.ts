@@ -4,9 +4,24 @@ import {
   SubscriptionPlan,
   UserSubscription,
   PaymentOrder,
-  Invoice,
   UsageStats
 } from '@/types/payment'
+
+// 操作结果接口
+interface OperationResult<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+// 统计信息接口
+interface DatabaseStats {
+  plans: number;
+  subscriptions: number;
+  orders: number;
+  usageRecords: number;
+  lastUpdate: string;
+}
 
 // 数据存储路径
 const DB_PATH = path.join(process.cwd(), 'data')
@@ -45,6 +60,7 @@ export async function getSubscriptionPlanById(planId: string): Promise<Subscript
 }
 
 async function getDefaultPlans(): Promise<SubscriptionPlan[]> {
+  const currentTime = new Date().toISOString();
   const defaultPlans: SubscriptionPlan[] = [
     {
       id: 'basic-monthly',
@@ -63,8 +79,8 @@ async function getDefaultPlans(): Promise<SubscriptionPlan[]> {
       alipayProductId: 'basic_monthly',
       isActive: true,
       sortOrder: 1,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: currentTime,
+      updatedAt: currentTime,
     },
     {
       id: 'pro-monthly',
@@ -83,8 +99,8 @@ async function getDefaultPlans(): Promise<SubscriptionPlan[]> {
       alipayProductId: 'pro_monthly',
       isActive: true,
       sortOrder: 2,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: currentTime,
+      updatedAt: currentTime,
     },
     {
       id: 'unlimited-monthly',
@@ -103,8 +119,8 @@ async function getDefaultPlans(): Promise<SubscriptionPlan[]> {
       alipayProductId: 'unlimited_monthly',
       isActive: true,
       sortOrder: 3,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: currentTime,
+      updatedAt: currentTime,
     }
   ]
 
@@ -142,19 +158,26 @@ export async function getUserSubscription(userId: string): Promise<UserSubscript
 }
 
 export async function createUserSubscription(subscription: Omit<UserSubscription, 'id' | 'createdAt' | 'updatedAt'>): Promise<UserSubscription> {
-  const subscriptions = await readUserSubscriptions()
-  
-  const newSubscription: UserSubscription = {
-    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-    ...subscription,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  }
+  try {
+    const subscriptions = await readUserSubscriptions()
+    const currentTime = new Date().toISOString()
+    
+    const newSubscription: UserSubscription = {
+      id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      ...subscription,
+      createdAt: currentTime,
+      updatedAt: currentTime,
+    }
 
-  subscriptions.push(newSubscription)
-  await writeUserSubscriptions(subscriptions)
-  
-  return newSubscription
+    subscriptions.push(newSubscription)
+    await writeUserSubscriptions(subscriptions)
+    
+    console.log(`创建用户订阅成功: ${newSubscription.id}`);
+    return newSubscription
+  } catch (error) {
+    console.error('创建用户订阅失败:', error);
+    throw new Error(`创建订阅失败: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
 export async function updateUserSubscription(id: string, updates: Partial<Omit<UserSubscription, 'id' | 'createdAt'>>): Promise<UserSubscription | null> {
@@ -193,19 +216,26 @@ async function writePaymentOrders(orders: PaymentOrder[]): Promise<void> {
 }
 
 export async function createPaymentOrder(order: Omit<PaymentOrder, 'id' | 'createdAt' | 'updatedAt'>): Promise<PaymentOrder> {
-  const orders = await readPaymentOrders()
-  
-  const newOrder: PaymentOrder = {
-    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-    ...order,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  }
+  try {
+    const orders = await readPaymentOrders()
+    const currentTime = new Date().toISOString()
+    
+    const newOrder: PaymentOrder = {
+      id: `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      ...order,
+      createdAt: currentTime,
+      updatedAt: currentTime,
+    }
 
-  orders.push(newOrder)
-  await writePaymentOrders(orders)
-  
-  return newOrder
+    orders.push(newOrder)
+    await writePaymentOrders(orders)
+    
+    console.log(`创建支付订单成功: ${newOrder.id}`);
+    return newOrder
+  } catch (error) {
+    console.error('创建支付订单失败:', error);
+    throw new Error(`创建订单失败: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
 export async function updatePaymentOrder(id: string, updates: Partial<Omit<PaymentOrder, 'id' | 'createdAt'>>): Promise<PaymentOrder | null> {
@@ -264,35 +294,50 @@ export async function getUserUsageStats(userId: string, subscriptionId: string):
 }
 
 export async function createOrUpdateUsageStats(userId: string, subscriptionId: string, downloadCount: number): Promise<UsageStats> {
-  const stats = await readUsageStats()
-  const existingIndex = stats.findIndex(stat => 
-    stat.userId === userId && stat.subscriptionId === subscriptionId
-  )
-
-  const now = new Date().toISOString()
-
-  if (existingIndex >= 0) {
-    // 更新现有记录
-    stats[existingIndex] = {
-      ...stats[existingIndex],
-      downloadCount,
-      updatedAt: now,
+  try {
+    if (!userId?.trim() || !subscriptionId?.trim()) {
+      throw new Error('用户ID和订阅ID不能为空');
     }
-  } else {
-    // 创建新记录
-    const newStat: UsageStats = {
-      userId,
-      subscriptionId,
-      downloadCount,
-      lastResetAt: now,
-      createdAt: now,
-      updatedAt: now,
+    
+    if (downloadCount < 0) {
+      throw new Error('下载次数不能为负数');
     }
-    stats.push(newStat)
+    
+    const stats = await readUsageStats()
+    const existingIndex = stats.findIndex(stat => 
+      stat.userId === userId && stat.subscriptionId === subscriptionId
+    )
+
+    const now = new Date().toISOString()
+
+    if (existingIndex >= 0) {
+      // 更新现有记录
+      stats[existingIndex] = {
+        ...stats[existingIndex],
+        downloadCount,
+        updatedAt: now,
+      }
+      console.log(`更新使用统计成功: ${userId} - ${subscriptionId}`);
+    } else {
+      // 创建新记录
+      const newStat: UsageStats = {
+        userId: userId.trim(),
+        subscriptionId: subscriptionId.trim(),
+        downloadCount,
+        lastResetAt: now,
+        createdAt: now,
+        updatedAt: now,
+      }
+      stats.push(newStat)
+      console.log(`创建使用统计成功: ${userId} - ${subscriptionId}`);
+    }
+
+    await writeUsageStats(stats)
+    return stats[existingIndex >= 0 ? existingIndex : stats.length - 1]
+  } catch (error) {
+    console.error('创建或更新使用统计失败:', error);
+    throw new Error(`使用统计操作失败: ${error instanceof Error ? error.message : String(error)}`);
   }
-
-  await writeUsageStats(stats)
-  return stats[existingIndex >= 0 ? existingIndex : stats.length - 1]
 }
 
 export async function incrementDownloadCount(userId: string): Promise<{
@@ -300,55 +345,149 @@ export async function incrementDownloadCount(userId: string): Promise<{
   remainingDownloads: number
   message?: string
 }> {
-  const subscription = await getUserSubscription(userId)
-  
-  if (!subscription) {
-    return {
-      success: false,
-      remainingDownloads: 0,
-      message: '没有有效订阅'
+  try {
+    if (!userId?.trim()) {
+      return {
+        success: false,
+        remainingDownloads: 0,
+        message: '用户ID不能为空'
+      }
     }
-  }
 
-  const plan = await getSubscriptionPlanById(subscription.planId)
-  if (!plan) {
-    return {
-      success: false,
-      remainingDownloads: 0,
-      message: '订阅套餐不存在'
+    const subscription = await getUserSubscription(userId)
+    
+    if (!subscription) {
+      return {
+        success: false,
+        remainingDownloads: 0,
+        message: '没有有效订阅'
+      }
     }
-  }
 
-  // 无限制套餐
-  if (plan.downloadLimit === -1) {
-    await createOrUpdateUsageStats(userId, subscription.id, subscription.downloadCount + 1)
+    const plan = await getSubscriptionPlanById(subscription.planId)
+    if (!plan) {
+      return {
+        success: false,
+        remainingDownloads: 0,
+        message: '订阅套餐不存在'
+      }
+    }
+
+    // 无限制套餐
+    if (plan.downloadLimit === -1) {
+      const newDownloadCount = subscription.downloadCount + 1;
+      await createOrUpdateUsageStats(userId, subscription.id, newDownloadCount)
+      await updateUserSubscription(subscription.id, {
+        downloadCount: newDownloadCount
+      })
+      return {
+        success: true,
+        remainingDownloads: -1
+      }
+    }
+
+    // 检查下载次数限制
+    if (subscription.downloadCount >= plan.downloadLimit) {
+      return {
+        success: false,
+        remainingDownloads: 0,
+        message: '本周期下载次数已用完'
+      }
+    }
+
+    // 增加下载次数
+    const newDownloadCount = subscription.downloadCount + 1
+    await createOrUpdateUsageStats(userId, subscription.id, newDownloadCount)
     await updateUserSubscription(subscription.id, {
-      downloadCount: subscription.downloadCount + 1
+      downloadCount: newDownloadCount
     })
+
+    const remaining = plan.downloadLimit - newDownloadCount;
+    console.log(`用户 ${userId} 下载次数增加，剩余: ${remaining}`);
+
     return {
       success: true,
-      remainingDownloads: -1
+      remainingDownloads: remaining
     }
-  }
-
-  // 检查下载次数限制
-  if (subscription.downloadCount >= plan.downloadLimit) {
+  } catch (error) {
+    console.error('增加下载次数失败:', error);
     return {
       success: false,
       remainingDownloads: 0,
-      message: '本周期下载次数已用完'
+      message: `操作失败: ${error instanceof Error ? error.message : String(error)}`
     }
   }
+}
 
-  // 增加下载次数
-  const newDownloadCount = subscription.downloadCount + 1
-  await createOrUpdateUsageStats(userId, subscription.id, newDownloadCount)
-  await updateUserSubscription(subscription.id, {
-    downloadCount: newDownloadCount
-  })
+// ===== 数据库统计和维护 =====
 
-  return {
-    success: true,
-    remainingDownloads: plan.downloadLimit - newDownloadCount
+/**
+ * 获取数据库统计信息
+ */
+export async function getDatabaseStats(): Promise<DatabaseStats> {
+  try {
+    const [plans, subscriptions, orders, stats] = await Promise.all([
+      getSubscriptionPlans(),
+      readUserSubscriptions(),
+      readPaymentOrders(),
+      readUsageStats()
+    ]);
+
+    return {
+      plans: plans.length,
+      subscriptions: subscriptions.length,
+      orders: orders.length,
+      usageRecords: stats.length,
+      lastUpdate: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('获取数据库统计失败:', error);
+    return {
+      plans: 0,
+      subscriptions: 0,
+      orders: 0,
+      usageRecords: 0,
+      lastUpdate: new Date().toISOString()
+    };
+  }
+}
+
+/**
+ * 清理过期数据
+ */
+export async function cleanupExpiredData(): Promise<OperationResult<{ cleaned: number }>> {
+  try {
+    const subscriptions = await readUserSubscriptions();
+    const currentDate = new Date();
+    
+    // 找出过期的订阅
+    let cleanedCount = 0;
+    const activeSubscriptions = subscriptions.filter(sub => {
+      const isExpired = new Date(sub.currentPeriodEnd) < currentDate && sub.status === 'active';
+      if (isExpired) {
+        cleanedCount++;
+        console.log(`标记过期订阅: ${sub.id} (用户: ${sub.userId})`);
+        // 更新状态而不是删除
+        sub.status = 'expired';
+        sub.updatedAt = currentDate.toISOString();
+        return true;
+      }
+      return true;
+    });
+
+    await writeUserSubscriptions(activeSubscriptions);
+
+    console.log(`清理完成，标记了 ${cleanedCount} 个过期订阅`);
+    
+    return {
+      success: true,
+      data: { cleaned: cleanedCount }
+    };
+  } catch (error) {
+    console.error('清理过期数据失败:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error)
+    };
   }
 }

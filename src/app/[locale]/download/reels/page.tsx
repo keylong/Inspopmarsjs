@@ -7,7 +7,6 @@ import {
   Download,
   Film,
   ArrowLeft,
-  Instagram,
   Play,
   Zap,
   FileVideo,
@@ -88,7 +87,7 @@ export default function InstagramReelsDownloadPage() {
 
             {/* 特性标签 */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {(() => { const data = (t as any)('downloadPages.reels.features'); return typeof data === 'object' ? Object.values(data) as string[] : ['Short Videos', 'Original Quality', 'Fast Download', 'MP4 Format']; })().map((feature: string, index: number) => (
+              {['短视频', '原始质量', '快速下载', 'MP4格式'].map((feature: string, index: number) => (
                 <span key={index} className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
                   {feature}
                 </span>
@@ -203,42 +202,56 @@ export default function InstagramReelsDownloadPage() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-red-500 mb-3"><Play /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.reels.features'); return typeof data === 'object' ? data['0'] : 'Short Videos'; })()}</h3>
+              <div className="w-8 h-8 text-red-500 mb-3"><Play className="w-8 h-8" /></div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                短视频下载
+              </h3>
               <p className="text-gray-600 text-sm">
                 专为 Instagram Reels 优化的下载器，支持各种分辨率。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-red-500 mb-3">🎯</div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.reels.features'); return typeof data === 'object' ? data['1'] : 'Original Quality'; })()}</h3>
+              <div className="w-8 h-8 text-red-500 mb-3 flex items-center justify-center">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                原始质量
+              </h3>
               <p className="text-gray-600 text-sm">
                 保持视频原始质量，不压缩，不降低画质。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-red-500 mb-3"><Zap /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.reels.features'); return typeof data === 'object' ? data['2'] : 'Fast Download'; })()}</h3>
+              <div className="w-8 h-8 text-red-500 mb-3"><Zap className="w-8 h-8" /></div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                快速下载
+              </h3>
               <p className="text-gray-600 text-sm">
                 优化的下载算法，确保快速获取视频内容。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-red-500 mb-3"><FileVideo /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.reels.features'); return typeof data === 'object' ? data['3'] : 'MP4 Format'; })()}</h3>
+              <div className="w-8 h-8 text-red-500 mb-3"><FileVideo className="w-8 h-8" /></div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                MP4格式
+              </h3>
               <p className="text-gray-600 text-sm">
                 下载为标准 MP4 格式，兼容所有设备和播放器。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-red-500 mb-3">✓</div>
+              <div className="w-8 h-8 text-red-500 mb-3 flex items-center justify-center">
+                <span className="text-2xl text-green-500">✓</span>
+              </div>
               <h3 className="font-semibold text-gray-900 mb-2">{t('download.features.noWatermark')}</h3>
               <p className="text-gray-600 text-sm">
                 {t('download.features.noWatermarkDesc')}
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-red-500 mb-3">🔒</div>
+              <div className="w-8 h-8 text-red-500 mb-3 flex items-center justify-center">
+                <span className="text-2xl">🔒</span>
+              </div>
               <h3 className="font-semibold text-gray-900 mb-2">隐私保护</h3>
               <p className="text-gray-600 text-sm">
                 不保存用户数据，不追踪用户行为，完全匿名。

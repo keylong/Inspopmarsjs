@@ -123,11 +123,11 @@ export default function PrivacyPolicyClient({ locale: _locale }: PrivacyPolicyCl
 
   // 使用翻译或备用内容
   const content = {
-    title: t?.privacy?.title || fallbackContent.title,
-    subtitle: t?.privacy?.subtitle || fallbackContent.subtitle,
-    lastUpdated: t?.privacy?.lastUpdated || fallbackContent.lastUpdated,
-    sections: t?.privacy?.sections || fallbackContent.sections,
-    tableOfContents: t?.privacy?.tableOfContents || fallbackContent.tableOfContents
+    title: t('privacy.title') || fallbackContent.title,
+    subtitle: t('privacy.subtitle') || fallbackContent.subtitle,
+    lastUpdated: t('privacy.lastUpdated') || fallbackContent.lastUpdated,
+    sections: (t as any)('privacy.sections') || fallbackContent.sections,
+    tableOfContents: t('privacy.tableOfContents') || fallbackContent.tableOfContents
   };
 
   const sectionVariants = {
@@ -222,7 +222,7 @@ export default function PrivacyPolicyClient({ locale: _locale }: PrivacyPolicyCl
                         className="block text-sm text-gray-600 hover:text-blue-600 transition-colors p-2 rounded hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         aria-label={`跳转到${title}部分`}
                       >
-                        {index + 1}. {title}
+                        {_index + 1}. {title}
                       </a>
                     );
                   })}

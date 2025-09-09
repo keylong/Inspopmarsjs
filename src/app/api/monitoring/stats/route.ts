@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // 模拟监控数据存储 (实际项目中应该使用数据库或监控服务)
-let monitoringData = {
+const monitoringData = {
   downloads: {
     total: 15420,
     success: 14548,
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     const timeRange = searchParams.get('timeRange') || '24h';
     
     // 根据时间范围调整数据 (这里是简化的示例)
-    let adjustedData = { ...monitoringData };
+    const adjustedData = { ...monitoringData };
     
     switch (timeRange) {
       case '1h':

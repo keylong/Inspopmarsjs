@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { 
   Download,
-  Image,
+  Image as ImageIcon,
   Film,
   Link as LinkIcon,
   ArrowLeft,
@@ -15,8 +16,6 @@ import {
   Copy,
   Instagram,
   ZoomIn,
-  Eye,
-  Heart,
   X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -295,7 +294,7 @@ export default function InstagramPostDownloadPage() {
                         {/* 图片画廊网格 */}
                         <div>
                           <h4 className="text-lg font-semibold mb-4 text-gray-800 flex items-center gap-2">
-                            <Image className="w-5 h-5" />
+                            <ImageIcon className="w-5 h-5" />
                             {t('download.result.selectResolution')}
                           </h4>
                           
@@ -339,7 +338,7 @@ export default function InstagramPostDownloadPage() {
                                 <div>
                                   <span className="text-blue-600 font-medium">{t('download.result.totalSize')}：</span>
                                   <span className="text-blue-800">
-                                    {(result.downloads.reduce((acc, d) => acc + (d.size || 0), 0) / 1024 / 1024).toFixed(2)} MB
+                                    {(result.downloads.reduce((acc, d) => acc + (d.resolutions?.[0]?.size || 0), 0) / 1024 / 1024).toFixed(2)} MB
                                   </span>
                                 </div>
                               </div>
@@ -361,7 +360,7 @@ export default function InstagramPostDownloadPage() {
                 <Alert variant="destructive" className="mb-8">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    {result.error || t('download.form.downloadFailed')}
+{result.error || t('download.form.downloadFailed')}
                   </AlertDescription>
                 </Alert>
               )}
@@ -498,9 +497,11 @@ export default function InstagramPostDownloadPage() {
 
             {/* 图片容器 */}
             <div className="bg-white rounded-lg shadow-2xl overflow-hidden">
-              <img
+              <Image
                 src={selectedImage.src}
                 alt={selectedImage.alt}
+                width={800}
+                height={600}
                 className="w-full h-auto max-h-[80vh] object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
@@ -548,8 +549,10 @@ export default function InstagramPostDownloadPage() {
 }
 
 // 媒体卡片组件 - 解决 Hooks 在循环中使用的问题
+import { InstagramMedia, DisplayResource } from '@/types/instagram';
+
 interface MediaCardProps {
-  media: any;
+  media: InstagramMedia;
   index: number;
   onImageClick: (url: string, title: string) => void;
   onDirectDownload: (url: string, filename: string) => void;
@@ -580,9 +583,11 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
       transition={{ duration: 0.3, delay: 0.1 * index }}
     >
       <div className="aspect-square relative overflow-hidden">
-        <img
+        <Image
           src={currentUrl}
           alt={`Instagram 媒体 ${index + 1}`}
+          width={400}
+          height={400}
           className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
           onClick={() => onImageClick(currentUrl, `Instagram 媒体 ${index + 1}`)}
           onError={(e) => {
@@ -600,7 +605,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
         {/* 图片标识 */}
         {!media.is_video && (
           <div className="absolute top-2 left-2 bg-white/90 text-gray-800 px-2 py-1 rounded text-xs flex items-center gap-1">
-            <Image className="w-3 h-3" />
+            <ImageIcon className="w-3 h-3" />
             {t('download.result.image')}
           </div>
         )}
@@ -628,7 +633,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
               {t('download.result.selectResolution')}:
             </label>
             <div className="flex flex-wrap gap-2">
-              {media.display_resources.map((resource: any, resIndex: number) => (
+              {media.display_resources.map((resource: DisplayResource, resIndex: number) => (
                 <button
                   key={resIndex}
                   onClick={() => setSelectedResolution(resource)}

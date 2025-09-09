@@ -8,13 +8,22 @@ import {
   addProxyToInstagramData,
   generateDownloadItems 
 } from '../utils/instagram-data-transformer';
-import { InstagramPost } from '@/types/instagram';
+import { InstagramPost, APIResponse } from '@/types/instagram';
 
-interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
+// 使用统一的API响应类型
+interface ApiResponse<T = any> extends APIResponse<T> {
   status?: number;
+  _apiError?: boolean;
+  _parseError?: boolean;
+  _mode?: string;
+}
+
+// 统一错误类型
+interface ApiError {
+  code: string;
+  message: string;
+  details?: any;
+  timestamp: string;
 }
 
 // API 配置
@@ -31,7 +40,13 @@ const API_CONFIG = {
  * 通用 API 请求处理器
  */
 async function apiRequest<T>(endpoint: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
   try {
+    if (!API_CONFIG.headers['X-RapidAPI-Key']) {
+      throw new Error('Missing RAPIDAPI_KEY environment variable');
+    }
+
     const url = new URL(endpoint, API_CONFIG.baseUrl);
     
     // 添加查询参数 - 避免双重URL编码
@@ -44,40 +59,81 @@ async function apiRequest<T>(endpoint: string, params?: Record<string, any>): Pr
       });
     }
 
-    console.log('API 请求URL:', url.toString());
+    console.log(`[${requestId}] API 请求URL:`, url.toString());
 
     const response = await fetch(url.toString(), {
       method: 'GET',
-      headers: API_CONFIG.headers,
+      headers: {
+        ...API_CONFIG.headers,
+        'X-Request-ID': requestId,
+      },
     });
 
     if (!response.ok) {
       // 增加更详细的错误信息
-      let errorMessage = `API 请求失败: ${response.status} ${response.statusText}`;
+      let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      let errorDetails: any = { status: response.status, statusText: response.statusText };
+      
       try {
         const errorBody = await response.text();
         if (errorBody) {
-          errorMessage += ` - ${errorBody}`;
+          try {
+            const parsedError = JSON.parse(errorBody);
+            errorDetails = { ...errorDetails, body: parsedError };
+            errorMessage = parsedError.message || parsedError.error || errorMessage;
+          } catch {
+            errorDetails = { ...errorDetails, body: errorBody };
+          }
         }
       } catch (e) {
-        // 忽略读取错误体的错误
+        console.warn(`[${requestId}] 无法读取错误响应体`);
       }
-      throw new Error(errorMessage);
+      
+      console.error(`[${requestId}] API 请求失败:`, errorDetails);
+      
+      return {
+        success: false,
+        error: {
+          code: `HTTP_${response.status}`,
+          message: errorMessage,
+          details: errorDetails
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId
+        },
+        status: response.status,
+        _apiError: true
+      };
     }
 
     const data = await response.json();
-    console.log('API 响应成功');
+    console.log(`[${requestId}] API 响应成功, 状态:`, response.status);
     
     return {
       success: true,
       data,
+      meta: {
+        timestamp: new Date().toISOString(),
+        requestId
+      },
       status: response.status,
     };
   } catch (error) {
-    console.error('Instagram API 错误:', error);
+    console.error(`[${requestId}] Instagram API 错误:`, error);
+    
     return {
       success: false,
-      error: error instanceof Error ? error.message : '未知错误',
+      error: {
+        code: 'NETWORK_ERROR',
+        message: error instanceof Error ? error.message : '网络请求失败',
+        details: { error: String(error) }
+      },
+      meta: {
+        timestamp: new Date().toISOString(),
+        requestId
+      },
+      _parseError: true
     };
   }
 }
@@ -122,9 +178,24 @@ export class UserService {
   /**
    * 通过用户名获取用户信息
    */
-  static async getUserInfo(username: string, version: 'v1' | 'v2' = 'v2'): Promise<ApiResponse> {
+  static async getUserInfo(username: string, version: 'v1' | 'v2' = 'v2'): Promise<ApiResponse<any>> {
+    if (!username?.trim()) {
+      return {
+        success: false,
+        error: {
+          code: 'INVALID_INPUT',
+          message: '用户名不能为空',
+          details: { username }
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: `val_${Date.now()}`
+        }
+      };
+    }
+    
     const endpoint = version === 'v2' ? '/user/info-v2' : '/user/info';
-    return apiRequest(endpoint, { username });
+    return apiRequest(endpoint, { username: username.trim() });
   }
 
   /**
@@ -194,12 +265,45 @@ export class MediaService {
    * 获取媒体下载链接 ⭐ 核心功能 - 使用 /post-dl 端点
    */
   static async getDownloadLink(input: string): Promise<ApiResponse<{ download_url: string }>> {
+    if (!input?.trim()) {
+      return {
+        success: false,
+        error: {
+          code: 'INVALID_INPUT',
+          message: '输入不能为空',
+          details: { input }
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId: `val_${Date.now()}`
+        }
+      };
+    }
+    
+    const trimmedInput = input.trim();
+    
     // 判断输入是URL还是ID
-    const isUrl = input.startsWith('http');
+    const isUrl = trimmedInput.startsWith('http');
     if (isUrl) {
-      return apiRequest('/post-dl', { url: input });
+      if (!URLUtils.isValidInstagramUrl(trimmedInput)) {
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_URL',
+            message: '无效的Instagram URL',
+            details: { url: trimmedInput }
+          },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId: `val_${Date.now()}`
+          }
+        };
+      }
+      
+      const cleanUrl = URLUtils.cleanInstagramUrl(trimmedInput);
+      return apiRequest('/post-dl', { url: cleanUrl });
     } else {
-      return apiRequest('/media/download-link', { media_id: input });
+      return apiRequest('/media/download-link', { media_id: trimmedInput });
     }
   }
 
@@ -342,77 +446,126 @@ export class InstagramDownloader {
   /**
    * 解析 Instagram URL 并获取下载信息 - 仅使用真实API响应
    */
-  static async parseAndDownload(url: string): Promise<ApiResponse> {
+  static async parseAndDownload(url: string): Promise<ApiResponse<InstagramPost>> {
+    const requestId = `parse_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
     try {
-      // 验证和清理URL
-      if (!URLUtils.isValidInstagramUrl(url)) {
+      // 输入验证
+      if (!url?.trim()) {
         return {
           success: false,
-          error: '请输入有效的Instagram链接'
+          error: {
+            code: 'INVALID_INPUT',
+            message: '请输入Instagram链接',
+            details: { url }
+          },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId
+          }
         };
       }
 
-      const cleanUrl = URLUtils.cleanInstagramUrl(url);
-      console.log('🔗 清理后的URL:', cleanUrl);
-      console.log('🚀 调用Instagram Looter2 API...');
+      const trimmedUrl = url.trim();
+      
+      // 验证和清理URL
+      if (!URLUtils.isValidInstagramUrl(trimmedUrl)) {
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_URL',
+            message: '请输入有效的Instagram链接',
+            details: { url: trimmedUrl }
+          },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId
+          }
+        };
+      }
+
+      const cleanUrl = URLUtils.cleanInstagramUrl(trimmedUrl);
+      console.log(`[${requestId}] 🔗 清理后的URL:`, cleanUrl);
+      console.log(`[${requestId}] 🚀 调用Instagram Looter2 API...`);
 
       // 调用真实Instagram Looter2 API
       const mediaInfo = await MediaService.getMediaInfoByUrl(cleanUrl);
       
       if (!mediaInfo.success) {
-        console.error('❌ Instagram API调用失败:', mediaInfo.error);
+        console.error(`[${requestId}] ❌ Instagram API调用失败:`, mediaInfo.error);
         return {
           success: false,
-          error: `Instagram API调用失败: ${mediaInfo.error}`,
+          error: {
+            code: 'API_CALL_FAILED',
+            message: 'Instagram API调用失败',
+            details: mediaInfo.error
+          },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId
+          },
           _apiError: true
         };
       }
 
       // 处理和标准化响应数据
       const responseData = mediaInfo.data;
-      console.log('📊 收到API响应，状态:', responseData?.status);
-      console.log('📊 API响应数据摘要:', {
-        status: responseData?.status,
-        hasUsername: !!responseData?.owner?.username,
-        mediaType: responseData?.__typename,
-        hasCarousel: !!responseData?.edge_sidecar_to_children,
-        mediaId: responseData?.id
-      });
-
+      console.log(`[${requestId}] 📊 收到API响应，状态:`, responseData?.status);
+      
       // 检查API返回的状态
-      if (responseData.status === false) {
+      if (responseData?.status === false) {
         const errorMessage = responseData.errorMessage || responseData.message || 'Instagram内容获取失败';
-        console.error('🚫 Instagram Looter2 API返回错误状态:', errorMessage);
+        console.error(`[${requestId}] 🚫 Instagram Looter2 API返回错误状态:`, errorMessage);
         return {
           success: false,
-          error: `Instagram内容不存在或无法访问：${errorMessage}`,
-          data: responseData,
+          error: {
+            code: 'CONTENT_NOT_FOUND',
+            message: `Instagram内容不存在或无法访问：${errorMessage}`,
+            details: { responseData }
+          },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId
+          },
           _apiError: true
         };
       }
 
       // API返回成功状态，使用数据转换工具处理
-      console.log('✅ API返回成功状态，开始处理Instagram数据');
+      console.log(`[${requestId}] ✅ API返回成功状态，开始处理Instagram数据`);
 
       // 使用数据转换工具
       const standardizedPost = standardizePostData(responseData);
       const proxiedPost = addProxyToInstagramData(standardizedPost);
+      const downloadItems = generateDownloadItems(proxiedPost);
 
-      console.log('✅ 数据处理完成，媒体数量:', proxiedPost.media?.length || 0);
+      console.log(`[${requestId}] ✅ 数据处理完成，媒体数量:`, proxiedPost.media?.length || 0);
 
       return {
         success: true,
         data: proxiedPost,
-        downloads: generateDownloadItems(proxiedPost),
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId
+        },
         status: 200,
+        downloads: downloadItems,
         _mode: 'real-api-only'
       };
 
     } catch (error) {
-      console.error('💥 Instagram下载解析错误:', error);
+      console.error(`[${requestId}] 💥 Instagram下载解析错误:`, error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : '下载解析失败',
+        error: {
+          code: 'PARSE_ERROR',
+          message: '下载解析失败',
+          details: { error: String(error) }
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId
+        },
         _parseError: true
       };
     }
@@ -426,96 +579,165 @@ export class InstagramDownloader {
       return null;
     }
 
-    // Instagram Looter2 API 的实际响应结构处理
-    const mapped = {
-      status: apiResponse.status !== false, // 保持API原始状态
-      display_url: apiResponse.display_url || apiResponse.thumbnail_src,
-      display_resources: apiResponse.display_resources || [],
-      is_video: apiResponse.is_video || false,
-      video_url: apiResponse.video_url,
-      owner: apiResponse.owner ? {
-        username: apiResponse.owner.username,
-        full_name: apiResponse.owner.full_name,
-        profile_pic_url: apiResponse.owner.profile_pic_url
-      } : null,
-      edge_sidecar_to_children: apiResponse.edge_sidecar_to_children || null,
-      timestamp: new Date().toISOString(),
-      shortcode: apiResponse.shortcode,
-      id: apiResponse.id,
-      __typename: apiResponse.__typename,
-      taken_at_timestamp: apiResponse.taken_at_timestamp,
-      edge_media_to_caption: apiResponse.edge_media_to_caption || { edges: [] },
-      edge_media_preview_like: apiResponse.edge_media_preview_like || { count: 0 },
-      edge_media_to_comment: apiResponse.edge_media_to_comment || { count: 0 },
-      // 保留原始数据供调试使用
-      _original: apiResponse,
-      _mode: 'real-api'
-    };
-
-    // 处理不同格式的多媒体数组
-    if (apiResponse.children && Array.isArray(apiResponse.children)) {
-      mapped.edge_sidecar_to_children = {
-        edges: apiResponse.children.map((child: any, index: number) => ({
-          node: {
-            display_url: child.display_url || child.thumbnail_url,
-            is_video: child.is_video || false,
-            video_url: child.video_url
-          }
-        }))
+    try {
+      // Instagram Looter2 API 的实际响应结构处理
+      const mapped = {
+        status: apiResponse.status !== false, // 保持API原始状态
+        display_url: apiResponse.display_url || apiResponse.thumbnail_src || '',
+        display_resources: Array.isArray(apiResponse.display_resources) ? apiResponse.display_resources : [],
+        is_video: Boolean(apiResponse.is_video),
+        video_url: apiResponse.video_url || undefined,
+        owner: apiResponse.owner ? {
+          username: apiResponse.owner.username || '',
+          full_name: apiResponse.owner.full_name || '',
+          profile_pic_url: apiResponse.owner.profile_pic_url || ''
+        } : null,
+        edge_sidecar_to_children: apiResponse.edge_sidecar_to_children || null,
+        timestamp: new Date().toISOString(),
+        shortcode: apiResponse.shortcode || '',
+        id: apiResponse.id || '',
+        __typename: apiResponse.__typename || 'GraphImage',
+        taken_at_timestamp: apiResponse.taken_at_timestamp || Math.floor(Date.now() / 1000),
+        edge_media_to_caption: apiResponse.edge_media_to_caption || { edges: [] },
+        edge_media_preview_like: apiResponse.edge_media_preview_like || { count: 0 },
+        edge_media_to_comment: apiResponse.edge_media_to_comment || { count: 0 },
+        // 保留原始数据供调试使用
+        _original: apiResponse,
+        _mode: 'real-api'
       };
-    }
 
-    // 处理不同分辨率的图片资源
-    if (apiResponse.images && Array.isArray(apiResponse.images)) {
-      mapped.display_resources = apiResponse.images.map((img: any) => ({
-        src: img.url || img.src,
-        config_width: img.width || 0,
-        config_height: img.height || 0
-      }));
-    }
+      // 处理不同格式的多媒体数组
+      if (apiResponse.children && Array.isArray(apiResponse.children)) {
+        mapped.edge_sidecar_to_children = {
+          edges: apiResponse.children.map((child: any) => ({
+            node: {
+              display_url: child.display_url || child.thumbnail_url || '',
+              is_video: Boolean(child.is_video),
+              video_url: child.video_url || undefined,
+              id: child.id || '',
+              dimensions: child.dimensions || { width: 1080, height: 1080 }
+            }
+          }))
+        };
+      }
 
-    console.log('映射后的数据:', JSON.stringify(mapped, null, 2));
-    return mapped;
+      // 处理不同分辨率的图片资源
+      if (apiResponse.images && Array.isArray(apiResponse.images)) {
+        mapped.display_resources = apiResponse.images.map((img: any) => ({
+          src: img.url || img.src || '',
+          config_width: Number(img.width) || 0,
+          config_height: Number(img.height) || 0
+        }));
+      }
+
+      console.log('映射后的数据结构摘要:', {
+        hasDisplayUrl: !!mapped.display_url,
+        resourcesCount: mapped.display_resources.length,
+        isVideo: mapped.is_video,
+        hasOwner: !!mapped.owner,
+        hasCarousel: !!mapped.edge_sidecar_to_children
+      });
+      
+      return mapped;
+    } catch (error) {
+      console.error('API响应映射失败:', error);
+      return apiResponse; // 映射失败时返回原始数据
+    }
   }
 
   /**
    * 通过用户名获取用户所有媒体的下载信息
    */
-  static async getUserAllMedia(username: string): Promise<ApiResponse> {
+  static async getUserAllMedia(username: string): Promise<ApiResponse<any>> {
+    const requestId = `user_media_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
     try {
+      if (!username?.trim()) {
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_INPUT',
+            message: '用户名不能为空',
+            details: { username }
+          },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId
+          }
+        };
+      }
+
+      const trimmedUsername = username.trim();
+      console.log(`[${requestId}] 开始获取用户媒体:`, trimmedUsername);
+      
       // 1. 获取用户ID
-      const userIdResult = await IdentityUtils.getUserIdFromUsername(username);
+      const userIdResult = await IdentityUtils.getUserIdFromUsername(trimmedUsername);
       if (!userIdResult.success) {
-        return userIdResult;
+        return {
+          success: false,
+          error: {
+            code: 'USER_NOT_FOUND',
+            message: '无法找到该用户',
+            details: userIdResult.error
+          },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId
+          }
+        };
       }
 
       const userId = userIdResult.data?.user_id;
       if (!userId) {
-        return { success: false, error: '无法获取用户ID' };
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_USER_ID',
+            message: '无法获取用户ID',
+            details: { userIdResult }
+          },
+          meta: {
+            timestamp: new Date().toISOString(),
+            requestId
+          }
+        };
       }
 
-      // 2. 获取用户信息
-      const userInfo = await UserService.getUserInfoById(userId);
-
-      // 3. 获取媒体列表
-      const mediaList = await UserService.getUserMedia(userId);
-
-      // 4. 获取Reels
-      const reelsList = await UserService.getUserReels(userId);
+      // 并行获取用户数据
+      const [userInfo, mediaList, reelsList] = await Promise.allSettled([
+        UserService.getUserInfoById(userId),
+        UserService.getUserMedia(userId),
+        UserService.getUserReels(userId)
+      ]);
 
       return {
         success: true,
         data: {
-          user: userInfo.data,
-          posts: mediaList.data,
-          reels: reelsList.data,
+          user: userInfo.status === 'fulfilled' ? userInfo.value.data : null,
+          posts: mediaList.status === 'fulfilled' ? mediaList.value.data : null,
+          reels: reelsList.status === 'fulfilled' ? reelsList.value.data : null,
+          username: trimmedUsername,
+          userId,
           timestamp: new Date().toISOString(),
         },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId
+        }
       };
     } catch (error) {
+      console.error(`[${requestId}] 获取用户媒体失败:`, error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : '获取用户媒体失败',
+        error: {
+          code: 'FETCH_ERROR',
+          message: '获取用户媒体失败',
+          details: { error: String(error) }
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+          requestId
+        }
       };
     }
   }

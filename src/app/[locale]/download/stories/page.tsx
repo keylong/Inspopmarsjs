@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { 
   Download,
   User,
-  Link as LinkIcon,
   ArrowLeft,
   Instagram,
   Eye,
@@ -91,7 +90,7 @@ export default function InstagramStoriesDownloadPage() {
 
             {/* 特性标签 */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {(() => { const data = (t as any)('downloadPages.stories.features'); return typeof data === 'object' ? Object.values(data) as string[] : ['Anonymous Download', 'No View Records', '24-hour Content']; })().map((feature: string, index: number) => (
+              {['匿名下载', '无查看记录', '24小时内容'].map((feature: string, index: number) => (
                 <span key={index} className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium">
                   {feature}
                 </span>
@@ -151,20 +150,25 @@ export default function InstagramStoriesDownloadPage() {
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             {t('downloadPages.stories.howToUse')}
           </h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {t('downloadPages.stories.steps') && Object.entries(t('downloadPages.stories.steps')).map(([key, step], index) => (
-              <div key={key} className="text-center">
+          <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            {[
+              { title: '输入用户名', desc: '输入用户名或复制 Stories 链接' },
+              { title: '点击下载', desc: '点击下载按钮开始处理' },
+              { title: '选择内容', desc: '选择 Stories 内容进行下载' },
+              { title: '保存文件', desc: '等待处理完成并保存到设备' }
+            ].map((step, index) => (
+              <div key={index} className="text-center">
                 <div className="w-16 h-16 bg-pink-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
                   {index + 1}
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                  {step.title}
                 </h3>
                 <p className="text-gray-600">
-                  {step}
+                  {step.desc}
                 </p>
               </div>
-            ))}
+            ))
           </div>
         </section>
 
@@ -175,42 +179,50 @@ export default function InstagramStoriesDownloadPage() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-pink-500 mb-3"><EyeOff /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.stories.features'); return typeof data === 'object' ? data['0'] : 'Anonymous Download'; })()}</h3>
+              <div className="w-8 h-8 text-pink-500 mb-3"><EyeOff className="w-8 h-8" /></div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                匿名下载
+              </h3>
               <p className="text-gray-600 text-sm">
                 无需登录 Instagram 账号即可下载 Stories，保护您的隐私。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-pink-500 mb-3"><Eye className="opacity-50" /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.stories.features'); return typeof data === 'object' ? data['1'] : 'No View Records'; })()}</h3>
+              <div className="w-8 h-8 text-pink-500 mb-3"><Eye className="w-8 h-8 opacity-50" /></div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                无查看记录
+              </h3>
               <p className="text-gray-600 text-sm">
                 下载 Stories 不会留下任何浏览痕迹，对方无法知道您查看过。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-pink-500 mb-3"><Clock /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.stories.features'); return typeof data === 'object' ? data['2'] : '24-hour Content'; })()}</h3>
+              <div className="w-8 h-8 text-pink-500 mb-3"><Clock className="w-8 h-8" /></div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                24小时内容
+              </h3>
               <p className="text-gray-600 text-sm">
                 自动获取最新的 Stories 内容，确保不错过任何更新。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-pink-500 mb-3">🎯</div>
+              <div className="w-8 h-8 text-pink-500 mb-3 flex items-center justify-center">
+                <span className="text-2xl">🎯</span>
+              </div>
               <h3 className="font-semibold text-gray-900 mb-2">{t('download.features.highQuality')}</h3>
               <p className="text-gray-600 text-sm">
                 {t('download.features.highQualityDesc')}
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-pink-500 mb-3"><Users /></div>
+              <div className="w-8 h-8 text-pink-500 mb-3"><Users className="w-8 h-8" /></div>
               <h3 className="font-semibold text-gray-900 mb-2">批量保存</h3>
               <p className="text-gray-600 text-sm">
                 支持一次性下载用户所有的 Stories 内容，节省时间。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-pink-500 mb-3"><Globe /></div>
+              <div className="w-8 h-8 text-pink-500 mb-3"><Globe className="w-8 h-8" /></div>
               <h3 className="font-semibold text-gray-900 mb-2">全球可用</h3>
               <p className="text-gray-600 text-sm">
                 支持全球所有地区的 Instagram Stories 下载。

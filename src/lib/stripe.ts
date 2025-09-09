@@ -45,7 +45,7 @@ export async function createStripeCheckoutSession(
     const cancelUrl = `${domain}/subscription/cancel?order_id=${order.id}`
 
     // 创建 Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: [
         {
@@ -57,13 +57,14 @@ export async function createStripeCheckoutSession(
       success_url: successUrl,
       cancel_url: cancelUrl,
       client_reference_id: order.id,
-      customer_email: undefined, // 可以从用户信息中获取
       metadata: {
         userId,
         planId,
         orderId: order.id,
       },
-    })
+    }
+    
+    const session = await stripe.checkout.sessions.create(sessionConfig)
 
     // 更新订单信息
     await updatePaymentOrder(order.id, {
@@ -193,7 +194,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       currentPeriodEnd: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString(), // 100年后
       cancelAtPeriodEnd: false,
       downloadCount: 0,
-      stripeSubscriptionId: session.subscription as string || undefined,
+      stripeSubscriptionId: (session.subscription as string) || '',
     })
   } else {
     // 定期订阅
@@ -213,7 +214,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         currentPeriodStart: now.toISOString(),
         currentPeriodEnd: periodEnd.toISOString(),
         downloadCount: 0, // 重置下载次数
-        stripeSubscriptionId: session.subscription as string || undefined,
+        stripeSubscriptionId: (session.subscription as string) || '',
       })
     } else {
       await createUserSubscription({
@@ -225,7 +226,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         currentPeriodEnd: periodEnd.toISOString(),
         cancelAtPeriodEnd: false,
         downloadCount: 0,
-        stripeSubscriptionId: session.subscription as string || undefined,
+        stripeSubscriptionId: (session.subscription as string) || '',
       })
     }
   }

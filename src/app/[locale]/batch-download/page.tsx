@@ -7,9 +7,8 @@ import { useI18n } from '@/lib/i18n/client';
 export default function BatchDownloadPage() {
   const t = useI18n();
 
-  // 将features对象转换为数组
-  const featuresData = (t as any)('batchDownload.features');
-  const features = typeof featuresData === 'object' ? Object.values(featuresData) as string[] : ['Batch Processing', 'Task Queue', 'Progress Tracking'];
+  // 使用硬编码的中文特性描述
+  const features = ['批量处理', '任务队列', '进度追踪'];
 
   return (
     <SEOLayout contentType="batch">

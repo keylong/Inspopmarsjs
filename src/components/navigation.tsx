@@ -3,14 +3,14 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
+import { useOptionalAuth } from '@/hooks/useAuth';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { User, LogOut } from 'lucide-react';
 
 export function Navigation() {
   const pathname = usePathname();
-  const { user, isAuthenticated, isLoading, signOut } = useAuth();
+  const { user, isAuthenticated, isLoading, signOut } = useOptionalAuth();
   const currentLocale = useCurrentLocale() || 'zh-CN';
   const t = useI18n();
 
@@ -80,12 +80,12 @@ export function Navigation() {
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <Link href={`/${currentLocale}/auth/signin`}>
+                    <Link href={`/${currentLocale}/signin`}>
                       <Button variant="ghost" size="sm">
                         {nav.login}
                       </Button>
                     </Link>
-                    <Link href={`/${currentLocale}/auth/signup`}>
+                    <Link href={`/${currentLocale}/signup`}>
                       <Button size="sm">
                         {nav.register}
                       </Button>

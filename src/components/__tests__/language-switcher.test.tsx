@@ -95,7 +95,7 @@ describe('LanguageSwitcher Component', () => {
     );
     
     // 打开下拉菜单
-    const button = screen.getByRole('button');
+    const button = screen.getByRole('button', { name: /语言|切换语言/ });
     await user.click(button);
     
     await waitFor(() => {
@@ -117,7 +117,7 @@ describe('LanguageSwitcher Component', () => {
     render(<LanguageSwitcher />);
     
     // 打开下拉菜单
-    const button = screen.getByRole('button');
+    const button = screen.getByRole('button', { name: /语言|切换语言/ });
     await user.click(button);
     
     // 选择英文
@@ -161,12 +161,12 @@ describe('LanguageSwitcher Component', () => {
     const user = userEvent.setup();
     render(<LanguageSwitcher />);
     
-    const button = screen.getByRole('button');
+    const button = screen.getByRole('button', { name: /语言|切换语言/ });
     await user.click(button);
     
     await waitFor(() => {
       const currentLanguageOption = screen.getByText('中文').closest('button');
-      expect(currentLanguageOption).toHaveAttribute('aria-pressed', 'true');
+      expect(currentLanguageOption).toHaveAttribute('aria-selected', 'true');
     });
   });
 
@@ -182,7 +182,7 @@ describe('LanguageSwitcher Component', () => {
     const user = userEvent.setup();
     render(<LanguageSwitcher />);
     
-    const button = screen.getByRole('button');
+    const button = screen.getByRole('button', { name: /语言|切换语言/ });
     await user.click(button);
     
     await waitFor(() => {
@@ -200,12 +200,22 @@ describe('LanguageSwitcher Component', () => {
 
   it('handles path without language code correctly', async () => {
     // Mock pathname without language code
-    jest.mocked(require('next/navigation').usePathname).mockReturnValueOnce('/');
+    const mockUsePathname = jest.fn().mockReturnValue('/');
+    jest.doMock('next/navigation', () => ({
+      useRouter: () => ({
+        push: mockPush,
+        replace: jest.fn(),
+        back: jest.fn(),
+        forward: jest.fn(),
+        refresh: jest.fn(),
+      }),
+      usePathname: mockUsePathname,
+    }));
     
     const user = userEvent.setup();
     render(<LanguageSwitcher />);
     
-    const button = screen.getByRole('button');
+    const button = screen.getByRole('button', { name: /语言|切换语言/ });
     await user.click(button);
     
     await waitFor(() => {

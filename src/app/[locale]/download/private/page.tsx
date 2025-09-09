@@ -7,9 +7,8 @@ import { useI18n } from '@/lib/i18n/client';
 export default function InstagramPrivateDownloadPage() {
   const t = useI18n();
 
-  // 将features对象转换为数组
-  const featuresData = (t as any)('downloadPages.private.features');
-  const features = typeof featuresData === 'object' ? Object.values(featuresData) as string[] : ['Private Content', 'Authorized Access', 'Secure Download'];
+  // 使用硬编码的中文特性描述
+  const features = ['私人内容', '授权访问', '安全下载'];
 
   return (
     <SEOLayout contentType="private">

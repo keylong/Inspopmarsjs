@@ -25,7 +25,6 @@ export default function Home() {
 
   console.log('当前语言:', currentLocale);
   console.log('翻译对象:', t);
-  console.log('下载翻译:', t?.download);
 
   // 使用翻译内容
   const content = {

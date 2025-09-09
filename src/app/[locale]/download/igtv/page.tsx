@@ -7,7 +7,6 @@ import {
   Download,
   Tv,
   ArrowLeft,
-  Instagram,
   PlayCircle,
   Clock,
   HardDrive,
@@ -88,7 +87,7 @@ export default function IGTVDownloadPage() {
 
             {/* 特性标签 */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {(() => { const data = (t as any)('downloadPages.igtv.features'); return typeof data === 'object' ? Object.values(data) as string[] : ['Long Videos', 'HD Format', 'Stable Download', 'Large File Support']; })().map((feature: string, index: number) => (
+              {['长视频', '高清格式', '稳定下载', '大文件支持'].map((feature: string, index: number) => (
                 <span key={index} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
                   {feature}
                 </span>
@@ -203,42 +202,56 @@ export default function IGTVDownloadPage() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-purple-500 mb-3"><Clock /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.igtv.features'); return typeof data === 'object' ? data['0'] : 'Long Videos'; })()}</h3>
+              <div className="w-8 h-8 text-purple-500 mb-3"><Clock className="w-8 h-8" /></div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                长视频支持
+              </h3>
               <p className="text-gray-600 text-sm">
                 专为 IGTV 长视频设计，支持任意时长的视频内容。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-purple-500 mb-3">🎯</div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.igtv.features'); return typeof data === 'object' ? data['1'] : 'HD Format'; })()}</h3>
+              <div className="w-8 h-8 text-purple-500 mb-3 flex items-center justify-center">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                高清格式
+              </h3>
               <p className="text-gray-600 text-sm">
                 下载高清格式的 IGTV 视频，保持最佳画质。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-purple-500 mb-3"><PlayCircle /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.igtv.features'); return typeof data === 'object' ? data['2'] : 'Stable Download'; })()}</h3>
+              <div className="w-8 h-8 text-purple-500 mb-3"><PlayCircle className="w-8 h-8" /></div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                稳定下载
+              </h3>
               <p className="text-gray-600 text-sm">
                 优化的下载算法，即使是大文件也能稳定下载。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-purple-500 mb-3"><HardDrive /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.igtv.features'); return typeof data === 'object' ? data['3'] : 'Large File Support'; })()}</h3>
+              <div className="w-8 h-8 text-purple-500 mb-3"><HardDrive className="w-8 h-8" /></div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                大文件支持
+              </h3>
               <p className="text-gray-600 text-sm">
                 专门处理大文件，确保完整下载不中断。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-purple-500 mb-3">✓</div>
+              <div className="w-8 h-8 text-purple-500 mb-3 flex items-center justify-center">
+                <span className="text-2xl text-green-500">✓</span>
+              </div>
               <h3 className="font-semibold text-gray-900 mb-2">{t('download.features.noWatermark')}</h3>
               <p className="text-gray-600 text-sm">
                 {t('download.features.noWatermarkDesc')}
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
-              <div className="w-8 h-8 text-purple-500 mb-3">🔒</div>
+              <div className="w-8 h-8 text-purple-500 mb-3 flex items-center justify-center">
+                <span className="text-2xl">🔒</span>
+              </div>
               <h3 className="font-semibold text-gray-900 mb-2">安全可靠</h3>
               <p className="text-gray-600 text-sm">
                 安全的下载过程，不会损害您的设备或数据。

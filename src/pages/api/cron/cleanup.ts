@@ -29,7 +29,7 @@ interface CleanupResult {
  * 清理临时文件
  */
 async function cleanupTempFiles(): Promise<{ cleaned: number; errors: number }> {
-  let cleaned = 0;
+  const cleaned = 0;
   let errors = 0;
 
   try {
@@ -51,7 +51,7 @@ async function cleanupTempFiles(): Promise<{ cleaned: number; errors: number }> 
  * 清理过期会话
  */
 async function cleanupExpiredSessions(): Promise<{ expired: number; errors: number }> {
-  let expired = 0;
+  const expired = 0;
   let errors = 0;
 
   try {
@@ -73,7 +73,7 @@ async function cleanupExpiredSessions(): Promise<{ expired: number; errors: numb
  * 归档分析数据
  */
 async function archiveAnalyticsData(): Promise<{ archived: number; errors: number }> {
-  let archived = 0;
+  const archived = 0;
   let errors = 0;
 
   try {

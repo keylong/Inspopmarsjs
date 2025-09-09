@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
+import { useCurrentLocale } from '@/lib/i18n/client'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -12,12 +13,13 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth()
   const router = useRouter()
+  const currentLocale = useCurrentLocale() || 'zh-CN'
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/auth/signin')
+      router.push(`/${currentLocale}/signin`)
     }
-  }, [isAuthenticated, isLoading, router])
+  }, [isAuthenticated, isLoading, router, currentLocale])
 
   if (isLoading) {
     return (

@@ -36,7 +36,7 @@ interface ResultDisplayProps {
   result: {
     data?: InstagramPost;
     downloads?: DownloadItem[];
-    error?: {
+    error?: string | {
       code: string;
       message: string;
       details?: any;
@@ -125,6 +125,9 @@ export function ResultDisplay({
   };
 
   if (error) {
+    const errorMessage = typeof error === 'string' ? error : error.message;
+    const errorCode = typeof error === 'object' && error.code ? error.code : null;
+    
     return (
       <Card className={`w-full ${className}`}>
         <CardContent className="p-6">
@@ -134,10 +137,10 @@ export function ResultDisplay({
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">{t?.download?.result?.downloadFailed || '下载失败'}</h3>
-              <p className="text-gray-600 mb-4">{error.message}</p>
-              {error.code && (
+              <p className="text-gray-600 mb-4">{errorMessage}</p>
+              {errorCode && (
                 <Badge variant="destructive" className="mb-4">
-                  {t?.download?.result?.errorCode || '错误代码'}: {error.code}
+                  {t?.download?.result?.errorCode || '错误代码'}: {errorCode}
                 </Badge>
               )}
               <Button onClick={onRetry} variant="outline">
