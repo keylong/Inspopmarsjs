@@ -98,7 +98,7 @@
     },
     {
       "path": "/api/cron/analytics",
-      "schedule": "0 * * * *"
+      "schedule": "0 3 * * *"
     }
   ]
 }
