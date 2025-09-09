@@ -123,21 +123,30 @@ export function addProxyToImageUrl(imageUrl: string): string {
 }
 
 /**
- * 批量处理Instagram数据中的图片URL，添加代理
+ * 批量处理Instagram数据中的图片/视频URL，添加代理
  */
 export function addProxyToInstagramData(post: InstagramPost): InstagramPost {
   const processedPost = { ...post };
   
   // 处理media数组中的URL
-  processedPost.media = post.media.map(media => ({
-    ...media,
-    url: addProxyToImageUrl(media.url),
-    thumbnail: addProxyToImageUrl(media.thumbnail || ''),
-    display_resources: media.display_resources?.map(resource => ({
-      ...resource,
-      src: addProxyToImageUrl(resource.src)
-    })) || []
-  }));
+  processedPost.media = post.media.map(media => {
+    const processedMedia: InstagramMedia = {
+      ...media,
+      url: addProxyToImageUrl(media.url),
+      thumbnail: addProxyToImageUrl(media.thumbnail || ''),
+      display_resources: media.display_resources?.map(resource => ({
+        ...resource,
+        src: addProxyToImageUrl(resource.src)
+      })) || []
+    };
+    
+    // 只有当video_url存在时才添加
+    if (media.video_url) {
+      processedMedia.video_url = addProxyToImageUrl(media.video_url);
+    }
+    
+    return processedMedia;
+  });
   
   return processedPost;
 }
@@ -151,6 +160,17 @@ export function generateDownloadItems(post: InstagramPost): DownloadItem[] {
   post.media.forEach((media, mediaIndex) => {
     const resolutions: DownloadResolution[] = [];
     
+    // 如果是视频，优先使用video_url
+    if (media.is_video && media.video_url) {
+      resolutions.push({
+        url: extractOriginalUrl(media.video_url),
+        width: media.width,
+        height: media.height,
+        label: '视频原始质量',
+        size: estimateFileSize(media.width, media.height, true)
+      });
+    }
+    
     // 收集所有可用分辨率
     if (media.display_resources && media.display_resources.length > 0) {
       // 按分辨率从高到低排序
@@ -159,21 +179,27 @@ export function generateDownloadItems(post: InstagramPost): DownloadItem[] {
       );
       
       sortedResources.forEach((resource) => {
+        // 对于视频，display_resources通常是预览图
+        const isVideoThumbnail = media.is_video;
+        const label = isVideoThumbnail 
+          ? `视频预览 - ${getResolutionLabel(resource.config_width, resource.config_height)}`
+          : resource.label || getResolutionLabel(resource.config_width, resource.config_height);
+          
         resolutions.push({
           url: extractOriginalUrl(resource.src),
           width: resource.config_width,
           height: resource.config_height,
-          label: resource.label || getResolutionLabel(resource.config_width, resource.config_height),
-          size: estimateFileSize(resource.config_width, resource.config_height, media.is_video || false)
+          label: label,
+          size: estimateFileSize(resource.config_width, resource.config_height, false) // 预览图按图片计算
         });
       });
-    } else {
-      // 没有多分辨率时，使用主URL作为单一选项
+    } else if (!media.is_video || !media.video_url) {
+      // 没有多分辨率时，且不是视频，使用主URL作为单一选项
       resolutions.push({
         url: extractOriginalUrl(media.url),
         width: media.width,
         height: media.height,
-        label: '原图',
+        label: media.is_video ? '视频' : '原图',
         size: estimateFileSize(media.width, media.height, media.is_video || false)
       });
     }

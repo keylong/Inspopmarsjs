@@ -119,7 +119,7 @@ const nextConfig: NextConfig = {
   // Webpack optimization for code splitting
   webpack: (config, { dev, isServer }) => {
     // Only apply in production builds
-    if (!dev) {
+    if (!dev && !isServer) {
       config.optimization = {
         ...config.optimization,
         splitChunks: {
@@ -150,26 +150,34 @@ const nextConfig: NextConfig = {
           },
         },
       };
-      
-      // 生产环境下启用 gzip 压缩
-      config.plugins = config.plugins || [];
-      
-      // 添加资源优化
-      if (config.module) {
-        config.module.rules.push({
-          test: /\.(png|jpe?g|gif|svg)$/i,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                publicPath: '/_next/static/images/',
-                outputPath: 'static/images/',
-                name: '[name]-[hash].[ext]',
-              },
-            },
-          ],
-        });
+    }
+    
+    // 为服务端添加 polyfill，修复 'self is not defined' 错误
+    if (isServer) {
+      if (!config.resolve) {
+        config.resolve = {};
       }
+      if (!config.resolve.fallback) {
+        config.resolve.fallback = {};
+      }
+      
+      // 添加 Node.js polyfill
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      };
+      
+      // 定义 self 为 global
+      config.plugins = config.plugins || [];
+      const webpack = require('webpack');
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          'self': 'global',
+        })
+      );
     }
     
     return config;

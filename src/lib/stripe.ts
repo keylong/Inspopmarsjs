@@ -11,10 +11,21 @@ import {
 import { createInvoice } from './invoice'
 import { StripeCheckoutSession } from '@/types/payment'
 
-// 初始化 Stripe
-const stripe = new Stripe(paymentConfig.stripe.secretKey, {
-  apiVersion: '2025-08-27.basil',
-})
+// 延迟初始化 Stripe，只在需要时创建实例
+let stripeInstance: Stripe | null = null
+
+function getStripe(): Stripe {
+  if (!stripeInstance) {
+    const secretKey = paymentConfig.stripe.secretKey
+    if (!secretKey) {
+      throw new Error('Stripe secret key is not configured. Please set STRIPE_SECRET_KEY environment variable.')
+    }
+    stripeInstance = new Stripe(secretKey, {
+      apiVersion: '2025-08-27.basil',
+    })
+  }
+  return stripeInstance
+}
 
 /**
  * 创建 Stripe 支付会话
@@ -64,7 +75,7 @@ export async function createStripeCheckoutSession(
       },
     }
     
-    const session = await stripe.checkout.sessions.create(sessionConfig)
+    const session = await getStripe().checkout.sessions.create(sessionConfig)
 
     // 更新订单信息
     await updatePaymentOrder(order.id, {
@@ -94,7 +105,7 @@ export async function handleStripeWebhook(
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       signature,
       paymentConfig.stripe.webhookSecret
@@ -278,7 +289,7 @@ export async function cancelStripeSubscription(
   cancelAtPeriodEnd = true
 ): Promise<{ success: boolean; message?: string }> {
   try {
-    const subscription = await stripe.subscriptions.update(subscriptionId, {
+    const subscription = await getStripe().subscriptions.update(subscriptionId, {
       cancel_at_period_end: cancelAtPeriodEnd,
     })
 
@@ -297,7 +308,7 @@ export async function cancelStripeSubscription(
  */
 export async function getStripeSubscription(subscriptionId: string) {
   try {
-    return await stripe.subscriptions.retrieve(subscriptionId)
+    return await getStripe().subscriptions.retrieve(subscriptionId)
   } catch (error) {
     console.error('获取订阅详情失败:', error)
     return null
@@ -313,7 +324,7 @@ export async function createStripePortalSession(
 ): Promise<string | null> {
   try {
     const domain = getCurrentDomain()
-    const session = await stripe.billingPortal.sessions.create({
+    const session = await getStripe().billingPortal.sessions.create({
       customer: customerId,
       return_url: returnUrl || `${domain}/subscription`,
     })

@@ -1,4 +1,3 @@
-import * as AlipaySdk from 'alipay-sdk'
 import { paymentConfig, getCurrentDomain } from './payment-config'
 import { 
   getSubscriptionPlanById, 
@@ -13,15 +12,31 @@ import { createInvoice } from './invoice'
 import { AlipayOrderParams, AlipayNotifyParams } from '@/types/payment'
 import crypto from 'crypto'
 
-// 初始化支付宝 SDK
-const alipaySdk = new (AlipaySdk as any)({
-  appId: paymentConfig.alipay.appId,
-  privateKey: paymentConfig.alipay.privateKey,
-  alipayPublicKey: paymentConfig.alipay.publicKey,
-  gateway: paymentConfig.alipay.gatewayUrl,
-  timeout: 5000,
-  camelCase: true,
-})
+// 延迟初始化支付宝 SDK
+let alipaySdkInstance: any = null
+
+async function getAlipaySdk() {
+  if (!alipaySdkInstance) {
+    // 动态导入 alipay-sdk
+    const AlipaySdkModule = await import('alipay-sdk')
+    // alipay-sdk 使用 ES 模块导出
+    const AlipaySdk = (AlipaySdkModule as any).default || AlipaySdkModule
+    
+    if (!paymentConfig.alipay.appId) {
+      throw new Error('Alipay configuration is not complete. Please set environment variables.')
+    }
+    
+    alipaySdkInstance = new AlipaySdk({
+      appId: paymentConfig.alipay.appId,
+      privateKey: paymentConfig.alipay.privateKey,
+      alipayPublicKey: paymentConfig.alipay.publicKey,
+      gateway: paymentConfig.alipay.gatewayUrl,
+      timeout: 5000,
+      camelCase: true,
+    })
+  }
+  return alipaySdkInstance
+}
 
 /**
  * 创建支付宝支付订单
@@ -63,6 +78,7 @@ export async function createAlipayOrder(
     }
 
     // 生成支付页面 URL
+    const alipaySdk = await getAlipaySdk()
     const payUrl = await alipaySdk.pageExecute('alipay.trade.page.pay', {
       bizContent: {
         outTradeNo: orderParams.out_trade_no,
@@ -99,6 +115,7 @@ export async function handleAlipayNotify(
 ): Promise<{ success: boolean; message?: string }> {
   try {
     // 验证签名
+    const alipaySdk = await getAlipaySdk()
     const isValid = alipaySdk.checkNotifySign(params)
     if (!isValid) {
       console.error('支付宝回调签名验证失败')
@@ -246,6 +263,7 @@ export async function queryAlipayTradeStatus(outTradeNo: string): Promise<{
   error?: string
 }> {
   try {
+    const alipaySdk = await getAlipaySdk()
     const result = await alipaySdk.exec('alipay.trade.query', {
       bizContent: {
         outTradeNo,
@@ -282,6 +300,7 @@ export async function closeAlipayTrade(outTradeNo: string): Promise<{
   message?: string
 }> {
   try {
+    const alipaySdk = await getAlipaySdk()
     const result = await alipaySdk.exec('alipay.trade.close', {
       bizContent: {
         outTradeNo,
