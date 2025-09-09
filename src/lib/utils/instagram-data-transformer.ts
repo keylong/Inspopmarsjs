@@ -1,0 +1,313 @@
+/**
+ * Instagram 数据转换工具
+ * 统一处理不同API响应格式，标准化数据结构
+ */
+
+import { InstagramPost, InstagramMedia, DisplayResource, DownloadItem, DownloadResolution } from '@/types/instagram';
+
+/**
+ * 标准化Instagram媒体数据
+ */
+export function standardizeMediaData(rawMedia: any): InstagramMedia {
+  // 处理display_resources数组，生成多分辨率选项
+  const displayResources: DisplayResource[] = [];
+  
+  if (rawMedia.display_resources && Array.isArray(rawMedia.display_resources)) {
+    rawMedia.display_resources.forEach((resource: any) => {
+      displayResources.push({
+        src: resource.src,
+        config_width: resource.config_width,
+        config_height: resource.config_height,
+        label: getResolutionLabel(resource.config_width, resource.config_height)
+      });
+    });
+    
+    // 按分辨率从高到低排序，确保第一个是最高质量（原图）
+    displayResources.sort((a, b) => 
+      (b.config_width * b.config_height) - (a.config_width * a.config_height)
+    );
+  }
+  
+  // 如果没有display_resources，基于主图片URL创建
+  if (displayResources.length === 0 && rawMedia.display_url) {
+    displayResources.push({
+      src: rawMedia.display_url,
+      config_width: rawMedia.dimensions?.width || 1080,
+      config_height: rawMedia.dimensions?.height || 1080,
+      label: '原图'
+    });
+  }
+
+  return {
+    id: rawMedia.id || rawMedia.shortcode || generateRandomId(),
+    type: determineMediaType(rawMedia),
+    url: rawMedia.display_url || rawMedia.url || '',
+    thumbnail: rawMedia.display_url || rawMedia.thumbnail || '',
+    width: rawMedia.dimensions?.width || rawMedia.config_width || 1080,
+    height: rawMedia.dimensions?.height || rawMedia.config_height || 1080,
+    filename: generateFilename(rawMedia),
+    display_resources: displayResources,
+    video_url: rawMedia.video_url,
+    is_video: rawMedia.is_video || rawMedia.type === 'video'
+  };
+}
+
+/**
+ * 标准化Instagram帖子数据
+ */
+export function standardizePostData(rawPost: any): InstagramPost {
+  let allMedia: InstagramMedia[] = [];
+  
+  // 优先处理轮播媒体（edge_sidecar_to_children）
+  if (rawPost.edge_sidecar_to_children?.edges) {
+    const carouselMedia = rawPost.edge_sidecar_to_children.edges.map((edge: any) => 
+      standardizeMediaData(edge.node)
+    );
+    allMedia = allMedia.concat(carouselMedia);
+  }
+  // 处理carousel_media数组（备用格式）
+  else if (rawPost.carousel_media && Array.isArray(rawPost.carousel_media)) {
+    const carouselMedia = rawPost.carousel_media.map((media: any) => 
+      standardizeMediaData(media)
+    );
+    allMedia = allMedia.concat(carouselMedia);
+  }
+  // 只有在没有轮播媒体时才处理单媒体帖子
+  else if (rawPost.display_url || rawPost.url) {
+    allMedia.push(standardizeMediaData(rawPost));
+  }
+
+  return {
+    id: rawPost.id || rawPost.shortcode || generateRandomId(),
+    url: rawPost.permalink || rawPost.url || `https://instagram.com/p/${rawPost.shortcode}/`,
+    shortcode: rawPost.shortcode || '',
+    caption: rawPost.edge_media_to_caption?.edges?.[0]?.node?.text || rawPost.caption || '',
+    username: rawPost.owner?.username || rawPost.username || 'unknown',
+    timestamp: rawPost.taken_at_timestamp 
+      ? new Date(rawPost.taken_at_timestamp * 1000).toISOString()
+      : rawPost.timestamp || new Date().toISOString(),
+    media: allMedia,
+    type: rawPost.type || determinePostType(rawPost),
+    is_carousel: allMedia.length > 1,
+    carousel_media: allMedia.length > 1 ? allMedia : undefined,
+    edge_sidecar_to_children: rawPost.edge_sidecar_to_children
+  };
+}
+
+/**
+ * 为图片URL添加代理前缀
+ * 支持POST方式避免长URL截断问题
+ */
+export function addProxyToImageUrl(imageUrl: string): string {
+  if (!imageUrl || imageUrl.startsWith('/api/proxy/') || imageUrl.startsWith('data:')) {
+    return imageUrl;
+  }
+  
+  // 检查是否为Instagram CDN URL
+  const instagramDomains = ['fbcdn.net', 'cdninstagram.com', 'instagram.com'];
+  const isInstagramUrl = instagramDomains.some(domain => imageUrl.includes(domain));
+  
+  if (isInstagramUrl) {
+    // 对于长 URL，使用 GET 方式但记录原始 URL 以便必要时切换到 POST
+    const encodedUrl = encodeURIComponent(imageUrl);
+    
+    // 如果 URL 太长，可能需要 POST 方式
+    if (encodedUrl.length > 1500) {
+      console.warn('图片URL很长，可能需要POST方式：', imageUrl.substring(0, 100));
+    }
+    
+    return `/api/proxy/image?url=${encodedUrl}`;
+  }
+  
+  return imageUrl;
+}
+
+/**
+ * 批量处理Instagram数据中的图片URL，添加代理
+ */
+export function addProxyToInstagramData(post: InstagramPost): InstagramPost {
+  const processedPost = { ...post };
+  
+  // 处理media数组中的URL
+  processedPost.media = post.media.map(media => ({
+    ...media,
+    url: addProxyToImageUrl(media.url),
+    thumbnail: addProxyToImageUrl(media.thumbnail || ''),
+    display_resources: media.display_resources?.map(resource => ({
+      ...resource,
+      src: addProxyToImageUrl(resource.src)
+    }))
+  }));
+  
+  return processedPost;
+}
+
+/**
+ * 生成下载项目列表 - 同一媒体的不同分辨率合并为一个选项
+ */
+export function generateDownloadItems(post: InstagramPost): DownloadItem[] {
+  const downloadItems: DownloadItem[] = [];
+  
+  post.media.forEach((media, mediaIndex) => {
+    const resolutions: DownloadResolution[] = [];
+    
+    // 收集所有可用分辨率
+    if (media.display_resources && media.display_resources.length > 0) {
+      // 按分辨率从高到低排序
+      const sortedResources = [...media.display_resources].sort((a, b) => 
+        (b.config_width * b.config_height) - (a.config_width * a.config_height)
+      );
+      
+      sortedResources.forEach((resource) => {
+        resolutions.push({
+          url: extractOriginalUrl(resource.src),
+          width: resource.config_width,
+          height: resource.config_height,
+          label: resource.label || getResolutionLabel(resource.config_width, resource.config_height),
+          size: estimateFileSize(resource.config_width, resource.config_height, media.is_video)
+        });
+      });
+    } else {
+      // 没有多分辨率时，使用主URL作为单一选项
+      resolutions.push({
+        url: extractOriginalUrl(media.url),
+        width: media.width,
+        height: media.height,
+        label: '原图',
+        size: estimateFileSize(media.width, media.height, media.is_video)
+      });
+    }
+    
+    // 生成基础文件名（不包含分辨率后缀）
+    const baseFilename = generateBaseFilename(media, mediaIndex);
+    
+    // 确定默认分辨率（通常选择最高质量）
+    const defaultResolution = resolutions.length > 0 ? resolutions[0].label : '原图';
+    
+    // 创建下载项
+    downloadItems.push({
+      mediaId: media.id,
+      filename: baseFilename,
+      type: media.is_video ? 'video' : 'image',
+      resolutions: resolutions,
+      thumbnail: media.thumbnail || media.url,
+      defaultResolution: defaultResolution
+    });
+  });
+  
+  return downloadItems;
+}
+
+// 辅助函数
+
+function determineMediaType(rawMedia: any): 'image' | 'video' | 'carousel' {
+  if (rawMedia.is_video || rawMedia.video_url || rawMedia.type === 'video') {
+    return 'video';
+  }
+  if (rawMedia.media_type === 8 || rawMedia.carousel_media) {
+    return 'carousel';
+  }
+  return 'image';
+}
+
+function determinePostType(rawPost: any): 'post' | 'story' | 'highlight' | 'reel' | 'igtv' {
+  if (rawPost.__typename === 'GraphStory' || rawPost.story_type) return 'story';
+  if (rawPost.__typename === 'GraphVideo' || rawPost.is_reel) return 'reel';
+  if (rawPost.is_igtv || rawPost.igtv_type) return 'igtv';
+  if (rawPost.highlight_reel_type) return 'highlight';
+  return 'post';
+}
+
+function getResolutionLabel(width: number, height: number): string {
+  const pixels = width * height;
+  if (pixels >= 1920 * 1080) return '高清 (1080p+)';
+  if (pixels >= 1280 * 720) return '标清 (720p)';
+  if (pixels >= 640 * 640) return '中等质量';
+  return '低质量';
+}
+
+/**
+ * 生成基础文件名（不包含分辨率后缀）
+ */
+function generateBaseFilename(media: any, index?: number): string {
+  const timestamp = Date.now();
+  const indexSuffix = typeof index === 'number' ? `_${index + 1}` : '';
+  
+  if (media.is_video || media.video_url) {
+    return `instagram_video_${timestamp}${indexSuffix}`;
+  }
+  return `instagram_image_${timestamp}${indexSuffix}`;
+}
+
+/**
+ * 生成包含分辨率信息的完整文件名
+ */
+function generateFilename(media: any, label?: string, index?: number): string {
+  const baseFilename = generateBaseFilename(media, index);
+  const labelSuffix = label && label !== '原始质量' ? `_${label.replace(/\s+/g, '_')}` : '';
+  const extension = (media.is_video || media.video_url) ? '.mp4' : '.jpg';
+  
+  return `${baseFilename}${labelSuffix}${extension}`;
+}
+
+/**
+ * 为图片代理创建 POST 请求的工具函数
+ */
+export function createImageProxyPostRequest(imageUrl: string): Promise<string> {
+  return fetch('/api/proxy/image', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ url: imageUrl }),
+  })
+  .then(response => {
+    if (response.ok) {
+      return response.blob();
+    }
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  })
+  .then(blob => URL.createObjectURL(blob));
+}
+
+/**
+ * 检查 URL 是否需要使用 POST 方式代理
+ */
+export function shouldUsePostProxy(imageUrl: string): boolean {
+  if (!imageUrl) return false;
+  
+  const encodedUrl = encodeURIComponent(imageUrl);
+  // 如果编码后的 URL 超过 1500 字符，建议使用 POST
+  return encodedUrl.length > 1500;
+}
+
+/**
+ * 从代理URL中提取原始URL
+ */
+function extractOriginalUrl(proxyUrl: string): string {
+  if (!proxyUrl.startsWith('/api/proxy/image?url=')) {
+    return proxyUrl;
+  }
+  
+  try {
+    const urlParam = proxyUrl.substring('/api/proxy/image?url='.length);
+    return decodeURIComponent(urlParam);
+  } catch (e) {
+    console.warn('无法解码代理URL:', proxyUrl);
+    return proxyUrl;
+  }
+}
+
+function estimateFileSize(width: number, height: number, isVideo: boolean): number {
+  const pixels = width * height;
+  if (isVideo) {
+    // 视频估算：每秒约1MB，假设15秒视频
+    return Math.floor(pixels / 1000000 * 15 * 1024 * 1024);
+  }
+  // 图片估算：高质量JPEG压缩
+  return Math.floor(pixels * 0.3); // 约0.3字节每像素
+}
+
+function generateRandomId(): string {
+  return Math.random().toString(36).substr(2, 9);
+}
