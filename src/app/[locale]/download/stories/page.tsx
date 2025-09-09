@@ -168,7 +168,7 @@ export default function InstagramStoriesDownloadPage() {
                   {step.desc}
                 </p>
               </div>
-            ))
+            ))}
           </div>
         </section>
 
