@@ -339,7 +339,7 @@ export default function InstagramPostDownloadPage() {
                                 <div>
                                   <span className="text-blue-600 font-medium">{t('download.result.totalSize')}：</span>
                                   <span className="text-blue-800">
-                                    {(result.downloads.reduce((acc, d) => acc + d.size, 0) / 1024 / 1024).toFixed(2)} MB
+                                    {(result.downloads.reduce((acc, d) => acc + (d.size || 0), 0) / 1024 / 1024).toFixed(2)} MB
                                   </span>
                                 </div>
                               </div>

@@ -8,8 +8,8 @@ export default function InstagramPrivateDownloadPage() {
   const t = useI18n();
 
   // 将features对象转换为数组
-  const featuresObj = t('downloadPages.private.features') as Record<string, string>;
-  const features = Object.values(featuresObj);
+  const featuresData = (t as any)('downloadPages.private.features');
+  const features = typeof featuresData === 'object' ? Object.values(featuresData) as string[] : ['Private Content', 'Authorized Access', 'Secure Download'];
 
   return (
     <SEOLayout contentType="private">

@@ -91,7 +91,7 @@ export default function InstagramStoriesDownloadPage() {
 
             {/* 特性标签 */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {Object.values(t('downloadPages.stories.features') as Record<string, string>).map((feature: string, index: number) => (
+              {(() => { const data = (t as any)('downloadPages.stories.features'); return typeof data === 'object' ? Object.values(data) as string[] : ['Anonymous Download', 'No View Records', '24-hour Content']; })().map((feature: string, index: number) => (
                 <span key={index} className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium">
                   {feature}
                 </span>
@@ -176,21 +176,21 @@ export default function InstagramStoriesDownloadPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-pink-500 mb-3"><EyeOff /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(t('downloadPages.stories.features') as Record<string, string>)['0']}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.stories.features'); return typeof data === 'object' ? data['0'] : 'Anonymous Download'; })()}</h3>
               <p className="text-gray-600 text-sm">
                 无需登录 Instagram 账号即可下载 Stories，保护您的隐私。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-pink-500 mb-3"><Eye className="opacity-50" /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(t('downloadPages.stories.features') as Record<string, string>)['1']}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.stories.features'); return typeof data === 'object' ? data['1'] : 'No View Records'; })()}</h3>
               <p className="text-gray-600 text-sm">
                 下载 Stories 不会留下任何浏览痕迹，对方无法知道您查看过。
               </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border">
               <div className="w-8 h-8 text-pink-500 mb-3"><Clock /></div>
-              <h3 className="font-semibold text-gray-900 mb-2">{(t('downloadPages.stories.features') as Record<string, string>)['2']}</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{(() => { const data = (t as any)('downloadPages.stories.features'); return typeof data === 'object' ? data['2'] : '24-hour Content'; })()}</h3>
               <p className="text-gray-600 text-sm">
                 自动获取最新的 Stories 内容，确保不错过任何更新。
               </p>

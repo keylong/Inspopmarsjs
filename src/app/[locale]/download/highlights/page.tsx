@@ -8,8 +8,8 @@ export default function InstagramHighlightsDownloadPage() {
   const t = useI18n();
 
   // 将features对象转换为数组
-  const featuresObj = t('downloadPages.highlights.features') as Record<string, string>;
-  const features = Object.values(featuresObj);
+  const featuresData = (t as any)('downloadPages.highlights.features');
+  const features = typeof featuresData === 'object' ? Object.values(featuresData) as string[] : ['Curated Content', 'Permanent Storage', 'Batch Processing'];
 
   return (
     <SEOLayout contentType="highlights">

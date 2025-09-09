@@ -29,7 +29,7 @@ export default function DownloadPage() {
       href: `/download/post`,
       gradient: 'from-blue-500 to-purple-500',
       bgGradient: 'from-blue-50 to-purple-50',
-      features: Object.values(t('downloadCenter.options.post.features') as Record<string, string>)
+      features: (() => { const data = (t as any)('downloadCenter.options.post.features'); return typeof data === 'object' ? Object.values(data) as string[] : ['HD Quality', 'No Watermark', 'Batch Download']; })()
     },
     {
       title: t('downloadCenter.options.stories.title'),
@@ -38,7 +38,7 @@ export default function DownloadPage() {
       href: `/download/stories`,
       gradient: 'from-pink-500 to-rose-500',
       bgGradient: 'from-pink-50 to-rose-50',
-      features: Object.values(t('downloadCenter.options.stories.features') as Record<string, string>)
+      features: (() => { const data = (t as any)('downloadCenter.options.stories.features'); return typeof data === 'object' ? Object.values(data) as string[] : ['Anonymous Download', 'No View Records', '24-hour Content']; })()
     },
     {
       title: t('downloadCenter.options.reels.title'),
@@ -47,7 +47,7 @@ export default function DownloadPage() {
       href: `/download/reels`,
       gradient: 'from-green-500 to-emerald-500',
       bgGradient: 'from-green-50 to-emerald-50',
-      features: Object.values(t('downloadCenter.options.reels.features') as Record<string, string>)
+      features: (() => { const data = (t as any)('downloadCenter.options.reels.features'); return typeof data === 'object' ? Object.values(data) as string[] : ['Short Videos', 'Original Quality', 'Fast Download']; })()
     },
     {
       title: t('downloadCenter.options.igtv.title'),
@@ -56,7 +56,7 @@ export default function DownloadPage() {
       href: `/download/igtv`,
       gradient: 'from-orange-500 to-red-500',
       bgGradient: 'from-orange-50 to-red-50',
-      features: Object.values(t('downloadCenter.options.igtv.features') as Record<string, string>)
+      features: (() => { const data = (t as any)('downloadCenter.options.igtv.features'); return typeof data === 'object' ? Object.values(data) as string[] : ['Long Videos', 'HD Format', 'Stable Download']; })()
     },
     {
       title: t('downloadCenter.options.highlights.title'),
@@ -65,7 +65,7 @@ export default function DownloadPage() {
       href: `/download/highlights`,
       gradient: 'from-purple-500 to-indigo-500',
       bgGradient: 'from-purple-50 to-indigo-50',
-      features: Object.values(t('downloadCenter.options.highlights.features') as Record<string, string>)
+      features: (() => { const data = (t as any)('downloadCenter.options.highlights.features'); return typeof data === 'object' ? Object.values(data) as string[] : ['Curated Content', 'Permanent Storage', 'Batch Processing']; })()
     },
     {
       title: t('downloadCenter.options.profile.title'),
@@ -74,7 +74,7 @@ export default function DownloadPage() {
       href: `/download/profile`,
       gradient: 'from-teal-500 to-cyan-500',
       bgGradient: 'from-teal-50 to-cyan-50',
-      features: Object.values(t('downloadCenter.options.profile.features') as Record<string, string>)
+      features: (() => { const data = (t as any)('downloadCenter.options.profile.features'); return typeof data === 'object' ? Object.values(data) as string[] : ['Avatar Download', 'Profile Pictures', 'Simple & Quick']; })()
     }
   ];
 

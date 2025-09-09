@@ -22,10 +22,9 @@ export default function SignUpPage() {
         </div>
 
         {/* Stack Auth 注册组件 */}
-        <SignUp 
-          // 自定义样式
-          className="w-full"
-        />
+        <div className="w-full">
+          <SignUp />
+        </div>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">

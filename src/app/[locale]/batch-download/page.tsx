@@ -8,8 +8,8 @@ export default function BatchDownloadPage() {
   const t = useI18n();
 
   // 将features对象转换为数组
-  const featuresObj = t('batchDownload.features') as Record<string, string>;
-  const features = Object.values(featuresObj);
+  const featuresData = (t as any)('batchDownload.features');
+  const features = typeof featuresData === 'object' ? Object.values(featuresData) as string[] : ['Batch Processing', 'Task Queue', 'Progress Tracking'];
 
   return (
     <SEOLayout contentType="batch">
