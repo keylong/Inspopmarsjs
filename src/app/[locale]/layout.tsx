@@ -5,7 +5,7 @@ import { I18nProviderClient } from '@/lib/i18n/client';
 import { locales, type Locale } from '@/lib/i18n/config';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
-import { SessionProvider } from '@/components/providers/session-provider';
+import { StackAuthProvider } from '@/components/providers/stack-provider';
 import { AnalyticsProvider } from '@/components/providers/analytics-provider';
 import { ErrorBoundary } from '@/components/providers/error-boundary';
 import { QueryProvider } from '@/components/providers/query-provider';
@@ -116,7 +116,7 @@ export default async function LocaleLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <WebVitalsReporter />
-        <SessionProvider>
+        <StackAuthProvider>
           <AnalyticsProvider>
             <ErrorBoundary>
               <QueryProvider>
@@ -128,7 +128,7 @@ export default async function LocaleLayout({
               </QueryProvider>
             </ErrorBoundary>
           </AnalyticsProvider>
-        </SessionProvider>
+        </StackAuthProvider>
       </body>
     </html>
   );

@@ -90,7 +90,7 @@ export default function InstagramReelsDownloadPage() {
             <div className="flex flex-wrap justify-center gap-2 mb-8">
               {[0, 1, 2, 3].map((index: number) => (
                 <span key={index} className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
-                  {t(`downloadPages.reels.features.${index}` as any)}
+                  {t('downloadPages.reels.features')[index]}
                 </span>
               ))}
             </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { locales, defaultLocale, getLocaleFromCountryCode, isValidLocale } from './lib/i18n/config';
+import { stackApp } from '@/lib/stack-auth';
 
 // 辅助函数：从路径中提取语言代码
 function getLocaleFromPathname(pathname: string): string | undefined {
@@ -40,13 +41,13 @@ function detectPreferredLocale(request: NextRequest): string {
   return geoLocale;
 }
 
-// 认证检查函数
+// 需要认证的路由
 function requiresAuth(pathname: string): boolean {
   const protectedRoutes = ['/profile', '/dashboard', '/settings'];
-  return protectedRoutes.some(route => pathname.startsWith(route));
+  return protectedRoutes.some(route => pathname.includes(route));
 }
 
-export default function middleware(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 跳过静态资源和API路由
@@ -85,13 +86,20 @@ export default function middleware(request: NextRequest) {
   // 移除语言代码后的实际路径
   const pathnameWithoutLocale = pathname.slice(`/${currentLocale}`.length) || '/';
 
-  // 检查认证要求
+  // 检查认证要求 - 使用 Stack Auth
   if (requiresAuth(pathnameWithoutLocale)) {
-    // TODO: 集成NextAuth.js认证检查
-    // 这里可以检查JWT token或session
-    const token = request.cookies.get('next-auth.session-token')?.value;
-    if (!token) {
-      // 重定向到登录页面，保持当前语言
+    try {
+      // Stack Auth 会自动从 cookies 中读取 session
+      const user = await stackApp.getUser({ req: request });
+      
+      if (!user) {
+        // 重定向到登录页面，保持当前语言
+        const loginUrl = new URL(`/${currentLocale}/auth/signin`, request.url);
+        loginUrl.searchParams.set('callbackUrl', request.url);
+        return NextResponse.redirect(loginUrl);
+      }
+    } catch (error) {
+      // 认证检查失败，重定向到登录页
       const loginUrl = new URL(`/${currentLocale}/auth/signin`, request.url);
       loginUrl.searchParams.set('callbackUrl', request.url);
       return NextResponse.redirect(loginUrl);
@@ -114,7 +122,7 @@ export const config = {
   matcher: [
     /*
      * 匹配所有路径，除了：
-     * - api/auth (NextAuth.js API routes)
+     * - api/auth (Stack Auth API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)

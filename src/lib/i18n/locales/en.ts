@@ -440,25 +440,25 @@ export default {
     title: 'About Instagram Downloader',
     features: {
       title: 'Features',
-      items: [
-        'Support downloading Instagram photos and videos',
-        'High quality media file downloads',
-        'Support batch downloads',
-        'Simple and easy-to-use interface',
-        'No need to login to Instagram account',
-        'Fast and secure download process'
-      ]
+      items: {
+        0: 'Support downloading Instagram photos and videos',
+        1: 'High quality media file downloads',
+        2: 'Support batch downloads',
+        3: 'Simple and easy-to-use interface',
+        4: 'No need to login to Instagram account',
+        5: 'Fast and secure download process'
+      }
     },
     contentTypes: {
       title: 'Supported Content Types',
-      items: [
-        'Single image posts',
-        'Video posts',
-        'Carousel photos/videos',
-        'Instagram Stories',
-        'Highlights',
-        'Profile pictures'
-      ]
+      items: {
+        0: 'Single image posts',
+        1: 'Video posts',
+        2: 'Carousel photos/videos',
+        3: 'Instagram Stories',
+        4: 'Highlights',
+        5: 'Profile pictures'
+      }
     },
     instructions: {
       title: 'Instructions',
@@ -623,7 +623,11 @@ export default {
       heading: 'Instagram Stories Downloader',
       subheading: 'Anonymous download of Instagram Stories photos and videos',
       inputPlaceholder: 'Enter Instagram username or Stories link...',
-      features: ['Anonymous Download', 'No View Records', '24-hour Content'],
+      features: {
+        0: 'Anonymous Download',
+        1: 'No View Records',
+        2: '24-hour Content'
+      },
       howToUse: 'How to Download Instagram Stories?',
       steps: {
         step1: 'Enter username or copy Stories link',
@@ -638,7 +642,12 @@ export default {
       heading: 'Instagram Photo/Video Download',
       subheading: 'High quality download of Instagram post content, supports single images, carousels and videos',
       inputPlaceholder: 'Paste Instagram post link...',
-      features: ['HD Quality', 'No Watermark', 'Batch Download', 'Carousel Support'],
+      features: {
+        0: 'HD Quality',
+        1: 'No Watermark',
+        2: 'Batch Download',
+        3: 'Carousel Support'
+      },
       howToUse: 'How to Download Instagram Posts?'
     },
     reels: {
@@ -647,7 +656,12 @@ export default {
       heading: 'Instagram Reels Download',
       subheading: 'Download Instagram Reels short videos while maintaining original quality',
       inputPlaceholder: 'Paste Instagram Reels link...',
-      features: ['Short Videos', 'Original Quality', 'Fast Download', 'MP4 Format'],
+      features: {
+        0: 'Short Videos',
+        1: 'Original Quality',
+        2: 'Fast Download',
+        3: 'MP4 Format'
+      },
       howToUse: 'How to Download Instagram Reels?'
     },
     igtv: {
@@ -670,7 +684,12 @@ export default {
       heading: 'Highlights Download',
       subheading: 'Download user curated highlights content for permanent storage',
       inputPlaceholder: 'Enter Instagram username...',
-      features: ['Curated Content', 'Permanent Storage', 'Batch Processing', 'Category Download'],
+      features: {
+        0: 'Curated Content',
+        1: 'Permanent Storage',
+        2: 'Batch Processing',
+        3: 'Category Download'
+      },
       howToUse: 'How to Download Instagram Highlights?'
     },
     profile: {
@@ -679,7 +698,12 @@ export default {
       heading: 'User Avatar Download',
       subheading: 'Download user avatars, profile pictures and other content',
       inputPlaceholder: 'Enter Instagram username...',
-      features: ['Avatar Download', 'Profile Pictures', 'Simple & Quick', 'HD Quality'],
+      features: {
+        0: 'Avatar Download',
+        1: 'Profile Pictures',
+        2: 'Simple & Quick',
+        3: 'HD Quality'
+      },
       howToUse: 'How to Download User Profiles?'
     },
     private: {
@@ -688,7 +712,12 @@ export default {
       heading: 'Private Content Download',
       subheading: 'Download private account content (authorization required)',
       inputPlaceholder: 'Login authorization required for private content download...',
-      features: ['Private Content', 'Authorized Access', 'Secure Download', 'User Privacy'],
+      features: {
+        0: 'Private Content',
+        1: 'Authorized Access',
+        2: 'Secure Download',
+        3: 'User Privacy'
+      },
       howToUse: 'How to Download Private Content?'
     }
   },
@@ -805,7 +834,11 @@ export default {
     pageDescription: 'Efficiently process multiple Instagram links for batch downloading',
     placeholder: 'Add multiple Instagram links for batch download...',
     optimizedFor: 'Batch Download',
-    features: ['Batch Processing', 'Task Queue', 'Progress Tracking'],
+    features: {
+      0: 'Batch Processing',
+      1: 'Task Queue',
+      2: 'Progress Tracking'
+    },
     title: 'Batch Download',
     description: 'Download multiple Instagram content at once',
     heading: 'Batch Download Tool',

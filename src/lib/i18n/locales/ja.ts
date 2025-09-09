@@ -623,7 +623,11 @@ export default {
       heading: 'Instagram ストーリーダウンローダー',
       subheading: 'Instagram ストーリーの写真と動画を匿名でダウンロード',
       inputPlaceholder: 'Instagram ユーザー名またはストーリーリンクを入力...',
-      features: ['匿名ダウンロード', '閲覧記録なし', '24時間コンテンツ'],
+      features: {
+        0: '匿名ダウンロード',
+        1: '閲覧記録なし',
+        2: '24時間コンテンツ'
+      },
       howToUse: 'Instagram ストーリーのダウンロード方法',
       steps: {
         step1: 'ユーザー名を入力またはストーリーリンクをコピー',
@@ -638,7 +642,12 @@ export default {
       heading: 'Instagram 写真・動画ダウンロード',
       subheading: 'Instagram 投稿コンテンツを高品質でダウンロード、単一画像、カルーセル、動画対応',
       inputPlaceholder: 'Instagram 投稿リンクを貼り付け...',
-      features: ['HD 品質', '透かしなし', '一括ダウンロード', 'カルーセル対応'],
+      features: {
+        0: 'HD 品質',
+        1: '透かしなし',
+        2: '一括ダウンロード',
+        3: 'カルーセル対応'
+      },
       howToUse: 'Instagram 投稿のダウンロード方法'
     },
     reels: {
@@ -647,7 +656,12 @@ export default {
       heading: 'Instagram リールダウンロード',
       subheading: 'オリジナル品質を保持して Instagram リール短動画をダウンロード',
       inputPlaceholder: 'Instagram リールリンクを貼り付け...',
-      features: ['短動画', 'オリジナル品質', '高速ダウンロード', 'MP4 形式'],
+      features: {
+        0: '短動画',
+        1: 'オリジナル品質',
+        2: '高速ダウンロード',
+        3: 'MP4 形式'
+      },
       howToUse: 'Instagram リールのダウンロード方法'
     },
     igtv: {
@@ -656,7 +670,12 @@ export default {
       heading: 'IGTV 動画ダウンロード',
       subheading: 'HD 形式対応で IGTV 長動画コンテンツをダウンロード',
       inputPlaceholder: 'IGTV 動画リンクを貼り付け...',
-      features: ['長動画', 'HD 形式', '安定ダウンロード', '大容量ファイル対応'],
+      features: {
+        0: '長動画',
+        1: 'HD 形式',
+        2: '安定ダウンロード',
+        3: '大容量ファイル対応'
+      },
       howToUse: 'IGTV 動画のダウンロード方法'
     },
     highlights: {
@@ -665,7 +684,12 @@ export default {
       heading: 'ハイライトダウンロード',
       subheading: 'ユーザー厳選ハイライトコンテンツを永続保存用にダウンロード',
       inputPlaceholder: 'Instagram ユーザー名を入力...',
-      features: ['厳選コンテンツ', '永続保存', '一括処理', 'カテゴリ別ダウンロード'],
+      features: {
+        0: '厳選コンテンツ',
+        1: '永続保存',
+        2: '一括処理',
+        3: 'カテゴリ別ダウンロード'
+      },
       howToUse: 'Instagram ハイライトのダウンロード方法'
     },
     profile: {
@@ -674,7 +698,12 @@ export default {
       heading: 'ユーザーアバターダウンロード',
       subheading: 'ユーザーアバター、プロフィール写真その他コンテンツをダウンロード',
       inputPlaceholder: 'Instagram ユーザー名を入力...',
-      features: ['アバターダウンロード', 'プロフィール写真', 'シンプル & 高速', 'HD 品質'],
+      features: {
+        0: 'アバターダウンロード',
+        1: 'プロフィール写真',
+        2: 'シンプル & 高速',
+        3: 'HD 品質'
+      },
       howToUse: 'ユーザープロフィールのダウンロード方法'
     },
     private: {
@@ -683,7 +712,12 @@ export default {
       heading: '非公開コンテンツダウンロード',
       subheading: '非公開アカウントコンテンツのダウンロード（認証が必要）',
       inputPlaceholder: '非公開コンテンツダウンロードにはログイン認証が必要...',
-      features: ['非公開コンテンツ', '認証アクセス', 'セキュアダウンロード', 'ユーザープライバシー'],
+      features: {
+        0: '非公開コンテンツ',
+        1: '認証アクセス',
+        2: 'セキュアダウンロード',
+        3: 'ユーザープライバシー'
+      },
       howToUse: '非公開コンテンツのダウンロード方法'
     }
   },
@@ -755,7 +789,11 @@ export default {
     pageDescription: '複数の Instagram リンクを効率的に処理して一括ダウンロード',
     placeholder: '一括ダウンロード用に複数の Instagram リンクを追加...',
     optimizedFor: '一括ダウンロード',
-    features: ['一括処理', 'タスクキュー', '進行状況追跡'],
+    features: {
+        0: '一括処理',
+        1: 'タスクキュー',
+        2: '進行状況追跡'
+      },
     title: '一括ダウンロード',
     description: '複数の Instagram コンテンツを一度にダウンロード',
     heading: '一括ダウンロードツール',

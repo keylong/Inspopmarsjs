@@ -91,9 +91,9 @@ export default function InstagramStoriesDownloadPage() {
 
             {/* 特性标签 */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {t('downloadPages.stories.features').map((feature: string, index: number) => (
+              {[0, 1, 2].map((index: number) => (
                 <span key={index} className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium">
-                  {feature}
+                  {t('downloadPages.stories.features')[index]}
                 </span>
               ))}
             </div>

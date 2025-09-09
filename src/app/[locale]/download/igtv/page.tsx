@@ -90,7 +90,7 @@ export default function IGTVDownloadPage() {
             <div className="flex flex-wrap justify-center gap-2 mb-8">
               {[0, 1, 2, 3].map((index: number) => (
                 <span key={index} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                  {t(`downloadPages.igtv.features.${index}` as any)}
+                  {t('downloadPages.igtv.features')[index]}
                 </span>
               ))}
             </div>

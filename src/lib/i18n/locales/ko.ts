@@ -623,7 +623,11 @@ export default {
       heading: 'Instagram 스토리 다운로더',
       subheading: 'Instagram 스토리 사진과 동영상을 익명으로 다운로드',
       inputPlaceholder: 'Instagram 사용자명 또는 스토리 링크를 입력하세요...',
-      features: ['익명 다운로드', '조회 기록 없음', '24시간 콘텐츠'],
+      features: {
+        0: '익명 다운로드',
+        1: '조회 기록 없음',
+        2: '24시간 콘텐츠'
+      },
       howToUse: 'Instagram 스토리 다운로드 방법',
       steps: {
         step1: '사용자명을 입력하거나 스토리 링크를 복사하세요',
@@ -638,7 +642,12 @@ export default {
       heading: 'Instagram 사진/동영상 다운로드',
       subheading: 'Instagram 게시물 콘텐츠를 고품질로 다운로드, 단일 이미지, 캐러셀, 동영상 지원',
       inputPlaceholder: 'Instagram 게시물 링크를 붙여넣으세요...',
-      features: ['HD 품질', '워터마크 없음', '일괄 다운로드', '캐러셀 지원'],
+      features: {
+        0: 'HD 품질',
+        1: '워터마크 없음',
+        2: '일괄 다운로드',
+        3: '캐러셀 지원'
+      },
       howToUse: 'Instagram 게시물 다운로드 방법'
     },
     reels: {
@@ -647,7 +656,12 @@ export default {
       heading: 'Instagram 릴스 다운로드',
       subheading: '원본 품질을 유지하면서 Instagram 릴스 짧은 동영상을 다운로드',
       inputPlaceholder: 'Instagram 릴스 링크를 붙여넣으세요...',
-      features: ['짧은 동영상', '원본 품질', '빠른 다운로드', 'MP4 형식'],
+      features: {
+        0: '짧은 동영상',
+        1: '원본 품질',
+        2: '빠른 다운로드',
+        3: 'MP4 형식'
+      },
       howToUse: 'Instagram 릴스 다운로드 방법'
     },
     igtv: {
@@ -656,7 +670,12 @@ export default {
       heading: 'IGTV 동영상 다운로드',
       subheading: 'HD 형식을 지원하는 IGTV 긴 동영상 콘텐츠 다운로드',
       inputPlaceholder: 'IGTV 동영상 링크를 붙여넣으세요...',
-      features: ['긴 동영상', 'HD 형식', '안정적 다운로드', '대용량 파일 지원'],
+      features: {
+        0: '긴 동영상',
+        1: 'HD 형식',
+        2: '안정적 다운로드',
+        3: '대용량 파일 지원'
+      },
       howToUse: 'IGTV 동영상 다운로드 방법'
     },
     highlights: {
@@ -665,7 +684,12 @@ export default {
       heading: '하이라이트 다운로드',
       subheading: '사용자 선별 하이라이트 콘텐츠를 영구 보관용으로 다운로드',
       inputPlaceholder: 'Instagram 사용자명을 입력하세요...',
-      features: ['선별된 콘텐츠', '영구 보관', '일괄 처리', '카테고리별 다운로드'],
+      features: {
+        0: '선별된 콘텐츠',
+        1: '영구 보관',
+        2: '일괄 처리',
+        3: '카테고리별 다운로드'
+      },
       howToUse: 'Instagram 하이라이트 다운로드 방법'
     },
     profile: {
@@ -674,7 +698,12 @@ export default {
       heading: '사용자 아바타 다운로드',
       subheading: '사용자 아바타, 프로필 사진 및 기타 콘텐츠 다운로드',
       inputPlaceholder: 'Instagram 사용자명을 입력하세요...',
-      features: ['아바타 다운로드', '프로필 사진', '간단하고 빠름', 'HD 품질'],
+      features: {
+        0: '아바타 다운로드',
+        1: '프로필 사진',
+        2: '간단하고 빠름',
+        3: 'HD 품질'
+      },
       howToUse: '사용자 프로필 다운로드 방법'
     },
     private: {
@@ -683,7 +712,12 @@ export default {
       heading: '비공개 콘텐츠 다운로드',
       subheading: '비공개 계정 콘텐츠 다운로드 (인증 필요)',
       inputPlaceholder: '비공개 콘텐츠 다운로드를 위해 로그인 인증이 필요합니다...',
-      features: ['비공개 콘텐츠', '인증된 접근', '보안 다운로드', '사용자 개인정보'],
+      features: {
+        0: '비공개 콘텐츠',
+        1: '인증된 접근',
+        2: '보안 다운로드',
+        3: '사용자 개인정보'
+      },
       howToUse: '비공개 콘텐츠 다운로드 방법'
     }
   },
@@ -755,7 +789,11 @@ export default {
     pageDescription: '여러 Instagram 링크를 효율적으로 처리하여 일괄 다운로드',
     placeholder: '일괄 다운로드를 위해 여러 Instagram 링크를 추가하세요...',
     optimizedFor: '일괄 다운로드',
-    features: ['일괄 처리', '작업 대기열', '진행 상황 추적'],
+    features: {
+        0: '일괄 처리',
+        1: '작업 대기열',
+        2: '진행 상황 추적'
+      },
     title: '일괄 다운로드',
     description: '여러 Instagram 콘텐츠를 한 번에 다운로드',
     heading: '일괄 다운로드 도구',

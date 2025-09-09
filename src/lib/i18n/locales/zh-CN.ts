@@ -623,7 +623,11 @@ export default {
       heading: 'Instagram Stories 下载器',
       subheading: '匿名下载 Instagram Stories 图片和视频',
       inputPlaceholder: '输入Instagram用户名或Stories链接...',
-      features: ['匿名下载', '无浏览记录', '24小时内容'],
+      features: {
+        0: '匿名下载',
+        1: '无浏览记录',
+        2: '24小时内容'
+      },
       howToUse: '如何下载 Instagram Stories？',
       steps: {
         step1: '输入用户名或复制Stories链接',
@@ -638,7 +642,12 @@ export default {
       heading: 'Instagram 图片/视频下载',
       subheading: '高清下载 Instagram 帖子内容，支持单图、轮播和视频',
       inputPlaceholder: '粘贴Instagram帖子链接...',
-      features: ['高清质量', '无水印', '批量下载', '支持轮播'],
+      features: {
+        0: '高清质量',
+        1: '无水印',
+        2: '批量下载',
+        3: '支持轮播'
+      },
       howToUse: '如何下载 Instagram 帖子？'
     },
     reels: {
@@ -647,7 +656,12 @@ export default {
       heading: 'Instagram Reels 下载',
       subheading: '下载 Instagram Reels 短视频，保持原始画质',
       inputPlaceholder: '粘贴Instagram Reels链接...',
-      features: ['短视频', '原始质量', '快速下载', 'MP4格式'],
+      features: {
+        0: '短视频',
+        1: '原始质量',
+        2: '快速下载',
+        3: 'MP4格式'
+      },
       howToUse: '如何下载 Instagram Reels？'
     },
     igtv: {
@@ -670,7 +684,12 @@ export default {
       heading: 'Highlights 精选下载',
       subheading: '下载用户精选集锦内容，永久保存',
       inputPlaceholder: '输入Instagram用户名...',
-      features: ['精选内容', '永久保存', '批量处理', '分类下载'],
+      features: {
+        0: '精选内容',
+        1: '永久保存',
+        2: '批量处理',
+        3: '分类下载'
+      },
       howToUse: '如何下载 Instagram Highlights？'
     },
     profile: {
@@ -679,7 +698,12 @@ export default {
       heading: '用户头像下载',
       subheading: '下载用户头像、个人资料图片等内容',
       inputPlaceholder: '输入Instagram用户名...',
-      features: ['头像下载', '资料图片', '简单快捷', '高清质量'],
+      features: {
+        0: '头像下载',
+        1: '资料图片',
+        2: '简单快捷',
+        3: '高清质量'
+      },
       howToUse: '如何下载用户资料？'
     },
     private: {
@@ -688,7 +712,12 @@ export default {
       heading: '私密内容下载',
       subheading: '下载私密账户的内容（需要授权）',
       inputPlaceholder: '需要登录授权后下载私密内容...',
-      features: ['私密内容', '授权访问', '安全下载', '用户隐私'],
+      features: {
+        0: '私密内容',
+        1: '授权访问',
+        2: '安全下载',
+        3: '用户隐私'
+      },
       howToUse: '如何下载私密内容？'
     }
   },
@@ -805,7 +834,11 @@ export default {
     pageDescription: '高效处理多个Instagram链接，一次性完成批量下载',
     placeholder: '添加多个Instagram链接进行批量下载...',
     optimizedFor: '批量下载',
-    features: ['批量处理', '任务队列', '进度跟踪'],
+    features: {
+        0: '批量处理',
+        1: '任务队列',
+        2: '进度跟踪'
+      },
     title: '批量下载',
     description: '一次下载多个Instagram内容',
     heading: '批量下载工具',

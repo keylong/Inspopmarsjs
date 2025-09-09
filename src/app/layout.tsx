@@ -11,6 +11,11 @@ export default function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  // 根布局只返回 children，html/body 标签由 [locale]/layout.tsx 处理
-  return children;
+  return (
+    <html>
+      <body>
+        {children}
+      </body>
+    </html>
+  );
 }

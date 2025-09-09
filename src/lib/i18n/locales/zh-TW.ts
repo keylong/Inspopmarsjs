@@ -623,7 +623,11 @@ export default {
       heading: 'Instagram Stories 下載器',
       subheading: '匿名下載 Instagram Stories 圖片和影片',
       inputPlaceholder: '輸入 Instagram 用戶名或 Stories 連結...',
-      features: ['匿名下載', '無觀看記錄', '24小時內容'],
+      features: {
+        0: '匿名下載',
+        1: '無觀看記錄',
+        2: '24小時內容'
+      },
       howToUse: '如何下載 Instagram Stories',
       steps: {
         step1: '輸入用戶名或複製 Stories 連結',
@@ -638,7 +642,12 @@ export default {
       heading: 'Instagram 圖片/影片下載',
       subheading: '高品質下載 Instagram 貼文內容，支援單張圖片、輪播和影片',
       inputPlaceholder: '貼上 Instagram 貼文連結...',
-      features: ['高清品質', '無浮水印', '批量下載', '輪播支援'],
+      features: {
+        0: '高清品質',
+        1: '無浮水印',
+        2: '批量下載',
+        3: '輪播支援'
+      },
       howToUse: '如何下載 Instagram 貼文'
     },
     reels: {
@@ -647,7 +656,12 @@ export default {
       heading: 'Instagram Reels 下載',
       subheading: '保持原始品質下載 Instagram Reels 短影片',
       inputPlaceholder: '貼上 Instagram Reels 連結...',
-      features: ['短影片', '原始品質', '快速下載', 'MP4格式'],
+      features: {
+        0: '短影片',
+        1: '原始品質',
+        2: '快速下載',
+        3: 'MP4格式'
+      },
       howToUse: '如何下載 Instagram Reels'
     },
     igtv: {
@@ -656,7 +670,12 @@ export default {
       heading: 'IGTV 影片下載',
       subheading: '支援高清格式的 IGTV 長影片內容下載',
       inputPlaceholder: '貼上 IGTV 影片連結...',
-      features: ['長影片', '高清格式', '穩定下載', '大檔案支援'],
+      features: {
+        0: '長影片',
+        1: '高清格式',
+        2: '穩定下載',
+        3: '大檔案支援'
+      },
       howToUse: '如何下載 IGTV 影片'
     },
     highlights: {
@@ -665,7 +684,12 @@ export default {
       heading: 'Highlights 下載',
       subheading: '下載用戶精選 Highlights 內容供永久保存',
       inputPlaceholder: '輸入 Instagram 用戶名...',
-      features: ['精選內容', '永久保存', '批量處理', '分類下載'],
+      features: {
+        0: '精選內容',
+        1: '永久保存',
+        2: '批量處理',
+        3: '分類下載'
+      },
       howToUse: '如何下載 Instagram Highlights'
     },
     profile: {
@@ -674,7 +698,12 @@ export default {
       heading: '用戶頭像下載',
       subheading: '下載用戶頭像、個人檔案圖片和其他內容',
       inputPlaceholder: '輸入 Instagram 用戶名...',
-      features: ['頭像下載', '個人檔案圖片', '簡單快速', '高清品質'],
+      features: {
+        0: '頭像下載',
+        1: '個人檔案圖片',
+        2: '簡單快速',
+        3: '高清品質'
+      },
       howToUse: '如何下載用戶個人檔案'
     },
     private: {
@@ -683,7 +712,12 @@ export default {
       heading: '私人內容下載',
       subheading: '下載私人帳戶內容（需要授權）',
       inputPlaceholder: '私人內容下載需要登入授權...',
-      features: ['私人內容', '授權存取', '安全下載', '用戶隱私'],
+      features: {
+        0: '私人內容',
+        1: '授權存取',
+        2: '安全下載',
+        3: '用戶隱私'
+      },
       howToUse: '如何下載私人內容'
     }
   },
@@ -755,7 +789,11 @@ export default {
     pageDescription: '高效處理多個 Instagram 連結進行批量下載',
     placeholder: '添加多個 Instagram 連結進行批量下載...',
     optimizedFor: '批量下載',
-    features: ['批量處理', '任務佇列', '進度追蹤'],
+    features: {
+        0: '批量處理',
+        1: '任務佇列',
+        2: '進度追蹤'
+      },
     title: '批量下載',
     description: '一次下載多個 Instagram 內容',
     heading: '批量下載工具',

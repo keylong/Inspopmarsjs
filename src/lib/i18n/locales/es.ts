@@ -623,7 +623,11 @@ export default {
       heading: 'Descargador de Instagram Stories',
       subheading: 'Descarga anónima de fotos y videos de Instagram Stories',
       inputPlaceholder: 'Ingresa nombre de usuario de Instagram o enlace de Stories...',
-      features: ['Descarga Anónima', 'Sin Registros de Vista', 'Contenido de 24 Horas'],
+      features: {
+        0: 'Descarga Anónima',
+        1: 'Sin Registros de Vista',
+        2: 'Contenido de 24 Horas'
+      },
       howToUse: '¿Cómo Descargar Instagram Stories?',
       steps: {
         step1: 'Ingresa nombre de usuario o copia enlace de Stories',
@@ -638,7 +642,12 @@ export default {
       heading: 'Descarga de Fotos/Videos de Instagram',
       subheading: 'Descarga de alta calidad del contenido de publicaciones de Instagram, soporta imágenes individuales, carruseles y videos',
       inputPlaceholder: 'Pega enlace de publicación de Instagram...',
-      features: ['Calidad HD', 'Sin Marca de Agua', 'Descarga en Lote', 'Soporte de Carrusel'],
+      features: {
+        0: 'Calidad HD',
+        1: 'Sin Marca de Agua',
+        2: 'Descarga en Lote',
+        3: 'Soporte de Carrusel'
+      },
       howToUse: '¿Cómo Descargar Publicaciones de Instagram?'
     },
     reels: {
@@ -647,7 +656,12 @@ export default {
       heading: 'Descarga de Instagram Reels',
       subheading: 'Descarga videos cortos de Instagram Reels manteniendo la calidad original',
       inputPlaceholder: 'Pega enlace de Instagram Reels...',
-      features: ['Videos Cortos', 'Calidad Original', 'Descarga Rápida', 'Formato MP4'],
+      features: {
+        0: 'Videos Cortos',
+        1: 'Calidad Original',
+        2: 'Descarga Rápida',
+        3: 'Formato MP4'
+      },
       howToUse: '¿Cómo Descargar Instagram Reels?'
     },
     igtv: {
@@ -656,7 +670,12 @@ export default {
       heading: 'Descarga de Videos IGTV',
       subheading: 'Descarga contenido de video largo de IGTV con soporte de formato HD',
       inputPlaceholder: 'Pega enlace de video IGTV...',
-      features: ['Videos Largos', 'Formato HD', 'Descarga Estable', 'Soporte de Archivos Grandes'],
+      features: {
+        0: 'Videos Largos',
+        1: 'Formato HD',
+        2: 'Descarga Estable',
+        3: 'Soporte de Archivos Grandes'
+      },
       howToUse: '¿Cómo Descargar Videos IGTV?'
     },
     highlights: {
@@ -665,7 +684,12 @@ export default {
       heading: 'Descarga de Highlights',
       subheading: 'Descarga contenido destacado del usuario para almacenamiento permanente',
       inputPlaceholder: 'Ingresa nombre de usuario de Instagram...',
-      features: ['Contenido Seleccionado', 'Almacenamiento Permanente', 'Procesamiento en Lote', 'Descarga por Categoría'],
+      features: {
+        0: 'Contenido Seleccionado',
+        1: 'Almacenamiento Permanente',
+        2: 'Procesamiento en Lote',
+        3: 'Descarga por Categoría'
+      },
       howToUse: '¿Cómo Descargar Instagram Highlights?'
     },
     profile: {
@@ -674,7 +698,12 @@ export default {
       heading: 'Descarga de Avatar de Usuario',
       subheading: 'Descarga avatares de usuario, fotos de perfil y otro contenido',
       inputPlaceholder: 'Ingresa nombre de usuario de Instagram...',
-      features: ['Descarga de Avatar', 'Fotos de Perfil', 'Rápido y Sencillo', 'Calidad HD'],
+      features: {
+        0: 'Descarga de Avatar',
+        1: 'Fotos de Perfil',
+        2: 'Rápido y Sencillo',
+        3: 'Calidad HD'
+      },
       howToUse: '¿Cómo Descargar Perfiles de Usuario?'
     },
     private: {
@@ -683,7 +712,12 @@ export default {
       heading: 'Descarga de Contenido Privado',
       subheading: 'Descargar contenido de cuenta privada (se requiere autorización)',
       inputPlaceholder: 'Se requiere autorización de inicio de sesión para descarga de contenido privado...',
-      features: ['Contenido Privado', 'Acceso Autorizado', 'Descarga Segura', 'Privacidad del Usuario'],
+      features: {
+        0: 'Contenido Privado',
+        1: 'Acceso Autorizado',
+        2: 'Descarga Segura',
+        3: 'Privacidad del Usuario'
+      },
       howToUse: '¿Cómo Descargar Contenido Privado?'
     }
   },
@@ -755,7 +789,11 @@ export default {
     pageDescription: 'Procesa eficientemente múltiples enlaces de Instagram para descarga en lote',
     placeholder: 'Agregar múltiples enlaces de Instagram para descarga en lote...',
     optimizedFor: 'Descarga en Lote',
-    features: ['Procesamiento en Lote', 'Cola de Tareas', 'Seguimiento de Progreso'],
+    features: {
+        0: 'Procesamiento en Lote',
+        1: 'Cola de Tareas',
+        2: 'Seguimiento de Progreso'
+      },
     title: 'Descarga en Lote',
     description: 'Descargar múltiple contenido de Instagram de una vez',
     heading: 'Herramienta de Descarga en Lote',
