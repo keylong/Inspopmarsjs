@@ -165,13 +165,13 @@ export default function SubscriptionPage() {
                 </div>
                 <p className="font-medium">
                   {usage?.downloadLimit === -1 
-                    ? `${usage.downloadCount} ${t('subscription.times')}（${t('subscription.unlimited')}）`
-                    : `${usage.downloadCount} / ${usage.downloadLimit} ${t('subscription.times')}`
+                    ? `${usage?.downloadCount} ${t('subscription.times')}（${t('subscription.unlimited')}）`
+                    : `${usage?.downloadCount} / ${usage?.downloadLimit} ${t('subscription.times')}`
                   }
                 </p>
                 {usage?.downloadLimit !== -1 && (
                   <Progress 
-                    value={(usage.downloadCount / usage.downloadLimit) * 100} 
+                    value={(usage?.downloadCount || 0) / (usage?.downloadLimit || 1) * 100} 
                     className="h-2"
                   />
                 )}
