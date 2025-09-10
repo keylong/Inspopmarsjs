@@ -49,13 +49,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
         name: supabaseUser.user_metadata?.name
       })
 
-      // 检查是否是OAuth用户（Google登录）
-      const isOAuthUser = supabaseUser.app_metadata?.providers?.includes('google')
-      console.log('是否是OAuth用户:', isOAuthUser)
+      // 检查是否是OAuth用户（Google、Apple等）
+      const providers = supabaseUser.app_metadata?.providers || []
+      const isGoogleUser = providers.includes('google')
+      const isAppleUser = providers.includes('apple')
+      const isOAuthUser = isGoogleUser || isAppleUser
+      
+      console.log('OAuth检查:', { providers, isGoogleUser, isAppleUser, isOAuthUser })
 
       if (isOAuthUser) {
         try {
           console.log('开始为OAuth用户创建业务用户记录...')
+          
+          // 确定提供商
+          const provider = isGoogleUser ? 'Google' : isAppleUser ? 'Apple' : 'Unknown'
           
           // 调用API创建或更新用户
           const response = await fetch('/api/sync-google-user', {
@@ -68,13 +75,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
               email: supabaseUser.email,
               name: supabaseUser.user_metadata?.name || supabaseUser.user_metadata?.full_name,
               image: supabaseUser.user_metadata?.avatar_url,
+              provider: provider,
             })
           })
 
           const result = await response.json()
           console.log('用户同步结果:', result)
         } catch (error) {
-          console.error('同步Google用户失败:', error)
+          console.error('同步OAuth用户失败:', error)
         }
       }
 
