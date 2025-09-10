@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { updateUser } from '@/lib/db'
+import { getCurrentUser } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 export async function PUT(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getCurrentUser()
     
-    if (!session?.user?.id) {
+    if (!user?.id) {
       return NextResponse.json(
         { error: '未授权访问' },
         { status: 401 }
@@ -32,8 +31,9 @@ export async function PUT(req: NextRequest) {
     }
 
     // 更新用户信息
-    const updatedUser = await updateUser(session.user.id, {
-      name: name.trim(),
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { name: name.trim() }
     })
 
     if (!updatedUser) {
@@ -48,11 +48,7 @@ export async function PUT(req: NextRequest) {
       id: updatedUser.id,
       email: updatedUser.email,
       name: updatedUser.name,
-      avatar: updatedUser.avatar,
-      provider: updatedUser.provider,
-      providerId: updatedUser.providerId,
-      createdAt: updatedUser.createdAt,
-      updatedAt: updatedUser.updatedAt,
+      image: updatedUser.image,
     }
     return NextResponse.json(
       { 

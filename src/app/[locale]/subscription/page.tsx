@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useUser } from '@stackframe/stack'
+import { useEffect as useUserEffect, useState as useUserState } from 'react'
+import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -23,12 +24,21 @@ interface SubscriptionData {
 
 export default function SubscriptionPage() {
   const t = useI18n()
-  const user = useUser() // 不强制重定向，允许未登录用户查看
+  const [user, setUser] = useUserState<any>(null)
   const router = useRouter()
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null)
   const [plans, setPlans] = useState<SubscriptionPlan[]>([])
   const [loading, setLoading] = useState(true)
   const [upgrading, setUpgrading] = useState(false)
+
+  // 获取当前用户
+  useUserEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    getCurrentUser()
+  }, [])
 
   useEffect(() => {
     // 始终获取套餐信息（对所有用户可见）

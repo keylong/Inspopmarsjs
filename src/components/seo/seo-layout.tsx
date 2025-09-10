@@ -89,7 +89,7 @@ export function SEOLayout({ contentType, children, locale = 'zh' }: SEOLayoutPro
             transition={{ duration: 0.6, delay: 0.2 }}
             className="max-w-2xl mx-auto mb-16"
           >
-            {children || <DownloadForm />}
+            {children}
           </motion.section>
 
           {/* 使用步骤 */}

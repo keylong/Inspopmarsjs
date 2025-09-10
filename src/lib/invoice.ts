@@ -3,7 +3,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import { Invoice, PaymentOrder } from '@/types/payment'
 import { getPaymentOrderById } from './payment-db'
-import { getUserById } from './db'
+import { getUserById } from '@/lib/auth'
 import { getSubscriptionPlanById } from './payment-db'
 
 // 发票数据存储路径

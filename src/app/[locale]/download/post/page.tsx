@@ -71,7 +71,7 @@ export default function InstagramPostDownloadPage() {
 
   // 检查URL参数并自动填充和提交
   useEffect(() => {
-    const urlParam = searchParams.get('url');
+    const urlParam = searchParams?.get('url');
     if (urlParam && !autoSubmitted) {
       setUrl(urlParam);
       setAutoSubmitted(true);

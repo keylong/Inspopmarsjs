@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -32,10 +32,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { useInstagramDownloader } from '@/lib/hooks/use-download';
 import { DownloadFormData, URLValidationResult } from '@/types/instagram';
-import { useI18n } from '@/lib/i18n/client';
 
-// 创建表单验证 Schema 函数（支持i18n）
-const createDownloadFormSchema = (t: any) => z.object({
+// 创建表单验证 Schema（使用固定消息）
+const downloadFormSchema = z.object({
   url: z
     .string()
     .min(1, '请输入 Instagram 链接')
@@ -76,9 +75,12 @@ export function DownloadForm({
 }: DownloadFormProps) {
   const [validation, setValidation] = useState<URLValidationResult | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const t = useI18n();
+  const [isClient, setIsClient] = useState(false);
   
-  const downloadFormSchema = createDownloadFormSchema(t);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
   type FormData = z.infer<typeof downloadFormSchema>;
   
   const {

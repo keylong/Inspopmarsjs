@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getCurrentUser } from '@/lib/auth'
 import { getUserInvoices } from '@/lib/invoice'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getCurrentUser()
     
-    if (!session?.user?.id) {
+    if (!user?.id) {
       return NextResponse.json(
         { success: false, error: '请先登录' },
         { status: 401 }
       )
     }
 
-    const invoices = await getUserInvoices(session.user.id)
+    const invoices = await getUserInvoices(user.id)
     
     return NextResponse.json({
       success: true,

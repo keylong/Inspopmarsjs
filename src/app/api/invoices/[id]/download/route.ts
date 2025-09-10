@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getCurrentUser } from '@/lib/auth'
 import { getInvoiceById, getInvoicePDFPath } from '@/lib/invoice'
 import fs from 'fs/promises'
 
@@ -9,9 +8,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getCurrentUser()
     
-    if (!session?.user?.id) {
+    if (!user?.id) {
       return NextResponse.json(
         { success: false, error: '请先登录' },
         { status: 401 }
@@ -28,7 +27,7 @@ export async function GET(
     }
 
     // 验证发票所有者
-    if (invoice.userId !== session.user.id) {
+    if (invoice.userId !== user.id) {
       return NextResponse.json(
         { success: false, error: '无权访问此发票' },
         { status: 403 }

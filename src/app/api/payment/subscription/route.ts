@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getCurrentUser } from '@/lib/auth'
 import { getUserSubscription, getSubscriptionPlanById } from '@/lib/payment-db'
 import { GetSubscriptionResponse } from '@/types/payment'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getCurrentUser()
     
-    if (!session?.user?.id) {
+    if (!user?.id) {
       const response: GetSubscriptionResponse = {
         success: false,
         error: '请先登录',
@@ -16,7 +15,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(response, { status: 401 })
     }
 
-    const subscription = await getUserSubscription(session.user.id)
+    const subscription = await getUserSubscription(user.id)
     let plan = null
     
     if (subscription) {

@@ -67,11 +67,11 @@ export function DownloadForm({
         // 如果验证成功，跳转到下载页面
         router.push(`/download/post?url=${encodeURIComponent(url.trim())}`);
       } else {
-        setError(data.error || t('errors.downloadFailed'));
+        setError(data.error || '下载失败，请重试');
       }
     } catch (error) {
       console.error('验证失败:', error);
-      setError(t('errors.networkError'));
+      setError('网络错误，请检查网络连接');
     } finally {
       setLoading(false);
     }

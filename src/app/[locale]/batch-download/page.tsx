@@ -1,11 +1,16 @@
-'use client'
-
 import { SEOLayout } from '@/components/seo/seo-layout';
 import { DownloadForm } from '@/components/download/download-form';
-import { useI18n } from '@/lib/i18n/client';
+import { getI18n } from '@/lib/i18n/server';
+import { setStaticParamsLocale } from 'next-international/server';
 
-export default function BatchDownloadPage() {
-  const t = useI18n();
+interface BatchDownloadPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function BatchDownloadPage({ params }: BatchDownloadPageProps) {
+  const { locale } = await params;
+  setStaticParamsLocale(locale);
+  const t = await getI18n();
 
   // 使用硬编码的中文特性描述
   const features = ['批量处理', '任务队列', '进度追踪'];

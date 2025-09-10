@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getCurrentUser } from '@/lib/auth'
 import { createStripeCheckoutSession } from '@/lib/stripe'
 import { createAlipayOrder } from '@/lib/alipay'
 import { CreateCheckoutSessionRequest, CreateCheckoutSessionResponse } from '@/types/payment'
@@ -14,9 +13,9 @@ const createCheckoutSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const user = await getCurrentUser()
     
-    if (!session?.user?.id) {
+    if (!user?.id) {
       const response: CreateCheckoutSessionResponse = {
         success: false,
         error: '请先登录',
@@ -39,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     if (paymentMethod === 'stripe') {
       const checkoutSession = await createStripeCheckoutSession(
-        session.user.id,
+        user.id,
         planId,
         returnUrl
       )
@@ -58,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     if (paymentMethod === 'alipay') {
       const alipayOrder = await createAlipayOrder(
-        session.user.id,
+        user.id,
         planId,
         returnUrl
       )

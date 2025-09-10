@@ -1,98 +1,107 @@
-import { NextAuthOptions } from 'next-auth'
-import { PrismaAdapter } from '@auth/prisma-adapter'
-import GoogleProvider from 'next-auth/providers/google'
-import GitHubProvider from 'next-auth/providers/github'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import { compare } from 'bcryptjs'
-import { prisma } from '@/lib/prisma'
+import { createServerSupabaseClient } from './supabase-server'
+import { prisma } from './prisma'
+import { hash, compare } from 'bcryptjs'
 
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
-  providers: [
-    // 邮箱密码登录
-    CredentialsProvider({
-      name: 'credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
+export interface User {
+  id: string
+  email: string | null
+  name: string | null
+  image: string | null
+}
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        })
-        
-        if (!user || !user.password) {
-          return null
-        }
+export interface CreateUserData {
+  email: string
+  password?: string
+  name?: string
+  provider?: string
+  providerId?: string
+}
 
-        const isPasswordValid = await compare(credentials.password, user.password)
-        if (!isPasswordValid) {
-          return null
-        }
-
-        return {
-          id: user.id,
-          email: user.email || '',
-          name: user.name || '',
-          image: user.image || '',
-        }
+// 使用 Prisma 获取用户
+export async function getUserByEmail(email: string) {
+  try {
+    return await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        image: true,
+        password: true,
       }
-    }),
+    })
+  } catch (error) {
+    console.error('获取用户失败:', error)
+    return null
+  }
+}
 
-    // Google 登录
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-
-    // GitHub 登录
-    GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
-  ],
-
-  pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
-  },
-
-  callbacks: {
-    async signIn({ user }) {
-      return true
-    },
-
-    async jwt({ token, user, account: _account }) {
-      if (user) {
-        token.userId = user.id
-        token.email = user.email!
-        token.name = user.name!
-        token.avatar = user.image || ''
+export async function getUserById(id: string) {
+  try {
+    return await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        image: true,
       }
-      return token
-    },
+    })
+  } catch (error) {
+    console.error('获取用户失败:', error)
+    return null
+  }
+}
 
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.userId as string
-        session.user.email = token.email as string
-        session.user.name = token.name as string
-        session.user.image = token.avatar as string || ''
+// 创建新用户（使用 Prisma）
+export async function createUser(data: CreateUserData) {
+  try {
+    const hashedPassword = data.password ? await hash(data.password, 12) : null
+    
+    return await prisma.user.create({
+      data: {
+        email: data.email,
+        name: data.name || null,
+        password: hashedPassword,
+        // 其他字段使用默认值
       }
-      return session
-    },
-  },
+    })
+  } catch (error) {
+    console.error('创建用户失败:', error)
+    throw new Error('创建用户失败')
+  }
+}
 
-  session: {
-    strategy: 'database',
-    maxAge: 30 * 24 * 60 * 60, // 30 天
-  },
+// 验证用户密码
+export async function verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+  return await compare(plainPassword, hashedPassword)
+}
 
-  secret: process.env.NEXTAUTH_SECRET!,
-
-  debug: process.env.NODE_ENV === 'development',
+// 获取当前会话用户 (使用 Supabase Auth)
+export async function getCurrentUser(): Promise<User | null> {
+  try {
+    const supabase = await createServerSupabaseClient()
+    
+    const { data: { user: authUser }, error } = await supabase.auth.getUser()
+    
+    if (error || !authUser) {
+      return null
+    }
+    
+    // 从 Prisma 获取用户详细信息
+    const user = await prisma.user.findUnique({
+      where: { email: authUser.email! },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        image: true,
+      }
+    })
+    
+    return user
+  } catch (error) {
+    console.error('获取当前用户失败:', error)
+    return null
+  }
 }
