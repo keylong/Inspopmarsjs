@@ -1,5 +1,6 @@
 'use client'
 
+export const dynamic = 'force-dynamic';
 
 import { useAuth } from '@/hooks/useAuth'
 import { StackUserButton } from '@/components/auth/user-button'
