@@ -26,6 +26,21 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 
 import { InstagramPost, DownloadItem } from '@/types/instagram';
+import { generateImageSrc, isVideoUrl } from '@/lib/utils/media-proxy';
+
+// 生成内联SVG占位符
+const generatePlaceholder = (width: number, height: number, text: string) => {
+  const svgContent = `
+    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" fill="#f3f4f6"/>
+      <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" 
+            font-family="Arial, sans-serif" font-size="14" fill="#9ca3af">
+        ${text}
+      </text>
+    </svg>
+  `.trim();
+  return `data:image/svg+xml;base64,${btoa(svgContent)}`;
+};
 
 interface DownloadResult {
   success: boolean;
@@ -506,7 +521,7 @@ export default function InstagramPostDownloadPage() {
                 className="w-full h-auto max-h-[80vh] object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = 'https://via.placeholder.com/800x600?text=图片加载失败';
+                  target.src = generatePlaceholder(800, 600, '图片加载失败');
                 }}
               />
               
@@ -585,12 +600,12 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
            lowerUrl.includes('/v/');
   };
 
-  // 对于视频，获取下载URL和预览URL
+  // 对于视频，获取下载URL和预览URL，使用智能媒体代理
   const previewUrl = media.thumbnail && !isVideoUrl(media.thumbnail) 
-    ? media.thumbnail 
+    ? generateImageSrc(media.thumbnail, '/placeholder-image.jpg')
     : media.is_video || isVideoUrl(currentUrl)
-      ? 'https://via.placeholder.com/400x400?text=视频预览'
-      : currentUrl; // 预览使用缩略图，视频没有缩略图时使用占位图
+      ? generatePlaceholder(400, 400, '视频预览')
+      : generateImageSrc(currentUrl, '/placeholder-image.jpg'); // 预览使用缩略图，视频没有缩略图时使用占位图
   const downloadUrl = media.is_video ? (media.video_url || currentUrl) : currentUrl; // 下载使用视频URL或当前选择的分辨率
   
   return (

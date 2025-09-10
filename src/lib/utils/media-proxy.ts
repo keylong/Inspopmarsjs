@@ -120,7 +120,7 @@ export function processMediaUrls(urls: Array<{url: string, type?: 'video' | 'ima
     const detectedType = type || getMediaType(url);
     return {
       original: url,
-      proxy: generateProxyUrl(url, detectedType),
+      proxy: generateProxyUrl(url, detectedType === 'unknown' ? undefined : detectedType),
       type: detectedType,
       safe: detectedType !== 'unknown'
     };

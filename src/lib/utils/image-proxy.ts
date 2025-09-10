@@ -1,76 +1,32 @@
 /**
- * 图片代理工具函数
- * 解决Instagram图片CORS限制
+ * 智能媒体代理工具函数
+ * 解决Instagram图片/视频CORS限制，自动选择正确的代理端点
  */
+
+import { generateImageSrc, generateVideoSrc, generateProxyUrl, getMediaType } from './media-proxy';
 
 /**
- * 将Instagram图片URL转换为代理URL
- * @param originalUrl - Instagram原始图片URL
- * @returns 代理URL
+ * 将Instagram媒体URL转换为安全的代理URL
+ * 自动检测媒体类型并选择正确的代理端点
+ * @param originalUrl - Instagram原始媒体URL
+ * @returns 安全的代理URL（图片）或占位符
  */
 export function getProxyImageUrl(originalUrl: string): string {
-  // 输入验证
-  if (!originalUrl || typeof originalUrl !== 'string') {
-    return '/placeholder-image.jpg'; // 返回默认占位图
-  }
-
-  const trimmedUrl = originalUrl.trim();
-  
-  if (trimmedUrl.length === 0) {
-    return '/placeholder-image.jpg';
-  }
-
-  // 检查是否已经是代理URL，避免重复代理
-  if (trimmedUrl.startsWith('/api/proxy/image')) {
-    return trimmedUrl;
-  }
-  
-  // 检查是否为本地或数据URL
-  if (trimmedUrl.startsWith('/') || trimmedUrl.startsWith('data:')) {
-    return trimmedUrl;
-  }
-
-  // 检查是否为Instagram CDN URL
-  const isInstagramUrl = trimmedUrl.includes('fbcdn.net') || 
-                        trimmedUrl.includes('cdninstagram.com') ||
-                        trimmedUrl.includes('instagram.com');
-  
-  if (!isInstagramUrl) {
-    // 对于非Instagram URL，检查是否为HTTPS
-    if (trimmedUrl.startsWith('https://')) {
-      return trimmedUrl; // HTTPS URL相对安全，直接使用
-    } else {
-      return '/placeholder-image.jpg'; // HTTP URL或其他不安全URL
-    }
-  }
-
-  try {
-    // 编码原始URL并生成代理URL
-    const encodedUrl = encodeURIComponent(trimmedUrl);
-    
-    // 检查编码后URL长度
-    if (encodedUrl.length > 2000) {
-      console.warn('图片URL太长，可能影响性能:', trimmedUrl.substring(0, 100));
-    }
-    
-    return `/api/proxy/image?url=${encodedUrl}`;
-  } catch (error) {
-    console.error('URL编码失败:', error);
-    return '/placeholder-image.jpg';
-  }
+  return generateImageSrc(originalUrl, '/placeholder-image.jpg');
 }
 
 /**
  * 批量转换图片URL列表
  * @param urls - 原始URL数组
- * @returns 代理URL数组
+ * @returns 安全的代理URL数组
  */
 export function getProxyImageUrls(urls: string[]): string[] {
-  return urls.map(url => getProxyImageUrl(url));
+  return urls.map(url => generateImageSrc(url, '/placeholder-image.jpg'));
 }
 
 /**
- * 为Instagram数据结构中的所有图片URL添加代理
+ * 为Instagram数据结构中的所有媒体URL添加智能代理
+ * 自动处理图片和视频URL，选择正确的代理端点
  * @param data - Instagram数据对象
  * @returns 处理后的数据对象
  */
@@ -83,31 +39,47 @@ export function addProxyToInstagramData(data: any): any {
     // 深拷贝避免修改原始数据
     const processedData = JSON.parse(JSON.stringify(data));
 
-    // 处理主图片URL
+    // 智能处理函数：根据媒体类型选择正确的处理方式
+    const processUrl = (url: string, forceImage: boolean = false): string => {
+      if (!url) return '';
+      if (forceImage) {
+        // 强制作为图片处理（如缩略图）
+        return generateImageSrc(url, '/placeholder-image.jpg');
+      }
+      // 自动检测媒体类型
+      return generateProxyUrl(url);
+    };
+
+    // 处理主URL（可能是图片或视频）
     if (processedData.display_url) {
-      processedData.display_url = getProxyImageUrl(processedData.display_url);
+      processedData.display_url = processUrl(processedData.display_url);
     }
 
+    // 处理缩略图（强制作为图片）
     if (processedData.thumbnail_src) {
-      processedData.thumbnail_src = getProxyImageUrl(processedData.thumbnail_src);
+      processedData.thumbnail_src = processUrl(processedData.thumbnail_src, true);
     }
     
-    // 处理缩略图
     if (processedData.thumbnail) {
-      processedData.thumbnail = getProxyImageUrl(processedData.thumbnail);
+      processedData.thumbnail = processUrl(processedData.thumbnail, true);
     }
 
-    // 处理不同分辨率的图片资源
+    // 处理视频URL
+    if (processedData.video_url) {
+      processedData.video_url = generateVideoSrc(processedData.video_url) || processedData.video_url;
+    }
+
+    // 处理不同分辨率的资源
     if (processedData.display_resources && Array.isArray(processedData.display_resources)) {
       processedData.display_resources = processedData.display_resources
         .filter((resource: any) => resource && typeof resource === 'object')
         .map((resource: any) => ({
           ...resource,
-          src: getProxyImageUrl(resource.src)
+          src: processUrl(resource.src)
         }));
     }
 
-    // 处理轮播图片
+    // 处理轮播媒体
     if (processedData.edge_sidecar_to_children?.edges && Array.isArray(processedData.edge_sidecar_to_children.edges)) {
       processedData.edge_sidecar_to_children.edges = processedData.edge_sidecar_to_children.edges
         .filter((edge: any) => edge?.node)
@@ -115,33 +87,35 @@ export function addProxyToInstagramData(data: any): any {
           ...edge,
           node: {
             ...edge.node,
-            display_url: getProxyImageUrl(edge.node.display_url),
+            display_url: processUrl(edge.node.display_url),
+            video_url: edge.node.video_url ? (generateVideoSrc(edge.node.video_url) || edge.node.video_url) : undefined,
             display_resources: Array.isArray(edge.node.display_resources) 
               ? edge.node.display_resources
                   .filter((resource: any) => resource && typeof resource === 'object')
                   .map((resource: any) => ({
                     ...resource,
-                    src: getProxyImageUrl(resource.src)
+                    src: processUrl(resource.src)
                   }))
               : []
           }
         }));
     }
     
-    // 处理carousel_media数组（备用格式）
+    // 处理carousel_media数组
     if (processedData.carousel_media && Array.isArray(processedData.carousel_media)) {
       processedData.carousel_media = processedData.carousel_media
         .filter((media: any) => media && typeof media === 'object')
         .map((media: any) => ({
           ...media,
-          display_url: getProxyImageUrl(media.display_url),
-          thumbnail: getProxyImageUrl(media.thumbnail),
+          display_url: processUrl(media.display_url),
+          thumbnail: processUrl(media.thumbnail, true),
+          video_url: media.video_url ? (generateVideoSrc(media.video_url) || media.video_url) : undefined,
         }));
     }
 
     // 处理用户头像
     if (processedData.owner?.profile_pic_url) {
-      processedData.owner.profile_pic_url = getProxyImageUrl(processedData.owner.profile_pic_url);
+      processedData.owner.profile_pic_url = processUrl(processedData.owner.profile_pic_url, true);
     }
     
     // 处理media数组（标准化后的数据结构）
@@ -150,14 +124,15 @@ export function addProxyToInstagramData(data: any): any {
         .filter((media: any) => media && typeof media === 'object')
         .map((media: any) => ({
           ...media,
-          url: getProxyImageUrl(media.url),
-          thumbnail: getProxyImageUrl(media.thumbnail),
+          url: processUrl(media.url),
+          thumbnail: processUrl(media.thumbnail, true),
+          video_url: media.video_url ? (generateVideoSrc(media.video_url) || media.video_url) : undefined,
           display_resources: Array.isArray(media.display_resources)
             ? media.display_resources
                 .filter((resource: any) => resource && typeof resource === 'object')
                 .map((resource: any) => ({
                   ...resource,
-                  src: getProxyImageUrl(resource.src)
+                  src: processUrl(resource.src)
                 }))
             : []
         }));

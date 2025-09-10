@@ -262,8 +262,8 @@ export function MediaPreviewModal({
             >
               {(currentMedia?.is_video || safeMediaConfig?.isVideo) && !videoError ? (
                 <video
-                  src={safeMediaConfig?.videoSrc || generateVideoSrc(currentMedia?.video_url || currentMedia?.url || '')}
-                  poster={safeMediaConfig?.poster}
+                  src={safeMediaConfig?.videoSrc || generateVideoSrc(currentMedia?.video_url || currentMedia?.url || '') || ''}
+                  poster={safeMediaConfig?.poster || undefined}
                   controls
                   autoPlay={isPlaying}
                   muted={isMuted}
@@ -274,7 +274,7 @@ export function MediaPreviewModal({
                     console.error('视频加载失败:', e);
                     setVideoError(true);
                   }}
-                  onLoadStart={() => console.log('开始加载视频:', currentMedia.video_url || currentMedia.url)}
+                  onLoadStart={() => console.log('开始加载视频:', currentMedia?.video_url || currentMedia?.url)}
                   onCanPlay={() => console.log('视频可以播放')}
                 />
               ) : currentMedia?.is_video && videoError ? (
@@ -314,8 +314,8 @@ export function MediaPreviewModal({
                     </p>
                     <div className="space-y-2">
                       <video
-                        src={safeMediaConfig?.videoSrc || generateVideoSrc(currentMedia?.url || '')}
-                        poster={safeMediaConfig?.poster}
+                        src={safeMediaConfig?.videoSrc || generateVideoSrc(currentMedia?.url || '') || ''}
+                        poster={safeMediaConfig?.poster || undefined}
                         controls
                         autoPlay={isPlaying}
                         muted={isMuted}

@@ -4,6 +4,7 @@
  */
 
 import { InstagramPost, InstagramMedia, DisplayResource, DownloadItem, DownloadResolution } from '@/types/instagram';
+import { generateProxyUrl, getMediaType } from './media-proxy';
 
 /**
  * 标准化Instagram媒体数据
@@ -95,8 +96,8 @@ export function standardizePostData(rawPost: any): InstagramPost {
 }
 
 /**
- * 为图片URL添加代理前缀
- * 支持POST方式避免长URL截断问题
+ * 为媒体URL添加智能代理前缀
+ * 自动根据媒体类型选择正确的代理端点
  */
 export function addProxyToImageUrl(imageUrl: string): string {
   if (!imageUrl || imageUrl.startsWith('/api/proxy/') || imageUrl.startsWith('data:')) {
@@ -108,15 +109,8 @@ export function addProxyToImageUrl(imageUrl: string): string {
   const isInstagramUrl = instagramDomains.some(domain => imageUrl.includes(domain));
   
   if (isInstagramUrl) {
-    // 对于长 URL，使用 GET 方式但记录原始 URL 以便必要时切换到 POST
-    const encodedUrl = encodeURIComponent(imageUrl);
-    
-    // 如果 URL 太长，可能需要 POST 方式
-    if (encodedUrl.length > 1500) {
-      console.warn('图片URL很长，可能需要POST方式：', imageUrl.substring(0, 100));
-    }
-    
-    return `/api/proxy/image?url=${encodedUrl}`;
+    // 使用智能代理生成URL，自动根据媒体类型选择端点
+    return generateProxyUrl(imageUrl);
   }
   
   return imageUrl;
@@ -290,22 +284,27 @@ function generateFilename(media: InstagramMedia, label?: string, index?: number)
 }
 
 /**
- * 为图片代理创建 POST 请求的工具函数
+ * 为媒体代理创建 POST 请求的工具函数
+ * 自动根据媒体类型选择正确的代理端点
  */
 export async function createImageProxyPostRequest(imageUrl: string): Promise<string> {
   if (!imageUrl || typeof imageUrl !== 'string') {
-    throw new Error('无效的图片URL');
+    throw new Error('无效的媒体URL');
   }
   
   try {
-    const response = await fetch('/api/proxy/image', {
+    // 检测媒体类型并选择正确的端点
+    const mediaType = getMediaType(imageUrl);
+    const endpoint = mediaType === 'video' ? '/api/proxy/video' : '/api/proxy/image';
+    
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ url: imageUrl.trim() }),
-      // 添加超时控制
-      signal: AbortSignal.timeout(30000), // 30秒超时
+      // 添加超时控制，视频需要更长时间
+      signal: AbortSignal.timeout(mediaType === 'video' ? 45000 : 30000),
     });
     
     if (!response.ok) {
@@ -349,19 +348,32 @@ export function shouldUsePostProxy(imageUrl: string): boolean {
 
 /**
  * 从代理URL中提取原始URL
+ * 支持图片和视频代理端点
  */
 function extractOriginalUrl(proxyUrl: string): string {
-  if (!proxyUrl.startsWith('/api/proxy/image?url=')) {
-    return proxyUrl;
+  // 检查是否为图片代理URL
+  if (proxyUrl.startsWith('/api/proxy/image?url=')) {
+    try {
+      const urlParam = proxyUrl.substring('/api/proxy/image?url='.length);
+      return decodeURIComponent(urlParam);
+    } catch (e) {
+      console.warn('无法解码图片代理URL:', proxyUrl);
+      return proxyUrl;
+    }
   }
   
-  try {
-    const urlParam = proxyUrl.substring('/api/proxy/image?url='.length);
-    return decodeURIComponent(urlParam);
-  } catch (e) {
-    console.warn('无法解码代理URL:', proxyUrl);
-    return proxyUrl;
+  // 检查是否为视频代理URL
+  if (proxyUrl.startsWith('/api/proxy/video?url=')) {
+    try {
+      const urlParam = proxyUrl.substring('/api/proxy/video?url='.length);
+      return decodeURIComponent(urlParam);
+    } catch (e) {
+      console.warn('无法解码视频代理URL:', proxyUrl);
+      return proxyUrl;
+    }
   }
+  
+  return proxyUrl;
 }
 
 function estimateFileSize(width: number, height: number, isVideo: boolean): number {

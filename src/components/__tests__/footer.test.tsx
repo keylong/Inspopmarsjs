@@ -55,7 +55,7 @@ describe('Footer Component', () => {
   it('renders footer with company name and description', () => {
     render(<Footer />);
     
-    expect(screen.getByText('Instagram 下载器')).toBeInTheDocument();
+    expect(screen.getByText('Instagram 下载软件')).toBeInTheDocument();
     expect(screen.getByText('最好用的 Instagram 内容下载工具，支持图片、视频、Stories、IGTV 和 Reels 下载。')).toBeInTheDocument();
   });
 
@@ -64,7 +64,7 @@ describe('Footer Component', () => {
     
     // Check for parts of the copyright text since it might be broken up
     expect(screen.getByText(/版权所有/)).toBeInTheDocument();
-    expect(screen.getAllByText(/Instagram 下载器/)).toHaveLength(2); // 公司名和版权信息
+    expect(screen.getAllByText(/Instagram 下载软件/)).toHaveLength(2); // 公司名和版权信息
     expect(screen.getByText(/保留所有权利/)).toBeInTheDocument();
   });
 
