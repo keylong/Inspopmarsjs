@@ -348,7 +348,7 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
       transition={{ delay: index * 0.1 }}
       className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
     >
-      {/* 图片预览 */}
+      {/* 媒体预览 */}
       <div className="aspect-square relative overflow-hidden bg-gray-100">
         <Image
           src={item.thumbnail || '/placeholder-image.jpg'}
@@ -383,6 +383,15 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
             )}
           </Badge>
         </div>
+
+        {/* 视频播放按钮覆盖层 */}
+        {item.type === 'video' && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300">
+            <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+              <Play className="w-8 h-8 text-gray-800 ml-1" />
+            </div>
+          </div>
+        )}
 
         {/* 序号 */}
         <div className="absolute bottom-3 left-3">

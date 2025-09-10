@@ -1,0 +1,92 @@
+[
+  {
+    "id": "basic-monthly",
+    "name": "基础月度套餐",
+    "nameEn": "Basic Monthly",
+    "description": "每月100次下载，支持图片和视频",
+    "descriptionEn": "100 downloads per month, supports images and videos",
+    "price": 9.99,
+    "currency": "USD",
+    "duration": "monthly",
+    "features": [
+      "每月100次下载",
+      "图片视频下载",
+      "标准画质",
+      "邮件支持"
+    ],
+    "featuresEn": [
+      "100 downloads/month",
+      "Image & video download",
+      "Standard quality",
+      "Email support"
+    ],
+    "downloadLimit": 100,
+    "stripeProductId": "prod_basic_monthly",
+    "stripePriceId": "price_basic_monthly",
+    "alipayProductId": "basic_monthly",
+    "isActive": true,
+    "sortOrder": 1,
+    "createdAt": "2025-09-10T00:07:41.119Z",
+    "updatedAt": "2025-09-10T00:07:41.119Z"
+  },
+  {
+    "id": "pro-monthly",
+    "name": "专业月度套餐",
+    "nameEn": "Pro Monthly",
+    "description": "每月500次下载，高清画质，批量下载",
+    "descriptionEn": "500 downloads per month, HD quality, batch download",
+    "price": 19.99,
+    "currency": "USD",
+    "duration": "monthly",
+    "features": [
+      "每月500次下载",
+      "高清画质",
+      "批量下载",
+      "优先支持"
+    ],
+    "featuresEn": [
+      "500 downloads/month",
+      "HD quality",
+      "Batch download",
+      "Priority support"
+    ],
+    "downloadLimit": 500,
+    "stripeProductId": "prod_pro_monthly",
+    "stripePriceId": "price_pro_monthly",
+    "alipayProductId": "pro_monthly",
+    "isActive": true,
+    "sortOrder": 2,
+    "createdAt": "2025-09-10T00:07:41.119Z",
+    "updatedAt": "2025-09-10T00:07:41.119Z"
+  },
+  {
+    "id": "unlimited-monthly",
+    "name": "无限月度套餐",
+    "nameEn": "Unlimited Monthly",
+    "description": "无限下载，最高画质，API访问",
+    "descriptionEn": "Unlimited downloads, highest quality, API access",
+    "price": 39.99,
+    "currency": "USD",
+    "duration": "monthly",
+    "features": [
+      "无限下载",
+      "最高画质",
+      "API访问",
+      "24/7支持"
+    ],
+    "featuresEn": [
+      "Unlimited downloads",
+      "Highest quality",
+      "API access",
+      "24/7 support"
+    ],
+    "downloadLimit": -1,
+    "stripeProductId": "prod_unlimited_monthly",
+    "stripePriceId": "price_unlimited_monthly",
+    "alipayProductId": "unlimited_monthly",
+    "isActive": true,
+    "sortOrder": 3,
+    "createdAt": "2025-09-10T00:07:41.119Z",
+    "updatedAt": "2025-09-10T00:07:41.119Z"
+  }
+]

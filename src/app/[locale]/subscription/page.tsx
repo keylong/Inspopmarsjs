@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useUser } from '@stackframe/stack'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -23,7 +23,7 @@ interface SubscriptionData {
 
 export default function SubscriptionPage() {
   const t = useI18n()
-  const { status } = useSession()
+  const user = useUser() // 不强制重定向，允许未登录用户查看
   const router = useRouter()
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null)
   const [plans, setPlans] = useState<SubscriptionPlan[]>([])
@@ -31,16 +31,16 @@ export default function SubscriptionPage() {
   const [upgrading, setUpgrading] = useState(false)
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-      return
-    }
-
-    if (status === 'authenticated') {
+    // 始终获取套餐信息（对所有用户可见）
+    fetchPlans()
+    
+    // 只有登录用户才获取订阅数据
+    if (user) {
       fetchSubscriptionData()
-      fetchPlans()
+    } else {
+      setLoading(false) // 未登录用户不需要等待订阅数据
     }
-  }, [status, router])
+  }, [user])
 
   const fetchSubscriptionData = async () => {
     try {
@@ -71,6 +71,14 @@ export default function SubscriptionPage() {
   }
 
   const handleUpgrade = async (planId: string, paymentMethod: 'stripe' | 'alipay') => {
+    // 如果用户未登录，跳转到登录页面
+    if (!user) {
+      // 保存用户意图到 URL 参数，登录后可以继续
+      const returnUrl = `/subscription?plan=${planId}&method=${paymentMethod}`
+      router.push(`/signin?returnUrl=${encodeURIComponent(returnUrl)}`)
+      return
+    }
+    
     setUpgrading(true)
     
     try {
@@ -115,7 +123,7 @@ export default function SubscriptionPage() {
     }
   }
 
-  if (loading || status === 'loading') {
+  if (loading) {
     return (
       <div className="container mx-auto py-8 flex justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />

@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStackApp, useUser } from '@stackframe/stack';
 import { useI18n } from '@/lib/i18n/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 export function StackSignIn() {
@@ -11,15 +11,29 @@ export function StackSignIn() {
   const app = useStackApp();
   const user = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // 获取 returnUrl 参数
+  const returnUrl = searchParams.get('returnUrl') || '/zh-CN';
 
   // 如果已登录，重定向
+  useEffect(() => {
+    if (user) {
+      router.push(returnUrl);
+    }
+  }, [user, returnUrl, router]);
+  
+  // 如果用户已登录，显示加载状态
   if (user) {
-    router.push('/zh-CN');
-    return null;
+    return (
+      <div className="w-full max-w-md mx-auto text-center">
+        <p className="text-gray-600">正在跳转...</p>
+      </div>
+    );
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +48,7 @@ export function StackSignIn() {
       });
 
       if (result.status === 'ok') {
-        router.push('/zh-CN');
+        router.push(returnUrl);
       } else {
         setError('登录失败，请检查您的邮箱和密码');
       }

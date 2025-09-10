@@ -109,7 +109,30 @@ async function proxyMedia(mediaUrl: string): Promise<NextResponse> {
     if (!response || !response.ok) {
       console.error(`媒体请求失败: ${response ? `${response.status} ${response.statusText}` : '无响应'}`);
       
-      // 生成占位图作为fallback
+      // 检查请求的URL是否可能是视频
+      const responseContentType = response?.headers.get('content-type') || '';
+      const isLikelyVideo = decodedUrl.includes('.mp4') || 
+                           decodedUrl.includes('video') || 
+                           decodedUrl.includes('/v/') ||
+                           responseContentType.includes('video');
+      
+      // 生成适当的占位内容
+      if (isLikelyVideo) {
+        // 对于视频，返回一个简单的错误响应而不是SVG
+        return NextResponse.json({
+          error: '视频加载失败',
+          status: response?.status || 'unknown',
+          message: '媒体资源暂时无法访问，请稍后重试'
+        }, { 
+          status: 404,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+      
+      // 对于图片，生成占位图
       const placeholderSvg = `
         <svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
           <rect width="100%" height="100%" fill="#f3f4f6"/>

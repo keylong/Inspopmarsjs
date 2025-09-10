@@ -46,6 +46,7 @@ export function MediaPreviewModal({
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [videoError, setVideoError] = useState(false);
 
   const currentMedia = media[currentIndex];
 
@@ -99,6 +100,7 @@ export function MediaPreviewModal({
     setZoom(1);
     setRotation(0);
     setIsPlaying(false);
+    setVideoError(false);
   }, [currentIndex]);
 
   const nextMedia = () => {
@@ -241,17 +243,48 @@ export function MediaPreviewModal({
                 transition: 'transform 0.2s ease-out'
               }}
             >
-              {currentMedia?.is_video ? (
+              {currentMedia?.is_video && !videoError ? (
                 <video
                   src={currentMedia.video_url || currentMedia.url}
-                  poster={currentMedia.thumbnail}
+                  poster={currentMedia.thumbnail || currentMedia.url}
                   controls
                   autoPlay={isPlaying}
                   muted={isMuted}
                   className="max-w-full max-h-full object-contain"
                   onPlay={() => setIsPlaying(true)}
                   onPause={() => setIsPlaying(false)}
+                  onError={(e) => {
+                    console.error('视频加载失败:', e);
+                    setVideoError(true);
+                  }}
+                  onLoadStart={() => console.log('开始加载视频:', currentMedia.video_url || currentMedia.url)}
+                  onCanPlay={() => console.log('视频可以播放')}
                 />
+              ) : currentMedia?.is_video && videoError ? (
+                <div className="max-w-full max-h-full flex items-center justify-center bg-gray-100 rounded-lg">
+                  <div className="text-center p-8">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-300 rounded-full flex items-center justify-center">
+                      <Play className="w-8 h-8 text-gray-500" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">视频无法播放</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      视频文件可能正在处理中或暂时无法访问
+                    </p>
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setVideoError(false)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        重试播放
+                      </button>
+                      {currentMedia.thumbnail && (
+                        <div className="text-xs text-gray-500">
+                          显示视频缩略图
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <Image
                   src={currentMedia?.url || ''}
@@ -260,6 +293,12 @@ export function MediaPreviewModal({
                   height={currentMedia?.height || 800}
                   className="max-w-full max-h-full object-contain"
                   priority
+                  onError={(e) => {
+                    console.error('图片加载失败:', currentMedia?.url);
+                    const img = e.target as HTMLImageElement;
+                    img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzljYTNhZiI+CiAgICDlqpLkvZPliqDovb3lpLHotKUKICA8L3RleHQ+Cjwvc3ZnPgo=';
+                  }}
+                  onLoadStart={() => console.log('开始加载图片:', currentMedia?.url)}
                 />
               )}
             </motion.div>

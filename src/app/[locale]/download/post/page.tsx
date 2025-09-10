@@ -16,7 +16,8 @@ import {
   Copy,
   Instagram,
   ZoomIn,
-  X
+  X,
+  Play
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -574,6 +575,10 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
   const currentHeight = selectedResolution?.config_height || media.height;
   const currentLabel = selectedResolution?.label || '原图';
   
+  // 对于视频，获取下载URL和预览URL
+  const previewUrl = media.thumbnail || currentUrl; // 预览使用缩略图
+  const downloadUrl = media.is_video ? (media.video_url || currentUrl) : currentUrl; // 下载使用视频URL或当前选择的分辨率
+  
   return (
     <motion.div
       className="relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
@@ -584,15 +589,15 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
     >
       <div className="aspect-square relative overflow-hidden">
         <Image
-          src={currentUrl}
+          src={previewUrl}
           alt={`Instagram 媒体 ${index + 1}`}
           width={400}
           height={400}
           className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
-          onClick={() => onImageClick(currentUrl, `Instagram 媒体 ${index + 1}`)}
+          onClick={() => onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`)}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = 'https://via.placeholder.com/400x400?text=图片加载失败';
+            target.src = 'https://via.placeholder.com/400x400?text=媒体加载失败';
           }}
         />
         {/* 视频标识 */}
@@ -613,6 +618,15 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
         <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
           #{index + 1}
         </div>
+        
+        {/* 视频播放按钮覆盖层 */}
+        {media.is_video && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300">
+            <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+              <Play className="w-8 h-8 text-gray-800 ml-1" />
+            </div>
+          </div>
+        )}
       </div>
       
       <div className="p-4">
@@ -660,7 +674,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
             size="sm"
             variant="outline"
             className="flex-1 text-gray-700 hover:text-gray-900"
-            onClick={() => onImageClick(currentUrl, `Instagram 媒体 ${index + 1}`)}
+            onClick={() => onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`)}
           >
             <ZoomIn className="w-4 h-4 mr-1" />
             {t('download.result.preview')}
@@ -668,7 +682,10 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
           <Button
             size="sm"
             className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-            onClick={() => onDirectDownload(currentUrl, `instagram-${media.id || index}-${currentWidth}x${currentHeight}`)}
+            onClick={() => onDirectDownload(
+              downloadUrl, 
+              `instagram-${media.id || index}-${media.is_video ? 'video' : `${currentWidth}x${currentHeight}`}.${media.is_video ? 'mp4' : 'jpg'}`
+            )}
           >
             <Download className="w-4 h-4 mr-1" />
             {t('common.download')}
@@ -677,7 +694,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
             size="sm"
             variant="outline"
             className="text-gray-700 hover:text-gray-900"
-            onClick={() => onCopyUrl(currentUrl)}
+            onClick={() => onCopyUrl(downloadUrl)}
           >
             <Copy className="w-4 h-4" />
           </Button>
