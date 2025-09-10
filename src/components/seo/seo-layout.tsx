@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { NextSeo } from 'next-seo';
 import { motion } from 'framer-motion';
 import { 
   CheckCircle, 
@@ -38,7 +37,7 @@ export function SEOLayout({ contentType, children, locale = 'zh' }: SEOLayoutPro
 
   return (
     <>
-      <NextSeo {...seoConfig} />
+      {/* SEO metadata should be handled by generateMetadata in page.tsx */}
       <StructuredData 
         contentType={contentType} 
         breadcrumbs={breadcrumbs.map(b => ({ name: b.label, url: b.href || '' }))} 
