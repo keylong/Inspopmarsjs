@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
+import { useSearchParams } from 'next/navigation';
 
 import { InstagramPost, DownloadItem } from '@/types/instagram';
 import { generateImageSrc, isVideoUrl, generateVideoSrc } from '@/lib/utils/media-proxy';
@@ -56,6 +57,7 @@ interface DownloadResult {
 export default function InstagramPostDownloadPage() {
   const currentLocale = useCurrentLocale() || 'zh-CN';
   const t = useI18n();
+  const searchParams = useSearchParams();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DownloadResult | null>(null);
@@ -64,6 +66,52 @@ export default function InstagramPostDownloadPage() {
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<{src: string; title: string} | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [autoSubmitted, setAutoSubmitted] = useState(false);
+
+  // 检查URL参数并自动填充和提交
+  useEffect(() => {
+    const urlParam = searchParams.get('url');
+    if (urlParam && !autoSubmitted) {
+      setUrl(urlParam);
+      setAutoSubmitted(true);
+      // 延迟提交，让UI先渲染
+      setTimeout(() => {
+        handleAutoSubmit(urlParam);
+      }, 100);
+    }
+  }, [searchParams, autoSubmitted]);
+
+  const handleAutoSubmit = async (autoUrl: string) => {
+    if (!autoUrl.trim()) return;
+
+    setLoading(true);
+    setResult(null);
+
+    try {
+      const response = await fetch('/api/instagram/download', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: autoUrl.trim() }),
+      });
+
+      const data: DownloadResult = await response.json();
+      setResult(data);
+      
+      if (!data.success) {
+        console.error('下载失败:', data.error);
+      }
+    } catch (error) {
+      console.error('API请求失败:', error);
+      setResult({
+        success: false,
+        error: error instanceof Error ? error.message : t('errors.networkError')
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

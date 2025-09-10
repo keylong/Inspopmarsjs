@@ -135,7 +135,7 @@ async function proxyMedia(mediaUrl: string): Promise<NextResponse> {
         return NextResponse.json({
           error: '视频加载失败',
           status: response?.status || 'unknown',
-          message: '媒体资源暂时无法访问，请稍后重试'
+          message: '暂时无法访问'
         }, { 
           status: 404,
           headers: {
@@ -150,10 +150,10 @@ async function proxyMedia(mediaUrl: string): Promise<NextResponse> {
         <svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
           <rect width="100%" height="100%" fill="#f3f4f6"/>
           <text x="50%" y="45%" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#9ca3af">
-            媒体加载失败
+            加载失败
           </text>
           <text x="50%" y="55%" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#6b7280">
-            错误代码: ${response?.status || '未知'}
+            ${response?.status || '未知错误'}
           </text>
         </svg>
       `;

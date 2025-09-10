@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
+import { DownloadForm } from '@/components/download-form';
 
 export default function Home() {
   const currentLocale = useCurrentLocale() || 'zh-CN';
@@ -98,7 +99,7 @@ export default function Home() {
           </motion.h1>
           
           <motion.p 
-            className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -106,12 +107,22 @@ export default function Home() {
             {content.subtitle}
           </motion.p>
           
+          {/* 快速下载表单 */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            className="mb-12"
+          >
+            <DownloadForm />
+          </motion.div>
+          
           {/* 统计数据 */}
           <motion.div 
             className="flex flex-wrap justify-center gap-6 mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
+            transition={{ duration: 0.8, delay: 0.9 }}
           >
             <div className="flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full">
               <Users className="w-5 h-5 text-blue-600" />
@@ -132,7 +143,7 @@ export default function Home() {
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
+            transition={{ duration: 0.8, delay: 1.1 }}
           >
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -172,7 +183,7 @@ export default function Home() {
           className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-20"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
+          transition={{ duration: 0.8, delay: 1.3 }}
         >
           <motion.div
             whileHover={{ y: -8, scale: 1.02 }}
@@ -258,7 +269,7 @@ export default function Home() {
           className="text-center mb-16"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.4 }}
+          transition={{ duration: 0.8, delay: 1.5 }}
         >
           <h2 className="text-3xl font-bold text-gray-800 mb-8">{t('download.result.supportedContent')}</h2>
           <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">

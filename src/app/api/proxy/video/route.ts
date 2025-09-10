@@ -124,7 +124,7 @@ async function proxyVideo(videoUrl: string): Promise<NextResponse> {
       return NextResponse.json({
         error: '视频加载失败',
         status: response?.status || 'unknown',
-        message: '视频资源暂时无法访问，请稍后重试'
+        message: '暂时无法访问'
       }, { 
         status: 404,
         headers: {
