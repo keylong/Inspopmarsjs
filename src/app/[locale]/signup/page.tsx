@@ -50,13 +50,11 @@ export default function SignUpPage() {
       setError('');
       setMessage('');
       
-      const redirectUrl = `${window.location.origin}/auth/callback`
-      console.log('开始Google注册，重定向URL:', redirectUrl)
+      console.log('开始Google注册，使用默认重定向')
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -84,14 +82,10 @@ export default function SignUpPage() {
       setError('');
       setMessage('');
       
-      const redirectUrl = `${window.location.origin}/auth/callback`
-      console.log('开始Apple注册，重定向URL:', redirectUrl)
+      console.log('开始Apple注册，使用默认重定向')
       
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'apple',
-        options: {
-          redirectTo: redirectUrl,
-        }
+        provider: 'apple'
       });
 
       console.log('Apple注册响应:', { data, error })
