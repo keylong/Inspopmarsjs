@@ -12,7 +12,4 @@ export const {
   'zh-CN': () => import('./locales/zh-CN'),
   'zh-TW': () => import('./locales/zh-TW'),
   'en': () => import('./locales/en'),
-  'ja': () => import('./locales/ja'),
-  'ko': () => import('./locales/ko'),
-  'es': () => import('./locales/es'),
 });

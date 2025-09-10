@@ -66,6 +66,7 @@ export default function InstagramPostDownloadPage() {
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<{src: string; title: string} | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const [autoSubmitted, setAutoSubmitted] = useState(false);
 
   // 检查URL参数并自动填充和提交
@@ -80,6 +81,16 @@ export default function InstagramPostDownloadPage() {
       }, 100);
     }
   }, [searchParams, autoSubmitted]);
+
+  // 滚动到结果区域
+  const scrollToResults = () => {
+    if (resultsRef.current) {
+      resultsRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
 
   const handleAutoSubmit = async (autoUrl: string) => {
     if (!autoUrl.trim()) return;
@@ -98,6 +109,11 @@ export default function InstagramPostDownloadPage() {
 
       const data: DownloadResult = await response.json();
       setResult(data);
+      
+      // 无论成功或失败，都滚动到结果区域
+      setTimeout(() => {
+        scrollToResults();
+      }, 100);
       
       if (!data.success) {
         console.error('下载失败:', data.error);
@@ -139,6 +155,11 @@ export default function InstagramPostDownloadPage() {
       const data: DownloadResult = await response.json();
       setResult(data);
       
+      // 无论成功或失败，都滚动到结果区域
+      setTimeout(() => {
+        scrollToResults();
+      }, 100);
+      
       if (!data.success) {
         console.error('下载失败:', data.error);
       }
@@ -159,10 +180,13 @@ export default function InstagramPostDownloadPage() {
     inputRef.current?.focus();
   };
 
-  const handleCopyUrl = async (downloadUrl: string) => {
+  const handleCopyUrl = async () => {
     try {
-      await navigator.clipboard.writeText(downloadUrl);
+      // 生成下载页面链接，使用原始Instagram URL
+      const downloadPageUrl = `${window.location.origin}/${currentLocale}/download/post?url=${encodeURIComponent(url)}`;
+      await navigator.clipboard.writeText(downloadPageUrl);
       // 可以添加成功提示
+      console.log('复制的链接:', downloadPageUrl);
     } catch (error) {
       console.error('复制失败:', error);
     }
@@ -340,6 +364,7 @@ export default function InstagramPostDownloadPage() {
           {/* 结果显示 */}
           {result && (
             <motion.div
+              ref={resultsRef}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -621,7 +646,7 @@ export default function InstagramPostDownloadPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleCopyUrl(selectedImage.src)}
+                      onClick={() => handleCopyUrl()}
                     >
                       <Copy className="w-4 h-4 mr-1" />
                       {t('common.copy')}
@@ -660,7 +685,7 @@ interface MediaCardProps {
   index: number;
   onImageClick: (url: string, title: string, isVideo?: boolean) => void;
   onDirectDownload: (url: string, filename: string) => void;
-  onCopyUrl: (url: string) => void;
+  onCopyUrl: () => void;
   t: any;
 }
 
@@ -841,7 +866,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
             size="sm"
             variant="outline"
             className="text-gray-700 hover:text-gray-900"
-            onClick={() => onCopyUrl(downloadUrl)}
+            onClick={() => onCopyUrl()}
           >
             <Copy className="w-4 h-4" />
           </Button>

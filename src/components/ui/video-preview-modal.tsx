@@ -22,7 +22,7 @@ interface VideoPreviewModalProps {
   videoSrc: string;
   title: string;
   onDownload?: (url: string, filename: string) => void;
-  onCopyUrl?: (url: string) => void;
+  onCopyUrl?: () => void;
 }
 
 export function VideoPreviewModal({
@@ -392,7 +392,7 @@ export function VideoPreviewModal({
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => onCopyUrl(videoSrc)}
+                    onClick={() => onCopyUrl()}
                   >
                     <Copy className="w-4 h-4 mr-1" />
                     复制链接

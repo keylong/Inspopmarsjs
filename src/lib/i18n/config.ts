@@ -1,5 +1,5 @@
 export const defaultLocale = 'zh-CN' as const;
-export const locales = ['zh-CN', 'zh-TW', 'en', 'ja', 'ko', 'es'] as const;
+export const locales = ['zh-CN', 'zh-TW', 'en'] as const;
 
 export type Locale = (typeof locales)[number];
 
@@ -7,61 +7,29 @@ export const localeNames: Record<Locale, string> = {
   'zh-CN': '简体中文',
   'zh-TW': '繁體中文',
   'en': 'English',
-  'ja': '日本語',
-  'ko': '한국어',
-  'es': 'Español',
 };
 
 export const localeFlags: Record<Locale, string> = {
   'zh-CN': '🇨🇳',
   'zh-TW': '🇹🇼',
   'en': '🇺🇸',
-  'ja': '🇯🇵',
-  'ko': '🇰🇷',
-  'es': '🇪🇸',
 };
 
 // Geo-routing configuration
 export const geoLocaleMapping: Record<string, Locale> = {
-  // China
+  // 中国大陆
   'CN': 'zh-CN',
-  // Taiwan
+  // 台湾地区
   'TW': 'zh-TW',
-  // Hong Kong
+  // 香港
   'HK': 'zh-TW',
-  // Macau
+  // 澳门
   'MO': 'zh-TW',
-  // Singapore (Chinese preference)
+  // 新加坡（华人较多）
   'SG': 'zh-CN',
-  // Malaysia (Chinese preference)
+  // 马来西亚（华人较多）
   'MY': 'zh-CN',
-  // Japan
-  'JP': 'ja',
-  // South Korea
-  'KR': 'ko',
-  // Spain
-  'ES': 'es',
-  // Spanish-speaking countries
-  'MX': 'es',
-  'AR': 'es',
-  'CO': 'es',
-  'VE': 'es',
-  'PE': 'es',
-  'CL': 'es',
-  'EC': 'es',
-  'BO': 'es',
-  'UY': 'es',
-  'PY': 'es',
-  'CR': 'es',
-  'PA': 'es',
-  'DO': 'es',
-  'CU': 'es',
-  'GT': 'es',
-  'HN': 'es',
-  'SV': 'es',
-  'NI': 'es',
-  'PR': 'es',
-  // Default for other countries
+  // 默认使用英文
   'default': 'en',
 };
 

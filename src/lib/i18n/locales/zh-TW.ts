@@ -165,14 +165,21 @@ export default {
     },
     // 下載表單
     form: {
-      urlLabel: 'Instagram URL',
+      title: '快速下載 Instagram 內容',
+      subtitle: '支援圖片、影片、Stories、Reels 等所有格式',
+      urlLabel: 'Instagram 連結',
+      placeholder: '輸入或貼上 Instagram 連結（例如：https://www.instagram.com/p/...）',
       urlPlaceholder: '貼上 Instagram 連結...',
       urlRequired: '請輸入 Instagram 連結',
+      invalidUrl: '請輸入有效的 Instagram 連結',
       urlInvalid: '請輸入有效的 URL',
       urlInvalidInstagram: '請輸入有效的 Instagram 連結',
       urlValidationFailed: 'URL 驗證失敗',
       downloadFailed: '下載失敗',
       downloading: '下載中...',
+      analyze: '解析連結',
+      analyzing: '正在解析...',
+      paste: '貼上',
       startDownload: '開始下載',
       detected: '已偵測',
       advancedOptions: '進階選項',
@@ -180,6 +187,8 @@ export default {
       quality: '品質',
       downloadFormat: '下載格式',
       supportedTypes: '支援的內容類型：',
+      supportedContent: '支援所有格式',
+      contentTypes: '圖片 • 影片 • Stories • Reels • IGTV',
       autoDetect: '自動偵測',
       originalQuality: '原始品質',
       hdQuality: '高清',
@@ -485,7 +494,7 @@ export default {
 
   // Footer
   footer: {
-    company: 'Instagram 下載器',
+    company: 'InstaDownPro',
     copyright: '版權所有',
     allRightsReserved: '保留所有權利',
     links: {
@@ -494,6 +503,8 @@ export default {
       help: '說明中心',
       contact: '聯絡我們',
       about: '關於我們',
+      postDownload: '貼文下載',
+      storiesDownload: 'Stories下載',
     },
     social: {
       title: '關注我們',
@@ -501,6 +512,8 @@ export default {
       facebook: 'Facebook',
       instagram: 'Instagram',
       youtube: 'YouTube',
+      followOn: '在',
+      followUs: '上關注我們',
     },
     sections: {
       product: '產品',
@@ -509,6 +522,10 @@ export default {
       legal: '法律',
     },
     description: '最好用的 Instagram 內容下載工具，支援圖片、影片、Stories、IGTV 和 Reels 下載。',
+    ariaLabel: {
+      footer: '網站頁尾',
+      backToHome: '回到首頁',
+    },
   },
 
   // Privacy Policy
