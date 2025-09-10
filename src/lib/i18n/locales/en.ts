@@ -165,14 +165,21 @@ export default {
     },
     // Download form
     form: {
+      title: 'Quick Download Instagram Content',
+      subtitle: 'Support photos, videos, Stories, Reels and all formats',
       urlLabel: 'Instagram URL',
+      placeholder: 'Enter or paste Instagram link (e.g., https://www.instagram.com/p/...)',
       urlPlaceholder: 'Paste Instagram link here...',
       urlRequired: 'Please enter Instagram link',
+      invalidUrl: 'Please enter a valid Instagram link',
       urlInvalid: 'Please enter a valid URL',
       urlInvalidInstagram: 'Please enter a valid Instagram link',
       urlValidationFailed: 'URL validation failed',
       downloadFailed: 'Download failed',
       downloading: 'Downloading...',
+      analyze: 'Analyze Link',
+      analyzing: 'Analyzing...',
+      paste: 'Paste',
       startDownload: 'Start Download',
       detected: 'Detected',
       advancedOptions: 'Advanced Options',
@@ -180,6 +187,8 @@ export default {
       quality: 'Quality',
       downloadFormat: 'Download Format',
       supportedTypes: 'Supported content types:',
+      supportedContent: 'All formats supported',
+      contentTypes: 'Photos • Videos • Stories • Reels • IGTV',
       autoDetect: 'Auto Detect',
       originalQuality: 'Original Quality',
       hdQuality: 'High Definition',
@@ -485,7 +494,7 @@ export default {
 
   // Footer
   footer: {
-    company: 'Instagram Downloader',
+    company: 'InstaDownPro',
     copyright: 'Copyright',
     allRightsReserved: 'All rights reserved',
     links: {
@@ -494,6 +503,8 @@ export default {
       help: 'Help Center',
       contact: 'Contact Us',
       about: 'About Us',
+      postDownload: 'Post Download',
+      storiesDownload: 'Stories Download',
     },
     social: {
       title: 'Follow Us',
@@ -501,6 +512,8 @@ export default {
       facebook: 'Facebook',
       instagram: 'Instagram',
       youtube: 'YouTube',
+      followOn: 'Follow us on',
+      followUs: '',
     },
     sections: {
       product: 'Product',
@@ -509,6 +522,10 @@ export default {
       legal: 'Legal',
     },
     description: 'The best Instagram content download tool, supporting photos, videos, Stories, IGTV and Reels downloads.',
+    ariaLabel: {
+      footer: 'Website footer',
+      backToHome: 'Back to home',
+    },
   },
 
   // Privacy Policy

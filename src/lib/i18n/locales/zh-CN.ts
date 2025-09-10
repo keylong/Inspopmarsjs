@@ -165,14 +165,21 @@ export default {
     },
     // 下载表单
     form: {
+      title: '快速下载 Instagram 内容',
+      subtitle: '支持图片、视频、Stories、Reels 等所有格式',
       urlLabel: 'Instagram 链接',
+      placeholder: '输入或粘贴 Instagram 链接（例如：https://www.instagram.com/p/...）',
       urlPlaceholder: '粘贴 Instagram 链接...',
       urlRequired: '请输入 Instagram 链接',
+      invalidUrl: '请输入有效的 Instagram 链接',
       urlInvalid: '请输入有效的 URL',
       urlInvalidInstagram: '请输入有效的 Instagram 链接',
       urlValidationFailed: 'URL验证失败',
       downloadFailed: '下载失败',
       downloading: '下载中...',
+      analyze: '解析链接',
+      analyzing: '正在解析...',
+      paste: '粘贴',
       startDownload: '开始下载',
       detected: '检测到',
       advancedOptions: '高级选项',
@@ -180,6 +187,8 @@ export default {
       quality: '画质',
       downloadFormat: '下载格式',
       supportedTypes: '支持的内容类型：',
+      supportedContent: '支持所有格式',
+      contentTypes: '图片 • 视频 • Stories • Reels • IGTV',
       autoDetect: '自动检测',
       originalQuality: '原画质',
       hdQuality: '高清',
@@ -485,7 +494,7 @@ export default {
 
   // Footer
   footer: {
-    company: 'Instagram 下载软件',
+    company: 'InstaDownPro',
     copyright: '版权所有',
     allRightsReserved: '保留所有权利',
     links: {
@@ -494,6 +503,8 @@ export default {
       help: '帮助中心',
       contact: '联系我们',
       about: '关于我们',
+      postDownload: '帖子下载',
+      storiesDownload: 'Stories下载',
     },
     social: {
       title: '关注我们',
@@ -501,6 +512,8 @@ export default {
       facebook: 'Facebook',
       instagram: 'Instagram',
       youtube: 'YouTube',
+      followOn: '在',
+      followUs: '上关注我们',
     },
     sections: {
       product: '产品',
@@ -509,6 +522,10 @@ export default {
       legal: '法律',
     },
     description: '最好用的 Instagram 内容下载工具，支持图片、视频、Stories、IGTV 和 Reels 下载。',
+    ariaLabel: {
+      footer: '网站页脚',
+      backToHome: '回到首页',
+    },
   },
 
   // Privacy Policy
