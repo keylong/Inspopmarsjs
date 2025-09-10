@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 import { Metadata } from 'next';
+import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/lib/auth-context';
 import './globals.css';
 
 // 强制所有页面使用动态渲染
@@ -58,7 +60,10 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="min-h-screen bg-background font-sans antialiased">
-        {children}
+        <AuthProvider>
+          {children}
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

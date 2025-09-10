@@ -21,8 +21,8 @@
       "Email support"
     ],
     "downloadLimit": 100,
-    "stripeProductId": "prod_basic_monthly",
-    "stripePriceId": "price_basic_monthly",
+    "stripeProductId": "prod_T1rb88CSaGTV8C",
+    "stripePriceId": "price_1S5nsIIjrQ02OVM4k37MEmuQ",
     "alipayProductId": "basic_monthly",
     "isActive": true,
     "sortOrder": 1,
@@ -51,8 +51,8 @@
       "Priority support"
     ],
     "downloadLimit": 500,
-    "stripeProductId": "prod_pro_monthly",
-    "stripePriceId": "price_pro_monthly",
+    "stripeProductId": "prod_T1rbK4YonxXqck",
+    "stripePriceId": "price_1S5nsJIjrQ02OVM4W7BcId6b",
     "alipayProductId": "pro_monthly",
     "isActive": true,
     "sortOrder": 2,
@@ -81,12 +81,43 @@
       "24/7 support"
     ],
     "downloadLimit": -1,
-    "stripeProductId": "prod_unlimited_monthly",
-    "stripePriceId": "price_unlimited_monthly",
+    "stripeProductId": "prod_T1rbUQ0rH9QxO6",
+    "stripePriceId": "price_1S5nsLIjrQ02OVM41r8nRciY",
     "alipayProductId": "unlimited_monthly",
     "isActive": true,
     "sortOrder": 3,
     "createdAt": "2025-09-10T00:07:41.119Z",
     "updatedAt": "2025-09-10T00:07:41.119Z"
+  },
+  {
+    "id": "yearly-vip",
+    "name": "年度VIP会员",
+    "nameEn": "Yearly VIP",
+    "description": "一年无限下载，最高画质，所有功能",
+    "descriptionEn": "One year unlimited downloads, highest quality, all features",
+    "price": 99.99,
+    "currency": "USD",
+    "duration": "yearly",
+    "features": [
+      "无限下载",
+      "最高画质",
+      "API访问",
+      "24/7支持",
+      "优先新功能体验"
+    ],
+    "featuresEn": [
+      "Unlimited downloads",
+      "Highest quality",
+      "API access",
+      "24/7 support",
+      "Early access to new features"
+    ],
+    "downloadLimit": -1,
+    "stripeProductId": "prod_T1rbtnjtIV3el6",
+    "stripePriceId": "price_1S5nsMIjrQ02OVM4YBI3JsM3",
+    "isActive": true,
+    "sortOrder": 4,
+    "createdAt": "2025-09-10T13:15:55.149Z",
+    "updatedAt": "2025-09-10T13:15:55.150Z"
   }
 ]

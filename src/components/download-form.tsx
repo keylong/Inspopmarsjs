@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useI18n } from '@/lib/i18n/client';
+import { useI18n, useCurrentLocale } from '@/lib/i18n/client';
 import { useRouter } from 'next/navigation';
 
 interface DownloadFormProps {
@@ -28,6 +28,7 @@ export function DownloadForm({
 }: DownloadFormProps) {
   const t = useI18n();
   const router = useRouter();
+  const currentLocale = useCurrentLocale();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,33 +52,8 @@ export function DownloadForm({
     setLoading(true);
     setError(null);
 
-    try {
-      // 先调用API验证URL
-      const response = await fetch('/api/instagram/download', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          url: url.trim(),
-          quality: 'hd' // 未登录用户限制为HD画质
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        // 如果验证成功，跳转到下载页面
-        router.push(`/download/post?url=${encodeURIComponent(url.trim())}`);
-      } else {
-        setError(data.error || '下载失败，请重试');
-      }
-    } catch (error) {
-      console.error('验证失败:', error);
-      setError('网络错误，请检查网络连接');
-    } finally {
-      setLoading(false);
-    }
+    // 直接跳转到下载页面，不在首页进行API调用
+    router.push(`/${currentLocale}/download/post?url=${encodeURIComponent(url.trim())}`);
   };
 
   const handlePaste = async () => {

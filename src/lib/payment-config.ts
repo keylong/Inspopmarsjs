@@ -2,7 +2,7 @@ import { PaymentConfig } from '@/types/payment'
 
 export const paymentConfig: PaymentConfig = {
   stripe: {
-    publicKey: process.env.STRIPE_PUBLIC_KEY || '',
+    publicKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
     secretKey: process.env.STRIPE_SECRET_KEY || '',
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
   },
@@ -22,7 +22,7 @@ export function validatePaymentConfig() {
 
   // 验证 Stripe 配置
   if (!paymentConfig.stripe.publicKey) {
-    errors.push('STRIPE_PUBLIC_KEY 环境变量未设置')
+    errors.push('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY 环境变量未设置')
   }
   if (!paymentConfig.stripe.secretKey) {
     errors.push('STRIPE_SECRET_KEY 环境变量未设置')
