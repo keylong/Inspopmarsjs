@@ -23,9 +23,23 @@ async function proxyVideo(videoUrl: string): Promise<NextResponse> {
     let decodedUrl: string;
     try {
       decodedUrl = decodeURIComponent(videoUrl);
+      console.log('🔍 解码后的URL预览:', decodedUrl.substring(0, 100) + (decodedUrl.length > 100 ? '...' : ''));
     } catch (e) {
+      console.error('🚫 URL解码失败:', e);
       return NextResponse.json(
-        { error: 'URL格式无效' },
+        { error: 'URL格式无效', details: 'URL解码失败' },
+        { status: 400 }
+      );
+    }
+
+    // 验证URL格式
+    let url: URL;
+    try {
+      url = new URL(decodedUrl);
+    } catch (e) {
+      console.error('🚫 URL格式验证失败:', e, '原始URL:', decodedUrl);
+      return NextResponse.json(
+        { error: 'Invalid URL', details: 'URL格式不正确', originalUrl: decodedUrl.substring(0, 100) },
         { status: 400 }
       );
     }
@@ -49,7 +63,6 @@ async function proxyVideo(videoUrl: string): Promise<NextResponse> {
       /^.*\.meta\.com$/,
     ];
 
-    const url = new URL(decodedUrl);
     const isAllowedDomain = allowedDomainPatterns.some(pattern => 
       pattern.test(url.hostname)
     );

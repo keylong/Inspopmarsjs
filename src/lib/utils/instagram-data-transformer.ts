@@ -4,7 +4,7 @@
  */
 
 import { InstagramPost, InstagramMedia, DisplayResource, DownloadItem, DownloadResolution } from '@/types/instagram';
-import { generateProxyUrl, getMediaType } from './media-proxy';
+import { generateProxyUrl, getMediaType, generateImageSrc, generateVideoSrc } from './media-proxy';
 
 /**
  * 标准化Instagram媒体数据
@@ -39,17 +39,31 @@ export function standardizeMediaData(rawMedia: any): InstagramMedia {
     });
   }
 
+  // 对于视频，需要特殊处理缩略图
+  const isVideo = rawMedia.is_video || rawMedia.type === 'video' || rawMedia.video_url;
+  let thumbnailUrl = '';
+  let mainUrl = rawMedia.display_url || rawMedia.url || '';
+  
+  if (isVideo) {
+    // 对于视频，thumbnail 字段通常是缩略图
+    // display_url 对于视频可能也是缩略图，但我们优先使用 thumbnail 字段
+    thumbnailUrl = rawMedia.thumbnail_src || rawMedia.thumbnail || rawMedia.display_url || '';
+  } else {
+    // 对于图片，使用 display_url 作为缩略图
+    thumbnailUrl = rawMedia.display_url || rawMedia.thumbnail || '';
+  }
+
   return {
     id: rawMedia.id || rawMedia.shortcode || generateRandomId(),
     type: determineMediaType(rawMedia),
-    url: rawMedia.display_url || rawMedia.url || '',
-    thumbnail: rawMedia.display_url || rawMedia.thumbnail || '',
+    url: mainUrl,
+    thumbnail: thumbnailUrl,
     width: rawMedia.dimensions?.width || rawMedia.config_width || 1080,
     height: rawMedia.dimensions?.height || rawMedia.config_height || 1080,
     filename: generateFilename(rawMedia),
     display_resources: displayResources,
     video_url: rawMedia.video_url,
-    is_video: rawMedia.is_video || rawMedia.type === 'video'
+    is_video: isVideo
   };
 }
 
@@ -96,11 +110,21 @@ export function standardizePostData(rawPost: any): InstagramPost {
 }
 
 /**
- * 为媒体URL添加智能代理前缀
- * 自动根据媒体类型选择正确的代理端点
+ * 为图片URL添加图片代理前缀
  */
 export function addProxyToImageUrl(imageUrl: string): string {
-  if (!imageUrl || imageUrl.startsWith('/api/proxy/') || imageUrl.startsWith('data:')) {
+  // 如果URL为空，返回空字符串而不是占位符
+  if (!imageUrl) {
+    return '';
+  }
+  
+  // 如果已经是代理URL或data URL，直接返回
+  if (imageUrl.startsWith('/api/proxy/') || imageUrl.startsWith('data:')) {
+    return imageUrl;
+  }
+  
+  // 如果是本地路径（如 /placeholder-image.jpg），直接返回
+  if (imageUrl.startsWith('/')) {
     return imageUrl;
   }
   
@@ -109,11 +133,42 @@ export function addProxyToImageUrl(imageUrl: string): string {
   const isInstagramUrl = instagramDomains.some(domain => imageUrl.includes(domain));
   
   if (isInstagramUrl) {
-    // 使用智能代理生成URL，自动根据媒体类型选择端点
-    return generateProxyUrl(imageUrl);
+    // 直接构建代理URL，而不是调用generateImageSrc（避免返回占位符）
+    return `/api/proxy/image?url=${encodeURIComponent(imageUrl)}`;
   }
   
   return imageUrl;
+}
+
+/**
+ * 为视频URL添加视频代理前缀
+ */
+export function addProxyToVideoUrl(videoUrl: string): string {
+  // 如果URL为空，返回空字符串
+  if (!videoUrl) {
+    return '';
+  }
+  
+  // 如果已经是代理URL或data URL，直接返回
+  if (videoUrl.startsWith('/api/proxy/') || videoUrl.startsWith('data:')) {
+    return videoUrl;
+  }
+  
+  // 如果是本地路径，直接返回
+  if (videoUrl.startsWith('/')) {
+    return videoUrl;
+  }
+  
+  // 检查是否为Instagram CDN URL
+  const instagramDomains = ['fbcdn.net', 'cdninstagram.com', 'instagram.com'];
+  const isInstagramUrl = instagramDomains.some(domain => videoUrl.includes(domain));
+  
+  if (isInstagramUrl) {
+    // 直接构建视频代理URL
+    return `/api/proxy/video?url=${encodeURIComponent(videoUrl)}`;
+  }
+  
+  return videoUrl;
 }
 
 /**
@@ -126,17 +181,20 @@ export function addProxyToInstagramData(post: InstagramPost): InstagramPost {
   processedPost.media = post.media.map(media => {
     const processedMedia: InstagramMedia = {
       ...media,
-      url: addProxyToImageUrl(media.url),
+      // 对于视频，url字段通常是缩略图，应该使用图片代理
+      url: media.is_video ? addProxyToImageUrl(media.url) : addProxyToImageUrl(media.url),
+      // thumbnail始终是图片，使用图片代理
       thumbnail: addProxyToImageUrl(media.thumbnail || ''),
+      // display_resources通常是不同分辨率的缩略图，使用图片代理
       display_resources: media.display_resources?.map(resource => ({
         ...resource,
         src: addProxyToImageUrl(resource.src)
       })) || []
     };
     
-    // 只有当video_url存在时才添加
+    // 只有当video_url存在时才添加，且使用视频代理
     if (media.video_url) {
-      processedMedia.video_url = addProxyToImageUrl(media.video_url);
+      processedMedia.video_url = addProxyToVideoUrl(media.video_url);
     }
     
     return processedMedia;

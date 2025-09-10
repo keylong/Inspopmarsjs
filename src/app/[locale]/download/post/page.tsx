@@ -26,7 +26,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 
 import { InstagramPost, DownloadItem } from '@/types/instagram';
-import { generateImageSrc, isVideoUrl } from '@/lib/utils/media-proxy';
+import { generateImageSrc, isVideoUrl, generateVideoSrc } from '@/lib/utils/media-proxy';
+import { VideoPreviewModal } from '@/components/ui/video-preview-modal';
 
 // 生成内联SVG占位符
 const generatePlaceholder = (width: number, height: number, text: string) => {
@@ -60,6 +61,8 @@ export default function InstagramPostDownloadPage() {
   const [result, setResult] = useState<DownloadResult | null>(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{src: string; alt: string} | null>(null);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<{src: string; title: string} | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -117,8 +120,15 @@ export default function InstagramPostDownloadPage() {
     }
   };
 
-  // 处理图片点击放大
-  const handleImageClick = (src: string, alt: string) => {
+  // 处理媒体点击预览（支持图片和视频）
+  const handleMediaClick = (src: string, alt: string, isVideo: boolean = false) => {
+    if (isVideo) {
+      // 对于视频，直接使用src（已经是正确的代理URL）
+      setSelectedVideo({ src: src, title: alt });
+      setVideoModalOpen(true);
+      return;
+    }
+    // 只有图片才使用Image组件的模态框
     setSelectedImage({ src, alt });
     setImageModalOpen(true);
   };
@@ -137,13 +147,19 @@ export default function InstagramPostDownloadPage() {
   // 处理键盘事件（Escape 键关闭模态框）
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && imageModalOpen) {
-        setImageModalOpen(false);
-        setSelectedImage(null);
+      if (event.key === 'Escape') {
+        if (imageModalOpen) {
+          setImageModalOpen(false);
+          setSelectedImage(null);
+        }
+        if (videoModalOpen) {
+          setVideoModalOpen(false);
+          setSelectedVideo(null);
+        }
       }
     };
 
-    if (imageModalOpen) {
+    if (imageModalOpen || videoModalOpen) {
       document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden'; // 防止背景滚动
     }
@@ -152,7 +168,7 @@ export default function InstagramPostDownloadPage() {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'unset'; // 恢复滚动
     };
-  }, [imageModalOpen]);
+  }, [imageModalOpen, videoModalOpen]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -323,7 +339,7 @@ export default function InstagramPostDownloadPage() {
                                 key={media.id || index}
                                 media={media}
                                 index={index}
-                                onImageClick={handleImageClick}
+                                onImageClick={handleMediaClick}
                                 onDirectDownload={handleDirectDownload}
                                 onCopyUrl={handleCopyUrl}
                                 t={t}
@@ -565,6 +581,21 @@ export default function InstagramPostDownloadPage() {
           </motion.div>
         </motion.div>
       )}
+
+      {/* 视频预览模态框 */}
+      {selectedVideo && (
+        <VideoPreviewModal
+          isOpen={videoModalOpen}
+          onClose={() => {
+            setVideoModalOpen(false);
+            setSelectedVideo(null);
+          }}
+          videoSrc={selectedVideo.src}
+          title={selectedVideo.title}
+          onDownload={handleDirectDownload}
+          onCopyUrl={handleCopyUrl}
+        />
+      )}
     </div>
   );
 }
@@ -575,7 +606,7 @@ import { InstagramMedia, DisplayResource } from '@/types/instagram';
 interface MediaCardProps {
   media: InstagramMedia;
   index: number;
-  onImageClick: (url: string, title: string) => void;
+  onImageClick: (url: string, title: string, isVideo?: boolean) => void;
   onDirectDownload: (url: string, filename: string) => void;
   onCopyUrl: (url: string) => void;
   t: any;
@@ -596,12 +627,28 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
   const currentLabel = selectedResolution?.label || '原图';
   
 
+  // 调试日志
+  console.log('Media object:', {
+    is_video: media.is_video,
+    thumbnail: media.thumbnail,
+    url: media.url,
+    video_url: media.video_url,
+    display_resources: media.display_resources?.length
+  });
+
   // 对于视频，获取下载URL和预览URL，使用智能媒体代理
-  const previewUrl = media.thumbnail && !isVideoUrl(media.thumbnail) 
-    ? generateImageSrc(media.thumbnail, '/placeholder-image.jpg')
-    : media.is_video || isVideoUrl(currentUrl)
-      ? generatePlaceholder(400, 400, '视频预览')
-      : generateImageSrc(currentUrl, '/placeholder-image.jpg'); // 预览使用缩略图，视频没有缩略图时使用占位图
+  // 使用 SVG 占位符替代不存在的图片文件
+  const fallbackPlaceholder = generatePlaceholder(400, 400, media.is_video ? '视频预览' : '图片加载中');
+  
+  const previewUrl = media.is_video 
+    ? (media.thumbnail // 视频使用 thumbnail 字段作为缩略图
+        ? generateImageSrc(media.thumbnail, fallbackPlaceholder)
+        : media.url // 如果没有 thumbnail，尝试使用 url
+          ? generateImageSrc(media.url, fallbackPlaceholder)
+          : fallbackPlaceholder) // 最后使用占位图
+    : generateImageSrc(currentUrl, fallbackPlaceholder); // 图片直接使用当前选择的分辨率URL
+  
+  console.log('Generated previewUrl:', previewUrl);
   const downloadUrl = media.is_video ? (media.video_url || currentUrl) : currentUrl; // 下载使用视频URL或当前选择的分辨率
   
   return (
@@ -619,10 +666,14 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
           width={400}
           height={400}
           className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
-          onClick={() => onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`)}
+          onClick={() => onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`, media.is_video)}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = generatePlaceholder(400, 400, '媒体加载失败');
+            // 避免无限循环：只在不是占位符的情况下设置占位符
+            if (!target.src.startsWith('data:image/svg+xml')) {
+              console.warn('图片加载失败，使用占位符:', target.src);
+              target.src = generatePlaceholder(400, 400, '媒体加载失败');
+            }
           }}
         />
         {/* 视频标识 */}
@@ -655,15 +706,6 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
       </div>
       
       <div className="p-4">
-        {/* 标题和描述 */}
-        <div className="mb-3">
-          <h5 className="font-semibold text-gray-800">
-            {media.is_video ? t('download.result.videoContent') : t('download.result.imageContent')}
-          </h5>
-          <p className="text-sm text-gray-500">
-            媒体 {index + 1} • {media.display_resources?.length || 1} {t('download.result.resolutions')}可选
-          </p>
-        </div>
         
         {/* 分辨率选择器 */}
         {media.display_resources && media.display_resources.length > 0 && (
@@ -699,7 +741,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
             size="sm"
             variant="outline"
             className="flex-1 text-gray-700 hover:text-gray-900"
-            onClick={() => onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`)}
+            onClick={() => onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`, media.is_video)}
           >
             <ZoomIn className="w-4 h-4 mr-1" />
             {t('download.result.preview')}

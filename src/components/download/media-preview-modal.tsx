@@ -22,17 +22,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { InstagramMedia, DownloadItem } from '@/types/instagram';
-import { createSafeMediaConfig, generateVideoSrc, generateImageSrc } from '@/lib/utils/media-proxy';
-
-// 判断URL是否为视频文件
-const isVideoUrl = (url: string): boolean => {
-  if (!url) return false;
-  const videoExtensions = ['.mp4', '.webm', '.ogg', '.avi', '.mov'];
-  const lowerUrl = url.toLowerCase();
-  return videoExtensions.some(ext => lowerUrl.includes(ext)) || 
-         lowerUrl.includes('video') || 
-         lowerUrl.includes('/v/');
-};
+import { createSafeMediaConfig, generateVideoSrc, generateImageSrc, isVideoUrl } from '@/lib/utils/media-proxy';
 
 interface MediaPreviewModalProps {
   isOpen: boolean;
@@ -331,7 +321,7 @@ export function MediaPreviewModal({
                 </div>
               ) : (
                 <Image
-                  src={safeMediaConfig?.imageSrc || generateImageSrc(currentMedia?.url || '')}
+                  src={safeMediaConfig?.imageSrc || '/placeholder-image.jpg'}
                   alt={`媒体 ${currentIndex + 1}`}
                   width={currentMedia?.width || 800}
                   height={currentMedia?.height || 800}
@@ -428,7 +418,13 @@ export function MediaPreviewModal({
                   }`}
                 >
                   <Image
-                    src={generateImageSrc(mediaItem.thumbnail || mediaItem.url)}
+                    src={
+                      mediaItem.thumbnail && !isVideoUrl(mediaItem.thumbnail) 
+                        ? generateImageSrc(mediaItem.thumbnail)
+                        : mediaItem.is_video 
+                          ? '/placeholder-video.jpg'
+                          : generateImageSrc(mediaItem.url)
+                    }
                     alt={`缩略图 ${index + 1}`}
                     width={48}
                     height={48}

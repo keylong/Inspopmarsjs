@@ -24,126 +24,8 @@ export function getProxyImageUrls(urls: string[]): string[] {
   return urls.map(url => generateImageSrc(url, '/placeholder-image.jpg'));
 }
 
-/**
- * 为Instagram数据结构中的所有媒体URL添加智能代理
- * 自动处理图片和视频URL，选择正确的代理端点
- * @param data - Instagram数据对象
- * @returns 处理后的数据对象
- */
-export function addProxyToInstagramData(data: any): any {
-  if (!data || typeof data !== 'object') {
-    return data;
-  }
-
-  try {
-    // 深拷贝避免修改原始数据
-    const processedData = JSON.parse(JSON.stringify(data));
-
-    // 智能处理函数：根据媒体类型选择正确的处理方式
-    const processUrl = (url: string, forceImage: boolean = false): string => {
-      if (!url) return '';
-      if (forceImage) {
-        // 强制作为图片处理（如缩略图）
-        return generateImageSrc(url, '/placeholder-image.jpg');
-      }
-      // 自动检测媒体类型
-      return generateProxyUrl(url);
-    };
-
-    // 处理主URL（可能是图片或视频）
-    if (processedData.display_url) {
-      processedData.display_url = processUrl(processedData.display_url);
-    }
-
-    // 处理缩略图（强制作为图片）
-    if (processedData.thumbnail_src) {
-      processedData.thumbnail_src = processUrl(processedData.thumbnail_src, true);
-    }
-    
-    if (processedData.thumbnail) {
-      processedData.thumbnail = processUrl(processedData.thumbnail, true);
-    }
-
-    // 处理视频URL
-    if (processedData.video_url) {
-      processedData.video_url = generateVideoSrc(processedData.video_url) || processedData.video_url;
-    }
-
-    // 处理不同分辨率的资源
-    if (processedData.display_resources && Array.isArray(processedData.display_resources)) {
-      processedData.display_resources = processedData.display_resources
-        .filter((resource: any) => resource && typeof resource === 'object')
-        .map((resource: any) => ({
-          ...resource,
-          src: processUrl(resource.src)
-        }));
-    }
-
-    // 处理轮播媒体
-    if (processedData.edge_sidecar_to_children?.edges && Array.isArray(processedData.edge_sidecar_to_children.edges)) {
-      processedData.edge_sidecar_to_children.edges = processedData.edge_sidecar_to_children.edges
-        .filter((edge: any) => edge?.node)
-        .map((edge: any) => ({
-          ...edge,
-          node: {
-            ...edge.node,
-            display_url: processUrl(edge.node.display_url),
-            video_url: edge.node.video_url ? (generateVideoSrc(edge.node.video_url) || edge.node.video_url) : undefined,
-            display_resources: Array.isArray(edge.node.display_resources) 
-              ? edge.node.display_resources
-                  .filter((resource: any) => resource && typeof resource === 'object')
-                  .map((resource: any) => ({
-                    ...resource,
-                    src: processUrl(resource.src)
-                  }))
-              : []
-          }
-        }));
-    }
-    
-    // 处理carousel_media数组
-    if (processedData.carousel_media && Array.isArray(processedData.carousel_media)) {
-      processedData.carousel_media = processedData.carousel_media
-        .filter((media: any) => media && typeof media === 'object')
-        .map((media: any) => ({
-          ...media,
-          display_url: processUrl(media.display_url),
-          thumbnail: processUrl(media.thumbnail, true),
-          video_url: media.video_url ? (generateVideoSrc(media.video_url) || media.video_url) : undefined,
-        }));
-    }
-
-    // 处理用户头像
-    if (processedData.owner?.profile_pic_url) {
-      processedData.owner.profile_pic_url = processUrl(processedData.owner.profile_pic_url, true);
-    }
-    
-    // 处理media数组（标准化后的数据结构）
-    if (processedData.media && Array.isArray(processedData.media)) {
-      processedData.media = processedData.media
-        .filter((media: any) => media && typeof media === 'object')
-        .map((media: any) => ({
-          ...media,
-          url: processUrl(media.url),
-          thumbnail: processUrl(media.thumbnail, true),
-          video_url: media.video_url ? (generateVideoSrc(media.video_url) || media.video_url) : undefined,
-          display_resources: Array.isArray(media.display_resources)
-            ? media.display_resources
-                .filter((resource: any) => resource && typeof resource === 'object')
-                .map((resource: any) => ({
-                  ...resource,
-                  src: processUrl(resource.src)
-                }))
-            : []
-        }));
-    }
-
-    return processedData;
-  } catch (error) {
-    console.error('处理Instagram数据代理时出错:', error);
-    return data; // 出错时返回原始数据
-  }
-}
+// 注意：addProxyToInstagramData 函数已移动到 instagram-data-transformer.ts 中
+// 避免重复处理和双重编码问题
 
 /**
  * 获取错误占位图URL
@@ -207,6 +89,5 @@ export function getErrorPlaceholder(
 export default {
   getProxyImageUrl,
   getProxyImageUrls,
-  addProxyToInstagramData,
   getErrorPlaceholder
 };

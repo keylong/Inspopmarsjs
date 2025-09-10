@@ -8,11 +8,23 @@ export function isVideoUrl(url: string): boolean {
   if (!url) return false;
   const videoExtensions = ['.mp4', '.webm', '.ogg', '.avi', '.mov', '.m4v'];
   const lowerUrl = url.toLowerCase();
-  return videoExtensions.some(ext => lowerUrl.includes(ext)) || 
+  const isVideo = videoExtensions.some(ext => lowerUrl.includes(ext)) || 
          lowerUrl.includes('video') || 
          lowerUrl.includes('/v/') ||
          lowerUrl.includes('dash_baseline') ||
          lowerUrl.includes('progressive');
+  
+  if (url.includes('debug')) {
+    console.log('🔍 isVideoUrl检查:', {
+      url: url.substring(0, 100),
+      isVideo,
+      hasVideoExt: videoExtensions.some(ext => lowerUrl.includes(ext)),
+      hasVideoKeyword: lowerUrl.includes('video'),
+      hasDashBaseline: lowerUrl.includes('dash_baseline')
+    });
+  }
+  
+  return isVideo;
 }
 
 // 检测图片URL
@@ -58,33 +70,73 @@ export function generateProxyUrl(originalUrl: string, mediaType?: 'video' | 'ima
 
 // 为Image组件生成安全的src
 export function generateImageSrc(url: string, fallback: string = '/placeholder-image.jpg'): string {
-  if (!url) return fallback;
+  console.log('🖼️ generateImageSrc 调用:', { 
+    url: url?.substring(0, 100), 
+    fallback: fallback?.substring(0, 50),
+    isVideo: isVideoUrl(url),
+    isImage: isImageUrl(url)
+  });
+  
+  if (!url) {
+    console.log('⚠️ URL为空，返回fallback');
+    return fallback;
+  }
+  
+  // 如果已经是代理URL、data URL或本地路径，直接返回（避免重复代理）
+  if (url.startsWith('/api/proxy/') || url.startsWith('data:') || (url.startsWith('/') && !url.startsWith('/api/'))) {
+    console.log('📁 代理URL、本地资源或data URL，直接返回');
+    return url;
+  }
   
   // 如果是视频URL，返回占位符
   if (isVideoUrl(url)) {
-    console.warn('尝试将视频URL用作图片，使用占位符:', url.substring(0, 100));
+    console.warn('⚠️ 尝试将视频URL用作图片，使用占位符:', url.substring(0, 100));
     return fallback;
   }
   
   // 如果是图片URL，生成代理URL
   if (isImageUrl(url)) {
-    return generateProxyUrl(url, 'image');
+    const proxyUrl = generateProxyUrl(url, 'image');
+    console.log('✅ 生成图片代理URL:', proxyUrl);
+    return proxyUrl;
+  }
+  
+  // 对于Instagram的URL，即使没有明确的图片扩展名，也应该尝试作为图片处理
+  if (url.includes('instagram.com') || url.includes('fbcdn.net') || url.includes('cdninstagram.com')) {
+    console.log('🔍 检测到Instagram域名，尝试作为图片处理');
+    const proxyUrl = generateProxyUrl(url, 'image');
+    console.log('✅ 生成Instagram图片代理URL:', proxyUrl);
+    return proxyUrl;
   }
   
   // 未知类型，返回占位符
+  console.warn('❓ 未知URL类型，返回fallback:', url.substring(0, 100));
   return fallback;
 }
 
 // 为Video组件生成安全的src
 export function generateVideoSrc(url: string): string | null {
-  if (!url) return null;
+  console.log('🔍 generateVideoSrc 调用，URL:', url?.substring(0, 100));
+  
+  if (!url) {
+    console.warn('❌ generateVideoSrc: URL为空');
+    return null;
+  }
+  
+  // 如果已经是代理URL，直接返回（避免重复代理）
+  if (url.startsWith('/api/proxy/')) {
+    console.log('📁 已是代理URL，直接返回');
+    return url;
+  }
   
   // 只有视频URL才返回代理URL
   if (isVideoUrl(url)) {
-    return generateProxyUrl(url, 'video');
+    const proxyUrl = generateProxyUrl(url, 'video');
+    console.log('✅ generateVideoSrc: 生成视频代理URL:', proxyUrl);
+    return proxyUrl;
   }
   
-  console.warn('尝试将非视频URL用作视频源:', url.substring(0, 100));
+  console.warn('⚠️ 尝试将非视频URL用作视频源:', url.substring(0, 100));
   return null;
 }
 

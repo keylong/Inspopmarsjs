@@ -353,7 +353,13 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
       {/* 媒体预览 */}
       <div className="aspect-square relative overflow-hidden bg-gray-100">
         <Image
-          src={generateImageSrc(item.thumbnail || '', '/placeholder-image.jpg')}
+          src={
+            item.type === 'video' 
+              ? (item.thumbnail && !item.thumbnail.includes('video') 
+                 ? generateImageSrc(item.thumbnail, '/placeholder-video.jpg')
+                 : '/placeholder-video.jpg')
+              : generateImageSrc(item.thumbnail || '', '/placeholder-image.jpg')
+          }
           alt={`媒体 ${index + 1}`}
           fill
           className="object-cover"
