@@ -1,7 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useEffect, useState, memo } from 'react';
+import dynamic from 'next/dynamic';
+
+// 延迟加载 Supabase 客户端
+const getSupabase = () => import('@/lib/supabase').then(mod => mod.supabase);
 
 interface AdSenseProps {
   slot?: string;
@@ -17,7 +20,8 @@ declare global {
   }
 }
 
-export function AdSense({
+// 使用 memo 优化重渲染
+export const AdSense = memo(function AdSense({
   slot = 'auto',
   format = 'auto',
   responsive = true,
@@ -31,6 +35,7 @@ export function AdSense({
     // 检查用户登录状态
     const checkUser = async () => {
       try {
+        const supabase = await getSupabase();
         const { data: { user } } = await supabase.auth.getUser();
         setUser(user);
       } catch (error) {
@@ -43,12 +48,24 @@ export function AdSense({
     checkUser();
 
     // 监听登录状态变化
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
+    const setupSubscription = async () => {
+      const supabase = await getSupabase();
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        setUser(session?.user || null);
+      });
+      
+      return subscription;
+    };
+
+    let subscription: any;
+    setupSubscription().then(sub => {
+      subscription = sub;
     });
 
     return () => {
-      subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, []);
 
@@ -91,7 +108,7 @@ export function AdSense({
       />
     </div>
   );
-}
+});
 
 // 横幅广告组件
 export function AdSenseBanner({ className = '' }: { className?: string }) {

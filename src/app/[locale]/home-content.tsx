@@ -1,24 +1,28 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Download, 
-  Zap, 
-  Shield, 
-  Smartphone,
-  Instagram,
-  Play,
-  Image,
-  Star,
-  Users,
-  ArrowRight
-} from 'lucide-react';
+// 按需导入图标，减少包大小
+import Download from 'lucide-react/dist/esm/icons/download';
+import Zap from 'lucide-react/dist/esm/icons/zap';
+import Shield from 'lucide-react/dist/esm/icons/shield';
+import Smartphone from 'lucide-react/dist/esm/icons/smartphone';
+import Instagram from 'lucide-react/dist/esm/icons/instagram';
+import Play from 'lucide-react/dist/esm/icons/play';
+import Image from 'lucide-react/dist/esm/icons/image';
+import Star from 'lucide-react/dist/esm/icons/star';
+import Users from 'lucide-react/dist/esm/icons/users';
+import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/lib/i18n/client';
-import { DownloadForm } from '@/components/download-form';
-import dynamic from 'next/dynamic';
+// 延迟加载下载表单组件
+const DownloadForm = dynamic(() => import('@/components/download-form').then(mod => mod.DownloadForm), {
+  ssr: true,
+  loading: () => <div className="h-96 bg-white/80 rounded-2xl animate-pulse" />
+});
 import Link from 'next/link';
 
 // 动态导入广告组件，减少初始加载

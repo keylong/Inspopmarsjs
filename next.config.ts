@@ -173,7 +173,22 @@ const nextConfig: NextConfig = {
       'lucide-react',
       '@radix-ui/react-icons',
       'framer-motion',
+      '@supabase/supabase-js',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-label',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-tooltip',
     ],
+  },
+  
+  // 启用 SWC 编译器的更多优化
+  compiler: {
+    // 移除 console.log 在生产环境
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
   },
   
   // Headers for caching and security
