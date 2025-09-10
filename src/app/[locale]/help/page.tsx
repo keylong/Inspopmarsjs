@@ -1,6 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
 
 import { useI18n } from '@/lib/i18n/client';
 import { Button } from '@/components/ui/button';

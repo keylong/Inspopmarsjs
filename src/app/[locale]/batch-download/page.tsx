@@ -1,6 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
 
 import { SEOLayout } from '@/components/seo/seo-layout';
 import { DownloadForm } from '@/components/download/download-form';

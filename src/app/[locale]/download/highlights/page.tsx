@@ -1,25 +1,23 @@
-'use client'
+import { Metadata } from 'next';
+import DownloadPageWrapper, { generateDownloadPageMetadata } from '@/components/download/download-page-wrapper';
+import { locales } from '@/lib/i18n/config';
 
-export const dynamic = 'force-dynamic';
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
 
-import { SEOLayout } from '@/components/seo/seo-layout';
-import { DownloadForm } from '@/components/download/download-form';
-import { useI18n } from '@/lib/i18n/client';
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return generateDownloadPageMetadata(locale, 'highlights');
+}
 
-export default function InstagramHighlightsDownloadPage() {
-  const t = useI18n();
-
-  // 使用硬编码的中文特性描述
-  const features = ['精选内容', '永久保存', '批量处理'];
-
-  return (
-    <SEOLayout contentType="highlights">
-      <DownloadForm 
-        placeholder={t('downloadPages.highlights.inputPlaceholder')}
-        acceptedTypes={['highlights']}
-        optimizedFor={t('downloadPages.highlights.subheading')}
-        features={features}
-      />
-    </SEOLayout>
-  );
+export default async function HighlightsDownloadPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const translations = {
+    'zh-CN': { placeholder: '请输入精选链接', subheading: '精选集锦', features: ['精选合集', '永久保存', '批量下载'] },
+    'zh-TW': { placeholder: '請輸入精選連結', subheading: '精選集錦', features: ['精選合集', '永久保存', '批量下載'] },
+    'en': { placeholder: 'Enter Highlights URL', subheading: 'Highlights', features: ['Story Highlights', 'Permanent Save', 'Batch Download'] },
+  };
+  const t = translations[locale as keyof typeof translations] || translations['zh-CN'];
+  return <DownloadPageWrapper locale={locale} contentType="highlights" translations={t} acceptedTypes={['highlights']} />;
 }
