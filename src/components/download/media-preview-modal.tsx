@@ -22,6 +22,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { InstagramMedia, DownloadItem } from '@/types/instagram';
+import { createSafeMediaConfig, generateVideoSrc, generateImageSrc } from '@/lib/utils/media-proxy';
 
 // 判断URL是否为视频文件
 const isVideoUrl = (url: string): boolean => {
@@ -59,6 +60,12 @@ export function MediaPreviewModal({
   const [videoError, setVideoError] = useState(false);
 
   const currentMedia = media[currentIndex];
+  
+  // 创建安全的媒体配置
+  const safeMediaConfig = currentMedia ? createSafeMediaConfig(
+    currentMedia.video_url || currentMedia.url,
+    currentMedia.thumbnail
+  ) : null;
 
   // 键盘导航
   useEffect(() => {
@@ -253,14 +260,10 @@ export function MediaPreviewModal({
                 transition: 'transform 0.2s ease-out'
               }}
             >
-              {currentMedia?.is_video && !videoError ? (
+              {(currentMedia?.is_video || safeMediaConfig?.isVideo) && !videoError ? (
                 <video
-                  src={currentMedia.video_url || currentMedia.url}
-                  poster={
-                    currentMedia.thumbnail && !isVideoUrl(currentMedia.thumbnail) 
-                      ? currentMedia.thumbnail 
-                      : undefined // 不设置poster，避免使用视频URL
-                  }
+                  src={safeMediaConfig?.videoSrc || generateVideoSrc(currentMedia?.video_url || currentMedia?.url || '')}
+                  poster={safeMediaConfig?.poster}
                   controls
                   autoPlay={isPlaying}
                   muted={isMuted}
@@ -311,12 +314,8 @@ export function MediaPreviewModal({
                     </p>
                     <div className="space-y-2">
                       <video
-                        src={currentMedia?.url}
-                        poster={
-                          currentMedia?.thumbnail && !isVideoUrl(currentMedia.thumbnail) 
-                            ? currentMedia.thumbnail 
-                            : undefined
-                        }
+                        src={safeMediaConfig?.videoSrc || generateVideoSrc(currentMedia?.url || '')}
+                        poster={safeMediaConfig?.poster}
                         controls
                         autoPlay={isPlaying}
                         muted={isMuted}
@@ -332,7 +331,7 @@ export function MediaPreviewModal({
                 </div>
               ) : (
                 <Image
-                  src={currentMedia?.url || ''}
+                  src={safeMediaConfig?.imageSrc || generateImageSrc(currentMedia?.url || '')}
                   alt={`媒体 ${currentIndex + 1}`}
                   width={currentMedia?.width || 800}
                   height={currentMedia?.height || 800}
@@ -343,7 +342,7 @@ export function MediaPreviewModal({
                     const img = e.target as HTMLImageElement;
                     img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzljYTNhZiI+CiAgICDlqpLkvZPliqDovb3lpLHotKUKICA8L3RleHQ+Cjwvc3ZnPgo=';
                   }}
-                  onLoadStart={() => console.log('开始加载图片:', currentMedia?.url)}
+                  onLoadStart={() => console.log('开始加载图片:', safeMediaConfig?.imageSrc)}
                 />
               )}
             </motion.div>
@@ -429,13 +428,7 @@ export function MediaPreviewModal({
                   }`}
                 >
                   <Image
-                    src={
-                      mediaItem.thumbnail && !isVideoUrl(mediaItem.thumbnail) 
-                        ? mediaItem.thumbnail 
-                        : (mediaItem.is_video || isVideoUrl(mediaItem.url)) 
-                          ? 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+PHBhdGggZD0iTTIwIDEzLjVWMzQuNUwyOCAyNEwyMCAxMy41WiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg=='
-                          : mediaItem.url
-                    }
+                    src={generateImageSrc(mediaItem.thumbnail || mediaItem.url)}
                     alt={`缩略图 ${index + 1}`}
                     width={48}
                     height={48}

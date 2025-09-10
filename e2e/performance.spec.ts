@@ -27,9 +27,15 @@ test.describe('性能测试', () => {
     await page.waitForLoadState('networkidle');
 
     // 获取Web Vitals指标
-    const webVitals = await page.evaluate(async () => {
+    interface WebVitals {
+      LCP: number;
+      FID: number;
+      CLS: number;
+    }
+
+    const webVitals = await page.evaluate(async (): Promise<WebVitals> => {
       return new Promise((resolve) => {
-        const vitals = {
+        const vitals: WebVitals = {
           LCP: 0,
           FID: 0,
           CLS: 0,

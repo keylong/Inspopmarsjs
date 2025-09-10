@@ -31,6 +31,7 @@ import { ResolutionSelector } from './resolution-selector';
 import { MediaPreviewModal } from './media-preview-modal';
 import { generateDownloadItems } from '@/lib/utils/instagram-data-transformer';
 import { useI18n } from '@/lib/i18n/client';
+import { generateImageSrc } from '@/lib/utils/media-proxy';
 
 interface ResultDisplayProps {
   result: {
@@ -321,15 +322,6 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
   const [copied, setCopied] = useState(false);
   const t = useI18n();
 
-  // 检测视频URL
-  const isVideoUrl = (url: string): boolean => {
-    if (!url) return false;
-    const videoExtensions = ['.mp4', '.webm', '.ogg', '.avi', '.mov'];
-    const lowerUrl = url.toLowerCase();
-    return videoExtensions.some(ext => lowerUrl.includes(ext)) || 
-           lowerUrl.includes('video') || 
-           lowerUrl.includes('/v/');
-  };
 
   const formatFileSize = (bytes: number) => {
     const sizes = ['B', 'KB', 'MB', 'GB'];
@@ -361,11 +353,7 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
       {/* 媒体预览 */}
       <div className="aspect-square relative overflow-hidden bg-gray-100">
         <Image
-          src={
-            item.thumbnail && !isVideoUrl(item.thumbnail) 
-              ? item.thumbnail 
-              : '/placeholder-image.jpg'
-          }
+          src={generateImageSrc(item.thumbnail, '/placeholder-image.jpg')}
           alt={`媒体 ${index + 1}`}
           fill
           className="object-cover"
