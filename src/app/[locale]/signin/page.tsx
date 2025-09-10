@@ -44,9 +44,8 @@ export default function SignInPage() {
         const { data: { user } } = await supabase.auth.getUser()
         console.log('登录后检查用户状态:', user)
         
-        // 重定向到首页
-        router.push('/');
-        router.refresh(); // 刷新页面以更新认证状态
+        // 使用 window.location 进行硬刷新，确保所有组件重新加载
+        window.location.href = '/';
       }
     } catch (error) {
       console.error('登录错误:', error);

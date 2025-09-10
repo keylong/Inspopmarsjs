@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
+import { AdSenseBanner, AdSenseResponsive } from '@/components/ads/adsense';
 
 export default function DownloadPage() {
   const currentLocale = useCurrentLocale() || 'zh-CN';
@@ -134,6 +135,16 @@ export default function DownloadPage() {
           </div>
         </motion.header>
 
+        {/* 顶部横幅广告 - 仅对非登录用户显示 */}
+        <motion.div 
+          className="flex justify-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <AdSenseBanner className="max-w-4xl" />
+        </motion.div>
+
         {/* 下载选项网格 */}
         <motion.div 
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-16"
@@ -236,6 +247,16 @@ export default function DownloadPage() {
             </div>
           </div>
         </motion.section>
+
+        {/* 底部响应式广告 - 仅对非登录用户显示 */}
+        <motion.div 
+          className="flex justify-center mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.0 }}
+        >
+          <AdSenseResponsive className="max-w-4xl" />
+        </motion.div>
       </div>
     </div>
   );

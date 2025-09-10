@@ -9,6 +9,7 @@ import { AnalyticsProvider } from '@/components/providers/analytics-provider';
 import { ErrorBoundary } from '@/components/providers/error-boundary';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { WebVitalsReporter, ResourceHints } from '@/components/performance/web-vitals';
+import { AdSenseScript } from '@/components/ads/adsense-script';
 
 // 强制所有页面使用动态渲染
 export const dynamic = 'force-dynamic';
@@ -120,6 +121,7 @@ export default async function LocaleLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <WebVitalsReporter />
+        <AdSenseScript />
           <AnalyticsProvider>
             <ErrorBoundary>
               <QueryProvider>

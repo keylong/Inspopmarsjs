@@ -41,11 +41,22 @@ export function SupabaseUserButton() {
     getCurrentUser()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email)
+      
+      // 立即更新用户状态
       setUser(session?.user || null)
+      
       if (session?.user) {
+        // 用户登录或会话更新
         fetchUserProfile()
       } else {
+        // 用户登出
         setUserProfile(null)
+      }
+      
+      // 如果是登录事件，确保UI更新
+      if (event === 'SIGNED_IN') {
+        setLoading(false)
       }
     })
 

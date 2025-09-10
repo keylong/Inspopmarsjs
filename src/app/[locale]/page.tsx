@@ -22,6 +22,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 import { DownloadForm } from '@/components/download-form';
+import { AdSenseBanner, AdSenseResponsive } from '@/components/ads/adsense';
+import { AdTest } from '@/components/ads/ad-test';
 
 export default function Home() {
   const currentLocale = useCurrentLocale() || 'zh-CN';
@@ -68,6 +70,11 @@ export default function Home() {
       </div>
       
       <div className="container mx-auto px-4 py-16 relative">
+        {/* 广告测试组件 - 仅用于测试 */}
+        <div className="mb-8">
+          <AdTest />
+        </div>
+        
         {/* Hero Section */}
         <motion.div 
           className="text-center mb-20"
@@ -179,6 +186,16 @@ export default function Home() {
               </Link>
             </motion.div>
           </motion.div>
+        </motion.div>
+
+        {/* 中间横幅广告 - 仅对非登录用户显示 */}
+        <motion.div 
+          className="flex justify-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+        >
+          <AdSenseBanner className="max-w-4xl" />
         </motion.div>
 
         {/* 功能特色 */}
@@ -305,6 +322,16 @@ export default function Home() {
               <span className="font-medium text-gray-700">{t('download.result.reels')}</span>
             </motion.div>
           </div>
+        </motion.div>
+
+        {/* 底部响应式广告 - 仅对非登录用户显示 */}
+        <motion.div 
+          className="flex justify-center mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.8 }}
+        >
+          <AdSenseResponsive className="max-w-4xl" />
         </motion.div>
       </div>
     </div>

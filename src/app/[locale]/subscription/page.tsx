@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Loader2, CreditCard, Calendar, Download, Check, Crown, Timer, Zap } from 'lucide-react'
+import { Loader2, CreditCard, Calendar, Download, Check, Crown, Timer, Zap, Shield } from 'lucide-react'
 import { SubscriptionPlan, UserSubscription } from '@/types/payment'
 import { useI18n } from '@/lib/i18n/client'
 
@@ -295,8 +295,8 @@ export default function SubscriptionPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan, index) => {
             const isCurrentPlan = currentPlan?.id === plan.id
-            const isPremium = plan.name.includes('高级版') || plan.name.includes('Premium')
-            const isYearly = index === 0 // 假设第一个是年度套餐
+            const isYearlyVIP = index === 1 // 第二个是一年VIP会员（根据图片）
+            const isYearly = index === 0 // 第一个是年度超级VIP
             const isPro = plan.name.includes('专业版') || plan.name.includes('Pro')
             
             // 设置不同套餐的价格
@@ -310,10 +310,11 @@ export default function SubscriptionPage() {
               originalPrice = 668
               saveAmount = 270
               monthlyPrice = displayPrice / 12
-            } else if (isPremium) {
+            } else if (isYearlyVIP) {
               displayPrice = 188
               originalPrice = 268
-              monthlyPrice = displayPrice
+              saveAmount = 80
+              monthlyPrice = displayPrice / 12
             } else {
               displayPrice = 28
               monthlyPrice = displayPrice
@@ -323,7 +324,7 @@ export default function SubscriptionPage() {
               <Card key={plan.id} className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl ${
                 isCurrentPlan ? 'ring-2 ring-blue-500' : ''
               } ${isYearly ? 'bg-gradient-to-br from-teal-400 to-teal-500 text-white transform hover:scale-105' : 
-                 isPremium ? 'bg-white border-2 border-blue-500' : 'bg-white border'}`}>
+                 isYearlyVIP ? 'bg-gradient-to-br from-purple-400 to-purple-500 text-white transform hover:scale-105' : 'bg-white border'}`}>
                 
                 {/* 角标 */}
                 {isYearly && (
@@ -337,8 +338,8 @@ export default function SubscriptionPage() {
                 <CardHeader className="text-center">
                   {/* 标题 */}
                   <div className="mb-4">
-                    <h3 className={`text-xl font-bold mb-2 ${isYearly ? 'text-white' : 'text-gray-800'}`}>
-                      {isYearly ? '年度超级VIP' : isPremium ? '一年 VIP会员' : '一个月 VIP会员'}
+                    <h3 className={`text-xl font-bold mb-2 ${(isYearly || isYearlyVIP) ? 'text-white' : 'text-gray-800'}`}>
+                      {isYearly ? '年度超级VIP' : isYearlyVIP ? '一年 VIP会员' : '一个月 VIP会员'}
                     </h3>
                     {isYearly && (
                       <p className="text-white/90 text-sm">限时优惠: 23小时 49分 47秒</p>
@@ -348,12 +349,12 @@ export default function SubscriptionPage() {
                   {/* 价格展示 */}
                   <div className="mb-6">
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <span className={`text-4xl font-bold ${isYearly ? 'text-white' : 'text-gray-800'}`}>
+                      <span className={`text-4xl font-bold ${(isYearly || isYearlyVIP) ? 'text-white' : 'text-gray-800'}`}>
                         ¥{displayPrice}
                       </span>
                       {originalPrice > 0 && (
                         <>
-                          <span className={`text-2xl line-through ${isYearly ? 'text-white/70' : 'text-gray-400'}`}>
+                          <span className={`text-2xl ${(isYearly || isYearlyVIP) ? 'text-orange-200' : 'text-gray-400'}`}>
                             /{originalPrice}
                           </span>
                         </>
@@ -368,9 +369,13 @@ export default function SubscriptionPage() {
                       <p className="text-white/90 text-sm mt-2">年度无限下载特权</p>
                     )}
                     
-                    {!isYearly && (
+                    {isYearlyVIP && (
+                      <p className="text-white/90 text-sm mt-2">5000次，一年内有效</p>
+                    )}
+                    
+                    {!isYearly && !isYearlyVIP && (
                       <p className="text-gray-500 text-sm">
-                        {isPremium ? '5000次，一年内有效' : '500次，一个月内有效'}
+                        500次，一个月内有效
                       </p>
                     )}
                   </div>
@@ -424,36 +429,36 @@ export default function SubscriptionPage() {
                           </div>
                         </div>
                       </>
-                    ) : isPremium ? (
-                      // 一年VIP功能列表
+                    ) : isYearlyVIP ? (
+                      // 一年VIP功能列表（根据图片设计）
                       <>
                         <div className="space-y-2">
-                          <div className="flex items-center gap-3 p-2 rounded-lg bg-gray-50">
-                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                              <Download className="h-4 w-4 text-blue-500" />
+                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/20">
+                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                              <Download className="h-4 w-4 text-purple-500" />
                             </div>
-                            <span className="text-gray-700 text-sm">支持下载 图片/视频</span>
+                            <span className="text-white text-sm">支持下载 图片/视频</span>
                           </div>
-                          <div className="flex items-center gap-3 p-2 rounded-lg bg-gray-50">
-                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                              <Zap className="h-4 w-4 text-blue-500" />
+                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/20">
+                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                              <Zap className="h-4 w-4 text-purple-500" />
                             </div>
-                            <span className="text-gray-700 text-sm">支持下载 多张图片/视频</span>
+                            <span className="text-white text-sm">支持下载 多张图片/视频</span>
                           </div>
-                          <div className="flex items-center gap-3 p-2 rounded-lg bg-gray-50">
-                            <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/20">
+                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
                               <Crown className="h-4 w-4 text-orange-500" />
                             </div>
-                            <span className="text-gray-700 text-sm">
-                              <span className="text-red-500 font-bold">[新功能]</span> 网页端 一键打包下载功能
+                            <span className="text-white text-sm">
+                              <span className="text-red-300 font-bold">[新功能]</span> 网页端 一键打包下载功能
                             </span>
                           </div>
-                          <div className="flex items-center gap-3 p-2 rounded-lg bg-gray-50">
-                            <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/20">
+                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
                               <Shield className="h-4 w-4 text-yellow-500" />
                             </div>
-                            <span className="text-gray-700 text-sm">
-                              <span className="text-red-500 font-bold">[新功能]</span> 批量下载指定博主帖子
+                            <span className="text-white text-sm">
+                              <span className="text-red-300 font-bold">[新功能]</span> 批量下载指定博主帖子
                             </span>
                           </div>
                         </div>
@@ -494,7 +499,7 @@ export default function SubscriptionPage() {
                         onClick={() => handleUpgrade(plan.id, 'alipay')}
                         disabled={upgrading}
                         className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 ${
-                          isYearly 
+                          (isYearly || isYearlyVIP)
                             ? 'bg-blue-600 hover:bg-blue-700 text-white'
                             : 'bg-blue-500 hover:bg-blue-600 text-white'
                         }`}
@@ -513,7 +518,7 @@ export default function SubscriptionPage() {
                         onClick={() => handleUpgrade(plan.id, 'stripe')}
                         disabled={upgrading}
                         className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 ${
-                          isYearly 
+                          (isYearly || isYearlyVIP)
                             ? 'bg-green-500 hover:bg-green-600 text-white'
                             : 'bg-green-400 hover:bg-green-500 text-white'
                         }`}
