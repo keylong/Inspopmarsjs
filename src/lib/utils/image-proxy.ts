@@ -195,13 +195,12 @@ export function getErrorPlaceholder(
       </svg>
     `.trim();
     
-    return `data:image/svg+xml;base64,${btoa(svgContent)}`;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
   } catch (error) {
     console.error('生成占位图失败:', error);
     // 备用简单占位图
-    return `data:image/svg+xml;base64,${btoa(
-      '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#6b7280">加载失败</text></svg>'
-    )}`;
+    const fallbackSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#6b7280">加载失败</text></svg>';
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(fallbackSvg)}`;
   }
 }
 

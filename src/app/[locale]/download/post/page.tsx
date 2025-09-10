@@ -39,7 +39,9 @@ const generatePlaceholder = (width: number, height: number, text: string) => {
       </text>
     </svg>
   `.trim();
-  return `data:image/svg+xml;base64,${btoa(svgContent)}`;
+  
+  // 使用 encodeURIComponent 替代 btoa 来处理中文字符
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgContent)}`;
 };
 
 interface DownloadResult {
@@ -376,7 +378,10 @@ export default function InstagramPostDownloadPage() {
                 <Alert variant="destructive" className="mb-8">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-{result.error || t('download.form.downloadFailed')}
+                    {typeof result.error === 'string' 
+                      ? result.error 
+                      : (result.error as any)?.message || (result.error as any)?.toString() || t('download.form.downloadFailed')
+                    }
                   </AlertDescription>
                 </Alert>
               )}
@@ -590,15 +595,6 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
   const currentHeight = selectedResolution?.config_height || media.height;
   const currentLabel = selectedResolution?.label || '原图';
   
-  // 判断URL是否为视频文件
-  const isVideoUrl = (url: string): boolean => {
-    if (!url) return false;
-    const videoExtensions = ['.mp4', '.webm', '.ogg', '.avi', '.mov'];
-    const lowerUrl = url.toLowerCase();
-    return videoExtensions.some(ext => lowerUrl.includes(ext)) || 
-           lowerUrl.includes('video') || 
-           lowerUrl.includes('/v/');
-  };
 
   // 对于视频，获取下载URL和预览URL，使用智能媒体代理
   const previewUrl = media.thumbnail && !isVideoUrl(media.thumbnail) 
@@ -626,7 +622,7 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
           onClick={() => onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`)}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = 'https://via.placeholder.com/400x400?text=媒体加载失败';
+            target.src = generatePlaceholder(400, 400, '媒体加载失败');
           }}
         />
         {/* 视频标识 */}
