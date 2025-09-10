@@ -10,6 +10,7 @@ import { ErrorBoundary } from '@/components/providers/error-boundary';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { WebVitalsReporter, ResourceHints } from '@/components/performance/web-vitals';
 import { AdSenseScript } from '@/components/ads/adsense-script';
+import { PWAInstallPrompt } from '@/components/pwa/install-prompt';
 
 // 强制所有页面使用动态渲染
 export const dynamic = 'force-dynamic';
@@ -129,6 +130,7 @@ export default async function LocaleLayout({
                   <Navigation />
                   <main className="flex-1">{children}</main>
                   <Footer />
+                  <PWAInstallPrompt />
                 </I18nProviderClient>
               </QueryProvider>
             </ErrorBoundary>

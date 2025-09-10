@@ -3,6 +3,7 @@ import { InstagramDownloader } from '@/lib/api/instagram';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { userAdmin } from '@/lib/supabase-admin';
+import { ipLimiter, getClientIP } from '@/lib/ip-limiter';
 
 // 画质过滤辅助函数
 function filterMediaQuality(data: any, allowedQuality: string) {
@@ -138,6 +139,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 获取客户端IP地址
+    const clientIP = getClientIP(request);
+    console.log('客户端IP:', clientIP, '用户状态:', user ? '已登录' : '未登录');
+
     // 统一权限控制逻辑
     let finalQuality: string;
     let needsAuth = false;
@@ -148,37 +153,90 @@ export async function POST(request: NextRequest) {
     const hasUsage = user && userProfile && userProfile.value > 0;
     const requestedOriginal = quality === 'original';
 
-    if (requestedOriginal) {
-      if (!isAuthenticated) {
-        // 未登录用户：降级为HD
-        finalQuality = 'hd';
-        needsAuth = true;
-      } else if (!hasUsage) {
-        // 登录但无使用次数：降级为HD
-        finalQuality = 'hd';
-        needsAuth = true;
-      } else {
-        // 有权限：允许原图，扣除使用次数
-        finalQuality = 'original';
-        try {
-          await userAdmin.decrementUsage(userProfile.id);
-          usageDeducted = true;
-        } catch (error) {
-          console.error('扣除使用次数错误:', error);
-          // 扣费失败，降级为HD
-          finalQuality = 'hd';
-          needsAuth = true;
-        }
+    // 首先检查是否为登录用户且有下载次数
+    if (!isAuthenticated) {
+      // 未登录用户：检查IP限制
+      const ipCheck = ipLimiter.canDownload(clientIP);
+      
+      if (!ipCheck.allowed) {
+        const resetTime = new Date(ipCheck.resetTime!);
+        const remainingHours = Math.ceil((ipCheck.resetTime! - Date.now()) / (60 * 60 * 1000));
+        
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: `今日下载次数已用完（3次），请 ${remainingHours} 小时后再试，或注册登录获得更多下载次数`,
+            needsAuth: true,
+            ipLimited: true,
+            data: null,
+            downloads: [],
+            meta: {
+              timestamp: new Date().toISOString(),
+              url: url,
+              remainingDownloads: 0,
+              resetTime: resetTime.toISOString(),
+              userAuthenticated: false,
+              clientIP: clientIP
+            }
+          },
+          { status: 429 } // Too Many Requests
+        );
       }
+      
+      // 未登录用户：限制为HD质量，需要登录提示
+      finalQuality = requestedOriginal ? 'hd' : (quality || 'hd');
+      needsAuth = true;
+    } else if (!hasUsage) {
+      // 登录但无使用次数：拒绝下载
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: '下载次数不足，请购买VIP会员',
+          needsUpgrade: true,
+          data: null,
+          downloads: [],
+          meta: {
+            timestamp: new Date().toISOString(),
+            url: url,
+            remainingUsage: userProfile?.value || 0,
+            userAuthenticated: isAuthenticated
+          }
+        },
+        { status: 403 }
+      );
     } else {
-      // 请求非原图：直接使用请求的质量
-      finalQuality = quality || 'hd';
+      // 登录用户有使用次数：先不扣除，等解析成功后再扣除
+      finalQuality = requestedOriginal ? 'original' : (quality || 'hd');
+    }
+
+    // 对未登录用户添加6秒延迟
+    if (!isAuthenticated) {
+      console.log(`未登录用户 ${clientIP} 开始6秒延迟...`);
+      await new Promise(resolve => setTimeout(resolve, 6000)); // 6秒延迟
+      console.log(`未登录用户 ${clientIP} 延迟结束，开始解析...`);
     }
 
     // 调用下载服务
     const result = await InstagramDownloader.parseAndDownload(url);
 
     if (result.success) {
+      // 解析成功！现在记录下载
+      if (isAuthenticated && hasUsage) {
+        // 登录用户：扣除下载次数
+        try {
+          await userAdmin.decrementUsage(userProfile.id);
+          usageDeducted = true;
+          console.log(`用户 ${user.email} 解析成功，扣除1次下载次数，剩余: ${(userProfile.value - 1)} 次`);
+        } catch (error) {
+          console.error('扣除使用次数错误:', error);
+        }
+      } else if (!isAuthenticated) {
+        // 未登录用户：记录IP下载次数
+        ipLimiter.recordDownload(clientIP);
+        const ipStatus = ipLimiter.getIPStatus(clientIP);
+        console.log(`未登录用户 ${clientIP} 解析成功，剩余IP下载次数: ${ipStatus.remainingDownloads}`);
+      }
+    
       // 根据最终确定的权限应用内容过滤
       let processedData = result.data;
       let processedDownloads = (result as any).downloads || [];
@@ -203,7 +261,9 @@ export async function POST(request: NextRequest) {
           qualityDowngraded: requestedOriginal && finalQuality !== 'original',
           needsAuth: needsAuth,
           userAuthenticated: isAuthenticated,
-          remainingUsage: userProfile?.value || 0,
+          remainingUsage: usageDeducted ? (userProfile?.value - 1) : (userProfile?.value || 0),
+          // 为未登录用户添加IP限制信息
+          ipDownloads: !isAuthenticated ? ipLimiter.getIPStatus(clientIP) : undefined,
           contentFiltered: finalQuality !== 'original',
           usageDeducted: usageDeducted,
           // 调试信息

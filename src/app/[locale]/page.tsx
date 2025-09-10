@@ -23,7 +23,6 @@ import { Badge } from '@/components/ui/badge';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 import { DownloadForm } from '@/components/download-form';
 import { AdSenseBanner, AdSenseResponsive } from '@/components/ads/adsense';
-import { AdTest } from '@/components/ads/ad-test';
 
 export default function Home() {
   const currentLocale = useCurrentLocale() || 'zh-CN';
@@ -70,11 +69,6 @@ export default function Home() {
       </div>
       
       <div className="container mx-auto px-4 py-16 relative">
-        {/* 广告测试组件 - 仅用于测试 */}
-        <div className="mb-8">
-          <AdTest />
-        </div>
-        
         {/* Hero Section */}
         <motion.div 
           className="text-center mb-20"

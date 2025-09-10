@@ -34,6 +34,7 @@ import { InstagramPost, DownloadItem } from '@/types/instagram';
 import { generateImageSrc, isVideoUrl, generateVideoSrc } from '@/lib/utils/media-proxy';
 import { VideoPreviewModal } from '@/components/ui/video-preview-modal';
 import { PremiumUpgradeModal } from '@/components/ui/premium-upgrade-modal';
+import { IPLimitModal } from '@/components/ui/ip-limit-modal';
 
 // 生成内联SVG占位符
 const generatePlaceholder = (width: number, height: number, text: string) => {
@@ -57,6 +58,20 @@ interface DownloadResult {
   downloads?: DownloadItem[];
   error?: string;
   _mode?: string;
+  needsUpgrade?: boolean;
+  meta?: {
+    remainingUsage?: number;
+    usageDeducted?: boolean;
+    userAuthenticated?: boolean;
+    actualQuality?: string;
+    requestedQuality?: string;
+    ipDownloads?: {
+      downloadCount: number;
+      remainingDownloads: number;
+      resetTime?: number;
+    };
+  };
+  ipLimited?: boolean;
 }
 
 export default function InstagramPostDownloadPage() {
@@ -72,9 +87,11 @@ export default function InstagramPostDownloadPage() {
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<{src: string; title: string} | null>(null);
   const [premiumModalOpen, setPremiumModalOpen] = useState(false);
+  const [ipLimitModalOpen, setIpLimitModalOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const [autoSubmitted, setAutoSubmitted] = useState(false);
+  const [showLoadingPrompt, setShowLoadingPrompt] = useState(false);
 
   // 检查URL参数并自动填充和提交
   useEffect(() => {
@@ -104,6 +121,10 @@ export default function InstagramPostDownloadPage() {
 
     setLoading(true);
     setResult(null);
+    // 如果是未登录用户，立即显示注册提示
+    if (!isAuthenticated) {
+      setShowLoadingPrompt(true);
+    }
 
     try {
       const response = await fetch('/api/instagram/download', {
@@ -113,11 +134,26 @@ export default function InstagramPostDownloadPage() {
         },
         body: JSON.stringify({ 
           url: autoUrl.trim(),
-          quality: 'hd'  // 非登录用户限制为HD画质
+          quality: isAuthenticated ? 'original' : 'hd'  // 登录用户请求原图，未登录用户限制为HD
         }),
       });
 
       const data: DownloadResult = await response.json();
+      
+      // 如果是次数不足错误，显示升级模态框
+      if (!data.success && data.needsUpgrade) {
+        setPremiumModalOpen(true);
+        setLoading(false);
+        return;
+      }
+      
+      // 如果是IP限制错误，显示IP限制弹窗
+      if (!data.success && data.ipLimited) {
+        setIpLimitModalOpen(true);
+        setLoading(false);
+        return;
+      }
+      
       setResult(data);
       
       // 无论成功或失败，都滚动到结果区域
@@ -127,6 +163,8 @@ export default function InstagramPostDownloadPage() {
       
       if (!data.success) {
         console.error('下载失败:', data.error);
+      } else if (data.meta?.usageDeducted) {
+        console.log('自动下载成功，已扣除1次下载次数，剩余:', data.meta.remainingUsage);
       }
     } catch (error) {
       console.error('API请求失败:', error);
@@ -136,6 +174,7 @@ export default function InstagramPostDownloadPage() {
       });
     } finally {
       setLoading(false);
+      setShowLoadingPrompt(false);
     }
   };
 
@@ -152,6 +191,10 @@ export default function InstagramPostDownloadPage() {
 
     setLoading(true);
     setResult(null);
+    // 如果是未登录用户，立即显示注册提示
+    if (!isAuthenticated) {
+      setShowLoadingPrompt(true);
+    }
 
     try {
       const response = await fetch('/api/instagram/download', {
@@ -161,11 +204,26 @@ export default function InstagramPostDownloadPage() {
         },
         body: JSON.stringify({ 
           url: url.trim(),
-          quality: 'hd'  // 非登录用户限制为HD画质
+          quality: isAuthenticated ? 'original' : 'hd'  // 登录用户请求原图，未登录用户限制为HD
         }),
       });
 
       const data: DownloadResult = await response.json();
+      
+      // 如果是次数不足错误，显示升级模态框
+      if (!data.success && data.needsUpgrade) {
+        setPremiumModalOpen(true);
+        setLoading(false);
+        return;
+      }
+      
+      // 如果是IP限制错误，显示IP限制弹窗
+      if (!data.success && data.ipLimited) {
+        setIpLimitModalOpen(true);
+        setLoading(false);
+        return;
+      }
+      
       setResult(data);
       
       // 无论成功或失败，都滚动到结果区域
@@ -175,6 +233,8 @@ export default function InstagramPostDownloadPage() {
       
       if (!data.success) {
         console.error('下载失败:', data.error);
+      } else if (data.meta?.usageDeducted) {
+        console.log('下载成功，已扣除1次下载次数，剩余:', data.meta.remainingUsage);
       }
     } catch (error) {
       console.error('API请求失败:', error);
@@ -184,6 +244,7 @@ export default function InstagramPostDownloadPage() {
       });
     } finally {
       setLoading(false);
+      setShowLoadingPrompt(false);
     }
   };
 
@@ -242,6 +303,19 @@ export default function InstagramPostDownloadPage() {
 
   const handlePremiumLogin = () => {
     setPremiumModalOpen(false);
+    // 跳转到登录页面
+    window.location.href = `/${currentLocale}/signin`;
+  };
+
+  // 处理IP限制弹窗操作
+  const handleIpLimitRegister = () => {
+    setIpLimitModalOpen(false);
+    // 跳转到注册页面
+    window.location.href = `/${currentLocale}/signin?tab=register`;
+  };
+
+  const handleIpLimitLogin = () => {
+    setIpLimitModalOpen(false);
     // 跳转到登录页面
     window.location.href = `/${currentLocale}/signin`;
   };
@@ -373,6 +447,92 @@ export default function InstagramPostDownloadPage() {
                 </div>
               </form>
 
+              {/* 下载中的注册提示 - 立即显示 */}
+              {showLoadingPrompt && !isAuthenticated && (
+                <motion.div 
+                  className="mt-4 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border-2 border-orange-200 shadow-lg"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-red-400 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg">⚡</span>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-orange-800 text-lg">正在为您解析内容...</h4>
+                      <p className="text-orange-700 text-sm">免费用户需要等待，注册会员立即享受极速下载！</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/80 rounded-lg p-3 mb-3">
+                    <h5 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                      <span className="text-yellow-500">👑</span>
+                      升级VIP会员，解锁全部特权：
+                    </h5>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li className="flex items-center gap-2">
+                        <span className="text-green-500">✓</span>
+                        <strong>秒速下载</strong> - 无任何等待时间
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-green-500">✓</span>
+                        <strong>原图画质</strong> - 最高分辨率，完美画质
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-green-500">✓</span>
+                        <strong>无限下载</strong> - 每月500次下载额度
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-green-500">✓</span>
+                        <strong>批量下载</strong> - 一键下载多个内容
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <Button 
+                      className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-lg"
+                      onClick={() => window.location.href = `/${currentLocale}/signin?tab=register`}
+                    >
+                      <span className="mr-2">🚀</span>
+                      立即注册VIP
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 border-orange-300 text-orange-700 hover:bg-orange-50"
+                      onClick={() => window.location.href = `/${currentLocale}/signin`}
+                    >
+                      已有账户？登录
+                    </Button>
+                  </div>
+                  
+                  <div className="mt-3 text-center">
+                    <p className="text-xs text-gray-500">
+                      💰 限时优惠：首月仅需 ¥9.9，立省 ¥20
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* 用户下载次数状态 */}
+              {isAuthenticated && result?.meta && (
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-blue-700 font-medium">
+                      剩余下载次数：
+                    </span>
+                    <span className="text-blue-800 font-bold">
+                      {result.meta.remainingUsage || 0}
+                    </span>
+                  </div>
+                  {result.meta.usageDeducted && (
+                    <p className="text-blue-600 text-xs mt-1">
+                      ✅ 本次下载已扣除1次，剩余 {result.meta.remainingUsage} 次
+                    </p>
+                  )}
+                </div>
+              )}
               {/* 示例链接 */}
               <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-2">
@@ -708,6 +868,15 @@ export default function InstagramPostDownloadPage() {
         onClose={() => setPremiumModalOpen(false)}
         onSignUp={handlePremiumSignUp}
         onLogin={handlePremiumLogin}
+      />
+
+      {/* IP限制弹窗 */}
+      <IPLimitModal
+        isOpen={ipLimitModalOpen}
+        onClose={() => setIpLimitModalOpen(false)}
+        remainingHours={24}
+        onRegister={handleIpLimitRegister}
+        onLogin={handleIpLimitLogin}
       />
     </div>
   );

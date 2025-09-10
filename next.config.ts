@@ -1,6 +1,118 @@
 // import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+  buildExcludes: [/middleware-manifest\.json$/],
+  runtimeCaching: [
+    {
+      urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'google-fonts',
+        expiration: {
+          maxEntries: 4,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        }
+      }
+    },
+    {
+      urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'cdn-jsdelivr',
+        expiration: {
+          maxEntries: 10,
+          maxAgeSeconds: 365 * 24 * 60 * 60 // 1 year
+        }
+      }
+    },
+    {
+      urlPattern: /\.(?:eot|otf|ttc|ttf|woff|woff2|font.css)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-font-assets',
+        expiration: {
+          maxEntries: 4,
+          maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
+        }
+      }
+    },
+    {
+      urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-image-assets',
+        expiration: {
+          maxEntries: 64,
+          maxAgeSeconds: 24 * 60 * 60 // 24 hours
+        }
+      }
+    },
+    {
+      urlPattern: /\.(?:js)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-js-assets',
+        expiration: {
+          maxEntries: 32,
+          maxAgeSeconds: 24 * 60 * 60 // 24 hours
+        }
+      }
+    },
+    {
+      urlPattern: /\.(?:css|less)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-style-assets',
+        expiration: {
+          maxEntries: 32,
+          maxAgeSeconds: 24 * 60 * 60 // 24 hours
+        }
+      }
+    },
+    {
+      urlPattern: /^https:\/\/www\.instagram\.com\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'instagram-api',
+        expiration: {
+          maxEntries: 10,
+          maxAgeSeconds: 60 * 5 // 5 minutes
+        },
+        networkTimeoutSeconds: 10
+      }
+    },
+    {
+      urlPattern: /\/api\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'api-cache',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 60 * 5 // 5 minutes
+        },
+        networkTimeoutSeconds: 10
+      }
+    },
+    {
+      urlPattern: /.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'others',
+        expiration: {
+          maxEntries: 32,
+          maxAgeSeconds: 60 * 60 // 1 hour
+        },
+        networkTimeoutSeconds: 10
+      }
+    }
+  ]
+});
+
 const nextConfig: NextConfig = {
   /* i18n configuration */
   outputFileTracingRoot: process.cwd(),
@@ -217,4 +329,4 @@ const nextConfig: NextConfig = {
 // Make sure adding Sentry options is the last code to run before exporting
 // 临时禁用 Sentry 以解决类型错误
 // export default withSentryConfig(nextConfig, sentryWebpackPluginOptions);
-export default nextConfig;
+export default withPWA(nextConfig);

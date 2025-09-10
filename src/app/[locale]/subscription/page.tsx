@@ -184,36 +184,14 @@ export default function SubscriptionPage() {
 
   return (
     <div className="container mx-auto py-8 space-y-8">
-      {/* VIP标题栏和倒计时 */}
-      <div className="text-center space-y-6">
+      {/* VIP标题栏 */}
+      <div className="text-center">
         <div className="flex items-center justify-center gap-3">
           <Crown className="h-8 w-8 text-yellow-500" />
           <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
             开通VIP
           </h1>
           <Crown className="h-8 w-8 text-yellow-500" />
-        </div>
-        
-        {/* 倒计时 */}
-        <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white p-4 rounded-xl inline-block">
-          <div className="flex items-center gap-2 mb-2">
-            <Timer className="h-5 w-5" />
-            <span className="text-lg font-semibold">限时优惠倒计时</span>
-          </div>
-          <div className="flex gap-4 text-center">
-            <div className="bg-white/20 rounded-lg p-2 min-w-[50px]">
-              <div className="text-2xl font-bold">{String(timeLeft.hours).padStart(2, '0')}</div>
-              <div className="text-sm">小时</div>
-            </div>
-            <div className="bg-white/20 rounded-lg p-2 min-w-[50px]">
-              <div className="text-2xl font-bold">{String(timeLeft.minutes).padStart(2, '0')}</div>
-              <div className="text-sm">分钟</div>
-            </div>
-            <div className="bg-white/20 rounded-lg p-2 min-w-[50px]">
-              <div className="text-2xl font-bold">{String(timeLeft.seconds).padStart(2, '0')}</div>
-              <div className="text-sm">秒</div>
-            </div>
-          </div>
         </div>
       </div>
     
@@ -323,14 +301,14 @@ export default function SubscriptionPage() {
             return (
               <Card key={plan.id} className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl ${
                 isCurrentPlan ? 'ring-2 ring-blue-500' : ''
-              } ${isYearly ? 'bg-gradient-to-br from-teal-400 to-teal-500 text-white transform hover:scale-105' : 
-                 isYearlyVIP ? 'bg-gradient-to-br from-purple-400 to-purple-500 text-white transform hover:scale-105' : 'bg-white border'}`}>
+              } ${isYearly ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white transform hover:scale-105 border-0' : 
+                 isYearlyVIP ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white transform hover:scale-105 border-0' : 'bg-white border border-gray-200'}`}>
                 
                 {/* 角标 */}
                 {isYearly && (
-                  <div className="absolute top-0 right-0">
-                    <div className="bg-yellow-400 text-black px-4 py-1 rounded-bl-lg font-bold text-sm transform rotate-0">
-                      最受欢迎
+                  <div className="absolute -top-1 -right-1">
+                    <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-4 py-2 rounded-bl-xl font-bold text-sm shadow-lg">
+                      🔥 最受欢迎
                     </div>
                   </div>
                 )}
@@ -342,22 +320,41 @@ export default function SubscriptionPage() {
                       {isYearly ? '年度超级VIP' : isYearlyVIP ? '一年 VIP会员' : '一个月 VIP会员'}
                     </h3>
                     {isYearly && (
-                      <p className="text-white/90 text-sm">限时优惠: 23小时 49分 47秒</p>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 mt-3">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <Timer className="h-4 w-4 text-yellow-300" />
+                          <span className="text-sm font-semibold text-yellow-300">限时优惠倒计时</span>
+                        </div>
+                        <div className="flex justify-center gap-2">
+                          <div className="bg-white/20 rounded px-2 py-1 min-w-[40px] text-center">
+                            <div className="text-lg font-bold text-white">{String(timeLeft.hours).padStart(2, '0')}</div>
+                            <div className="text-xs text-white/80">小时</div>
+                          </div>
+                          <span className="text-white text-lg font-bold">:</span>
+                          <div className="bg-white/20 rounded px-2 py-1 min-w-[40px] text-center">
+                            <div className="text-lg font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                            <div className="text-xs text-white/80">分钟</div>
+                          </div>
+                          <span className="text-white text-lg font-bold">:</span>
+                          <div className="bg-white/20 rounded px-2 py-1 min-w-[40px] text-center">
+                            <div className="text-lg font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                            <div className="text-xs text-white/80">秒</div>
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                   
                   {/* 价格展示 */}
                   <div className="mb-6">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <span className={`text-4xl font-bold ${(isYearly || isYearlyVIP) ? 'text-white' : 'text-gray-800'}`}>
+                    <div className="flex items-center justify-center gap-3 mb-2">
+                      <span className={`text-4xl font-bold ${(isYearly || isYearlyVIP) ? 'text-white' : 'text-gray-900'}`}>
                         ¥{displayPrice}
                       </span>
                       {originalPrice > 0 && (
-                        <>
-                          <span className={`text-2xl ${(isYearly || isYearlyVIP) ? 'text-orange-200' : 'text-gray-400'}`}>
-                            /{originalPrice}
-                          </span>
-                        </>
+                        <span className={`text-xl line-through decoration-2 ${(isYearly || isYearlyVIP) ? 'text-white/60' : 'text-gray-400'}`}>
+                          ¥{originalPrice}
+                        </span>
                       )}
                     </div>
                     
@@ -391,40 +388,40 @@ export default function SubscriptionPage() {
                           👥 3000+用户的选择
                         </p>
                         <div className="space-y-2">
-                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/20' : 'bg-gray-50'}`}>
-                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                              <Download className="h-4 w-4 text-teal-500" />
+                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
+                            <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                              <Download className="h-4 w-4 text-purple-600" />
                             </div>
                             <span className="text-white text-sm">支持下载 图片/视频</span>
                           </div>
-                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/20' : 'bg-gray-50'}`}>
-                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                              <Zap className="h-4 w-4 text-teal-500" />
+                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
+                            <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                              <Zap className="h-4 w-4 text-purple-600" />
                             </div>
                             <span className="text-white text-sm">支持下载 多张图片/视频</span>
                           </div>
-                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/20' : 'bg-gray-50'}`}>
-                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
+                            <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
                               <Crown className="h-4 w-4 text-orange-500" />
                             </div>
                             <span className="text-white text-sm">
-                              <span className="text-orange-300 font-bold">[新功能]</span> 网页端 一键打包下载功能
+                              <span className="text-yellow-300 font-bold">[新功能]</span> 网页端 一键打包下载功能
                             </span>
                           </div>
-                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/20' : 'bg-gray-50'}`}>
-                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                              <Shield className="h-4 w-4 text-yellow-500" />
+                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
+                            <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                              <Shield className="h-4 w-4 text-green-500" />
                             </div>
                             <span className="text-white text-sm">
-                              <span className="text-yellow-300 font-bold">[新上线]</span> 批量下载指定博主帖子
+                              <span className="text-green-300 font-bold">[新上线]</span> 批量下载指定博主帖子
                             </span>
                           </div>
-                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/20' : 'bg-gray-50'}`}>
-                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
+                            <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
                               <Timer className="h-4 w-4 text-blue-500" />
                             </div>
                             <span className="text-white text-sm">
-                              <span className="text-blue-300 font-bold">[即将上线]</span> 图片提升清晰度功能
+                              <span className="text-cyan-300 font-bold">[即将上线]</span> 图片提升清晰度功能
                             </span>
                           </div>
                         </div>
@@ -433,32 +430,32 @@ export default function SubscriptionPage() {
                       // 一年VIP功能列表（根据图片设计）
                       <>
                         <div className="space-y-2">
-                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/20">
-                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                              <Download className="h-4 w-4 text-purple-500" />
+                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                            <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                              <Download className="h-4 w-4 text-blue-600" />
                             </div>
                             <span className="text-white text-sm">支持下载 图片/视频</span>
                           </div>
-                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/20">
-                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                              <Zap className="h-4 w-4 text-purple-500" />
+                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                            <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                              <Zap className="h-4 w-4 text-blue-600" />
                             </div>
                             <span className="text-white text-sm">支持下载 多张图片/视频</span>
                           </div>
-                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/20">
-                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                            <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
                               <Crown className="h-4 w-4 text-orange-500" />
                             </div>
                             <span className="text-white text-sm">
-                              <span className="text-red-300 font-bold">[新功能]</span> 网页端 一键打包下载功能
+                              <span className="text-yellow-300 font-bold">[新功能]</span> 网页端 一键打包下载功能
                             </span>
                           </div>
-                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/20">
-                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                              <Shield className="h-4 w-4 text-yellow-500" />
+                          <div className="flex items-center gap-3 p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                            <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                              <Shield className="h-4 w-4 text-green-500" />
                             </div>
                             <span className="text-white text-sm">
-                              <span className="text-red-300 font-bold">[新功能]</span> 批量下载指定博主帖子
+                              <span className="text-green-300 font-bold">[新功能]</span> 批量下载指定博主帖子
                             </span>
                           </div>
                         </div>
@@ -498,10 +495,10 @@ export default function SubscriptionPage() {
                       <Button
                         onClick={() => handleUpgrade(plan.id, 'alipay')}
                         disabled={upgrading}
-                        className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 ${
+                        className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 transition-all ${
                           (isYearly || isYearlyVIP)
-                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                            : 'bg-blue-500 hover:bg-blue-600 text-white'
+                            ? 'bg-white text-blue-600 hover:bg-blue-50'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
                         }`}
                       >
                         {upgrading ? (
@@ -517,10 +514,10 @@ export default function SubscriptionPage() {
                       <Button
                         onClick={() => handleUpgrade(plan.id, 'stripe')}
                         disabled={upgrading}
-                        className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 ${
+                        className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 transition-all ${
                           (isYearly || isYearlyVIP)
-                            ? 'bg-green-500 hover:bg-green-600 text-white'
-                            : 'bg-green-400 hover:bg-green-500 text-white'
+                            ? 'bg-white/90 text-green-600 hover:bg-green-50'
+                            : 'bg-green-500 hover:bg-green-600 text-white'
                         }`}
                       >
                         {upgrading ? (
@@ -533,7 +530,7 @@ export default function SubscriptionPage() {
                         )}
                       </Button>
                       
-                      <p className={`text-center text-sm ${isYearly ? 'text-white/80' : 'text-gray-500'}`}>
+                      <p className={`text-center text-sm ${(isYearly || isYearlyVIP) ? 'text-white/80' : 'text-gray-500'}`}>
                         使用帮助
                       </p>
                     </div>
