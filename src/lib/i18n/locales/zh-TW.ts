@@ -42,6 +42,8 @@ export default {
     register: '註冊',
     logout: '登出',
     dashboard: '控制台',
+    subscription: '開通VIP',
+    vip: 'VIP',
   },
 
   // Auth pages
@@ -494,7 +496,7 @@ export default {
 
   // Footer
   footer: {
-    company: 'InstaDownPro',
+    company: 'Instagram下載軟體',
     copyright: '版權所有',
     allRightsReserved: '保留所有權利',
     links: {
@@ -875,6 +877,34 @@ export default {
       free: '免費用戶：每批最多 5 個連結',
       premium: '高級用戶：每批最多 50 個連結',
       pro: '專業用戶：無限制'
+    }
+  },
+
+  // Premium upgrade modal
+  premiumUpgrade: {
+    title: '解鎖原圖畫質',
+    subtitle: '升級至VIP會員，享受無限制原圖下載',
+    features: {
+      originalQuality: {
+        title: '原圖畫質下載',
+        description: '獲得最高解析度圖片'
+      },
+      unlimitedDownloads: {
+        title: '無限下載次數',
+        description: '不再受限制約束'
+      },
+      prioritySupport: {
+        title: '優先支援',
+        description: '專屬客服優先處理'
+      }
+    },
+    buttons: {
+      signUp: '立即註冊成為VIP',
+      login: '已有帳戶？立即登入'
+    },
+    promotion: {
+      title: '💎 限時優惠：',
+      description: '新用戶首月僅需 NT$99，立享所有VIP特權！'
     }
   },
 

@@ -1,5 +1,8 @@
 'use client'
 
+// 强制动态渲染，避免预渲染错误
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

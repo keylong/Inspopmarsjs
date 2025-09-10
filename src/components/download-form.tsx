@@ -58,7 +58,10 @@ export function DownloadForm({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ 
+          url: url.trim(),
+          quality: 'hd' // 未登录用户限制为HD画质
+        }),
       });
 
       const data = await response.json();

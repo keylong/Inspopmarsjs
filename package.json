@@ -28,7 +28,10 @@
     "deploy:check": "node scripts/pre-deploy-check.js",
     "deploy:verify": "node scripts/verify-deployment.js",
     "ci:test": "npm run lint && npm run test:coverage && npm run build",
-    "analyze": "cross-env ANALYZE=true npm run build"
+    "analyze": "cross-env ANALYZE=true npm run build",
+    "migrate:mysql": "ts-node scripts/migrate-mysql-to-supabase.ts",
+    "migrate:mysql-dev": "tsx scripts/migrate-mysql-to-supabase.ts",
+    "test:mysql": "tsx scripts/test-mysql-connection.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
@@ -42,6 +45,7 @@
     "@radix-ui/react-progress": "^1.1.7",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@sentry/nextjs": "^10.10.0",
     "@stripe/stripe-js": "^7.9.0",
@@ -115,6 +119,8 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^3.4.5",
     "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }

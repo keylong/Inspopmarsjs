@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   assetPrefix: process.env.CDN_URL || '',
   
   // 输出配置
-  output: 'standalone', // 优化 Docker 部署
+  // output: 'standalone', // 暂时禁用以避免构建问题
   
   // 压缩配置
   compress: true,
@@ -120,6 +120,17 @@ const nextConfig: NextConfig = {
 
   // Webpack optimization for code splitting
   webpack: (config, { dev, isServer }) => {
+    // 忽略 Prisma instrumentation 警告
+    config.ignoreWarnings = [
+      {
+        module: /@prisma\/instrumentation/,
+      },
+      {
+        module: /@opentelemetry\/instrumentation/,
+      },
+      /Critical dependency: the request of a dependency is an expression/,
+    ];
+    
     // Only apply in production builds
     if (!dev && !isServer) {
       config.optimization = {

@@ -42,6 +42,8 @@ export default {
     register: 'Register',
     logout: 'Logout',
     dashboard: 'Dashboard',
+    subscription: 'Get VIP',
+    vip: 'VIP',
   },
 
   // Auth pages
@@ -494,7 +496,7 @@ export default {
 
   // Footer
   footer: {
-    company: 'InstaDownPro',
+    company: 'Instagram Downloader',
     copyright: 'Copyright',
     allRightsReserved: 'All rights reserved',
     links: {
@@ -881,6 +883,34 @@ export default {
       free: 'Free users: Maximum 5 links per batch',
       premium: 'Premium users: Maximum 50 links per batch',
       pro: 'Pro users: Unlimited'
+    }
+  },
+
+  // Premium upgrade modal
+  premiumUpgrade: {
+    title: 'Unlock Original Quality',
+    subtitle: 'Upgrade to VIP membership and enjoy unlimited original quality downloads',
+    features: {
+      originalQuality: {
+        title: 'Original Quality Download',
+        description: 'Get the highest resolution images'
+      },
+      unlimitedDownloads: {
+        title: 'Unlimited Downloads',
+        description: 'No more restrictions'
+      },
+      prioritySupport: {
+        title: 'Priority Support',
+        description: 'Dedicated customer service priority'
+      }
+    },
+    buttons: {
+      signUp: 'Become VIP Now',
+      login: 'Already have an account? Sign In'
+    },
+    promotion: {
+      title: '💎 Limited Offer:',
+      description: 'New users only $1.99 for the first month, enjoy all VIP privileges!'
     }
   },
 

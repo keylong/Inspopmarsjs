@@ -42,6 +42,8 @@ export default {
     register: '注册',
     logout: '退出登录',
     dashboard: '控制台',
+    subscription: '开通VIP',
+    vip: 'VIP',
   },
 
   // Auth pages
@@ -494,7 +496,7 @@ export default {
 
   // Footer
   footer: {
-    company: 'InstaDownPro',
+    company: 'Instagram下载软件',
     copyright: '版权所有',
     allRightsReserved: '保留所有权利',
     links: {
@@ -881,6 +883,292 @@ export default {
       free: '免费用户：每次最多5个链接',
       premium: '高级用户：每次最多50个链接',
       pro: '专业用户：无限制'
+    }
+  },
+
+  // Help page
+  help: {
+    title: '使用帮助',
+    subtitle: '了解如何使用我们的 Instagram 下载工具，获得最佳使用体验',
+    
+    // 快速导航
+    quickStart: {
+      title: '快速开始',
+      description: '新手入门指南',
+      step1: {
+        title: '复制链接',
+        description: '从 Instagram 复制您想下载的内容链接',
+        example: '示例链接格式：',
+        tip1: '支持帖子、视频、Stories、Reels 等',
+        tip2: '确保链接完整且有效'
+      },
+      step2: {
+        title: '粘贴下载',
+        description: '将链接粘贴到下载框并点击下载',
+        placeholder: '粘贴 Instagram 链接...',
+        note: '系统会自动分析并提供下载选项'
+      }
+    },
+    
+    downloadGuide: {
+      title: '下载指南',
+      description: '详细下载步骤',
+      stepByStep: {
+        title: '详细下载步骤',
+        description: '按照以下步骤轻松下载任何 Instagram 内容'
+      },
+      steps: {
+        step1: {
+          title: '找到目标内容',
+          description: '在 Instagram 中浏览并找到您想要下载的图片、视频或其他内容',
+          tip: '💡 提示：确保内容是公开可见的，私密账户的内容可能无法下载'
+        },
+        step2: {
+          title: '复制内容链接',
+          description: '点击内容右上角的三个点菜单，选择"复制链接"选项',
+        },
+        step3: {
+          title: '粘贴链接到下载器',
+          description: '返回我们的网站，将复制的链接粘贴到下载输入框中',
+        },
+        step4: {
+          title: '选择格式并下载',
+          description: '选择您需要的质量和格式，然后点击下载按钮开始下载',
+        }
+      },
+      tips: {
+        title: '下载小贴士',
+        tip1: '选择最高质量以获得最佳效果',
+        tip2: '批量下载可以节省时间',
+        tip3: '定期清理下载的文件以节省存储空间',
+        tip4: '尊重原创者的版权，仅供个人使用'
+      },
+      limitations: {
+        title: '使用限制',
+        item1: '只能下载公开可见的内容',
+        item2: '无法下载已删除或私密的内容',
+        item3: '请遵守相关法律法规和平台条款'
+      }
+    },
+    
+    faq: {
+      title: '常见问题',
+      description: '快速解答常见疑问',
+      items: {
+        q1: {
+          question: '这个下载工具是免费的吗？',
+          answer: '是的，我们的基础下载功能完全免费。高级用户可以选择付费计划以获得更多功能和更快的下载速度。'
+        },
+        q2: {
+          question: '可以下载私密账户的内容吗？',
+          answer: '出于隐私保护，我们无法下载私密账户的内容。只有公开可见的内容才能被下载。'
+        },
+        q3: {
+          question: '下载的内容质量如何？',
+          answer: '我们提供原始质量的下载，确保您获得最高清的图片和视频，无任何质量损失。'
+        },
+        q4: {
+          question: '支持哪些类型的内容？',
+          answer: '我们支持 Instagram 的所有主要内容类型：图片帖子、视频帖子、Stories、Reels、IGTV 和 Highlights。'
+        },
+        q5: {
+          question: '下载速度慢怎么办？',
+          answer: '下载速度取决于文件大小和您的网络连接。如果遇到问题，请尝试刷新页面或稍后重试。付费用户享有优先下载通道。'
+        },
+        q6: {
+          question: '可以同时下载多个内容吗？',
+          answer: '是的，我们支持批量下载功能。您可以添加多个链接并一次性下载所有内容。'
+        },
+        q7: {
+          question: '下载的文件会包含水印吗？',
+          answer: '不会，我们下载的是原始文件，不含任何水印或标识。但请尊重原创者的版权。'
+        },
+        q8: {
+          question: '如何举报问题或提供反馈？',
+          answer: '您可以通过我们的联系页面提交问题报告或建议。我们重视每一个用户的反馈。'
+        }
+      }
+    },
+    
+    // 标签页
+    tabs: {
+      quickStart: '快速开始',
+      downloadGuide: '下载指南',
+      faq: '常见问题',
+      troubleshooting: '故障排除'
+    },
+    
+    // 支持的内容类型
+    supportedTypes: {
+      title: '支持的内容类型',
+      description: '我们支持 Instagram 平台上的所有主要内容格式',
+      photos: '图片帖子',
+      photosDesc: '单张或多张图片',
+      videos: '视频帖子',
+      videosDesc: '各种格式的视频',
+      stories: 'Stories',
+      storiesDesc: '24小时动态内容',
+      reels: 'Reels 短视频',
+      reelsDesc: '竖屏短视频内容',
+      igtv: 'IGTV 长视频',
+      igtvDesc: '长格式视频内容',
+      highlights: 'Highlights 精选',
+      highlightsDesc: '用户精选集锦'
+    },
+    
+    // 故障排除
+    troubleshooting: {
+      common: {
+        title: '常见问题排除',
+        description: '遇到问题时的解决方案'
+      },
+      problems: {
+        problem1: {
+          title: '链接无法识别',
+          description: '系统提示"无法识别链接"或"链接无效"',
+          solution: '确保复制的是完整的 Instagram 链接，格式类似于 https://www.instagram.com/p/... 检查链接是否包含必要的参数。'
+        },
+        problem2: {
+          title: '下载失败',
+          description: '点击下载后没有响应或显示错误信息',
+          solution: '刷新页面重试，检查网络连接是否稳定。如果内容已被删除或设为私密，则无法下载。'
+        },
+        problem3: {
+          title: '文件质量不佳',
+          description: '下载的图片或视频质量比预期低',
+          solution: '选择"原始质量"或"高清"选项。某些内容可能只有较低质量版本可用。'
+        },
+        problem4: {
+          title: '下载速度慢',
+          description: '下载过程耗时较长',
+          solution: '大文件需要更多时间下载。确保网络连接稳定，避免同时进行其他下载任务。付费用户享有更快速度。'
+        }
+      },
+      solution: '解决方案'
+    },
+    
+    // 需要更多帮助
+    needMoreHelp: {
+      title: '需要更多帮助？',
+      description: '如果您没有找到答案，请随时联系我们的支持团队',
+      contactUs: '联系我们',
+      tryNow: '立即试用'
+    },
+    
+    contact: {
+      title: '联系支持',
+      description: '获得专业帮助'
+    }
+  },
+  
+  // Premium upgrade modal
+  premiumUpgrade: {
+    title: '解锁原图画质',
+    subtitle: '升级至VIP会员，享受无限制原图下载',
+    features: {
+      originalQuality: {
+        title: '原图画质下载',
+        description: '获得最高分辨率图片'
+      },
+      unlimitedDownloads: {
+        title: '无限下载次数',
+        description: '不再受限制约束'
+      },
+      prioritySupport: {
+        title: '优先支持',
+        description: '专属客服优先处理'
+      }
+    },
+    buttons: {
+      signUp: '立即注册成为VIP',
+      login: '已有账户？立即登录'
+    },
+    promotion: {
+      title: '💎 限时优惠：',
+      description: '新用户首月仅需 ¥9.9，立享所有VIP特权！'
+    }
+  },
+
+  // Contact page
+  contact: {
+    title: '联系我们',
+    subtitle: '有任何问题或建议？我们很乐意听取您的反馈并提供帮助',
+    
+    // 联系信息
+    info: {
+      title: '联系信息',
+      description: '通过以下方式与我们取得联系',
+      email: '邮箱地址',
+      hours: '工作时间',
+      hoursDetail: '周一至周五 9:00-18:00 (GMT+8)',
+      location: '服务地区',
+      locationDetail: '全球在线服务'
+    },
+    
+    // 响应时间
+    responseTime: {
+      title: '预期响应时间',
+      urgent: '紧急问题',
+      normal: '一般咨询',
+      general: '普通反馈',
+      hours: '小时'
+    },
+    
+    // 联系表单
+    form: {
+      title: '发送消息',
+      description: '请填写以下表单，我们会尽快回复您',
+      name: '姓名',
+      namePlaceholder: '请输入您的姓名',
+      email: '邮箱地址',
+      emailPlaceholder: '请输入您的邮箱地址',
+      subject: '主题',
+      subjectPlaceholder: '简要描述您的问题',
+      category: '问题类别',
+      categoryPlaceholder: '选择问题类型',
+      categories: {
+        support: '技术支持',
+        bug: '错误报告',
+        feedback: '意见反馈',
+        feature: '功能建议',
+        other: '其他问题'
+      },
+      message: '详细描述',
+      messagePlaceholder: '请详细描述您的问题或建议，我们会根据您的描述提供针对性的帮助...',
+      submit: '发送消息',
+      submitting: '发送中...',
+      reset: '重置表单',
+      note: '我们承诺保护您的隐私，不会将您的信息用于其他用途。'
+    },
+    
+    // 提交成功页面
+    success: {
+      title: '消息发送成功！',
+      description: '感谢您的反馈，我们已收到您的消息',
+      details: '我们会在 24 小时内回复您。如果您的问题比较紧急，您也可以通过邮箱直接联系我们。',
+      sendAnother: '发送其他消息',
+      backHome: '返回首页'
+    },
+    
+    // 快速帮助
+    quickHelp: {
+      title: '快速获得帮助',
+      description: '在联系我们之前，您也可以尝试以下快速解决方案',
+      faq: {
+        title: '常见问题',
+        description: '查看最常见的问题和答案',
+        button: '查看 FAQ'
+      },
+      guide: {
+        title: '使用指南',
+        description: '详细的使用说明和技巧',
+        button: '查看指南'
+      },
+      troubleshooting: {
+        title: '故障排除',
+        description: '解决常见的技术问题',
+        button: '排除故障'
+      }
     }
   },
 

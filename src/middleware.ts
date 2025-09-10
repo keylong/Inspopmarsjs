@@ -41,11 +41,7 @@ function detectPreferredLocale(request: NextRequest): string {
   return geoLocale;
 }
 
-// 需要认证的路由
-function requiresAuth(pathname: string): boolean {
-  const protectedRoutes = ['/profile', '/dashboard', '/settings'];
-  return protectedRoutes.some(route => pathname.includes(route));
-}
+// 注意：认证检查已移至组件级别，不再在中间件中处理
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -86,20 +82,9 @@ export default async function middleware(request: NextRequest) {
   // 移除语言代码后的实际路径
   const pathnameWithoutLocale = pathname.slice(`/${currentLocale}`.length) || '/';
 
-  // 检查认证要求
-  // 注意：Stack Auth 的认证检查应该在组件级别进行，
-  // 因为中间件在 Edge Runtime 中运行，无法访问某些 Node.js API
-  if (requiresAuth(pathnameWithoutLocale)) {
-    // 检查是否有 Stack Auth 的 cookie
-    const stackSession = request.cookies.get('stack-session');
-    
-    if (!stackSession) {
-      // 重定向到登录页面，保持当前语言
-      const loginUrl = new URL(`/${currentLocale}/auth/signin`, request.url);
-      loginUrl.searchParams.set('callbackUrl', request.url);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
+  // 注意：认证检查交给组件级别的 ProtectedRoute 处理，
+  // 因为中间件在 Edge Runtime 中运行时，Supabase 的 cookie 检查可能不可靠
+  // 这样可以确保认证状态检查的一致性
 
   // 设置请求头，以便在组件中获取当前语言
   const requestHeaders = new Headers(request.headers);

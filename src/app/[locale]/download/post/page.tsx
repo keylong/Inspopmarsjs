@@ -1,5 +1,8 @@
 'use client';
 
+// 强制动态渲染，避免预渲染错误
+export const dynamic = 'force-dynamic';
+
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -25,10 +28,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 import { useSearchParams } from 'next/navigation';
+import { useOptionalAuth } from '@/hooks/useAuth';
 
 import { InstagramPost, DownloadItem } from '@/types/instagram';
 import { generateImageSrc, isVideoUrl, generateVideoSrc } from '@/lib/utils/media-proxy';
 import { VideoPreviewModal } from '@/components/ui/video-preview-modal';
+import { PremiumUpgradeModal } from '@/components/ui/premium-upgrade-modal';
 
 // 生成内联SVG占位符
 const generatePlaceholder = (width: number, height: number, text: string) => {
@@ -58,6 +63,7 @@ export default function InstagramPostDownloadPage() {
   const currentLocale = useCurrentLocale() || 'zh-CN';
   const t = useI18n();
   const searchParams = useSearchParams();
+  const { isAuthenticated } = useOptionalAuth();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DownloadResult | null>(null);
@@ -65,6 +71,7 @@ export default function InstagramPostDownloadPage() {
   const [selectedImage, setSelectedImage] = useState<{src: string; alt: string} | null>(null);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<{src: string; title: string} | null>(null);
+  const [premiumModalOpen, setPremiumModalOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const [autoSubmitted, setAutoSubmitted] = useState(false);
@@ -104,7 +111,10 @@ export default function InstagramPostDownloadPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url: autoUrl.trim() }),
+        body: JSON.stringify({ 
+          url: autoUrl.trim(),
+          quality: 'hd'  // 非登录用户限制为HD画质
+        }),
       });
 
       const data: DownloadResult = await response.json();
@@ -149,7 +159,10 @@ export default function InstagramPostDownloadPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ 
+          url: url.trim(),
+          quality: 'hd'  // 非登录用户限制为HD画质
+        }),
       });
 
       const data: DownloadResult = await response.json();
@@ -218,6 +231,19 @@ export default function InstagramPostDownloadPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  // 处理VIP升级模态框操作
+  const handlePremiumSignUp = () => {
+    setPremiumModalOpen(false);
+    // 跳转到注册页面
+    window.location.href = `/${currentLocale}/signin?tab=register`;
+  };
+
+  const handlePremiumLogin = () => {
+    setPremiumModalOpen(false);
+    // 跳转到登录页面
+    window.location.href = `/${currentLocale}/signin`;
   };
 
   // 处理键盘事件（Escape 键关闭模态框）
@@ -416,9 +442,11 @@ export default function InstagramPostDownloadPage() {
                                 key={media.id || index}
                                 media={media}
                                 index={index}
+                                isAuthenticated={isAuthenticated}
                                 onImageClick={handleMediaClick}
                                 onDirectDownload={handleDirectDownload}
                                 onCopyUrl={handleCopyUrl}
+                                onPremiumUpgrade={() => setPremiumModalOpen(true)}
                                 t={t}
                               />
                             ))}
@@ -673,6 +701,14 @@ export default function InstagramPostDownloadPage() {
           onCopyUrl={handleCopyUrl}
         />
       )}
+
+      {/* VIP升级模态框 */}
+      <PremiumUpgradeModal
+        isOpen={premiumModalOpen}
+        onClose={() => setPremiumModalOpen(false)}
+        onSignUp={handlePremiumSignUp}
+        onLogin={handlePremiumLogin}
+      />
     </div>
   );
 }
@@ -680,28 +716,86 @@ export default function InstagramPostDownloadPage() {
 // 媒体卡片组件 - 解决 Hooks 在循环中使用的问题
 import { InstagramMedia, DisplayResource } from '@/types/instagram';
 
+// 获取分辨率标签的辅助函数
+function getResolutionLabel(index: number, isAuthenticated: boolean, resource: DisplayResource, t: any): string {
+  if (index === 0) {
+    // 第一个选项（原图）
+    return isAuthenticated ? t('download.result.original') : '原图 🔒';
+  }
+  
+  // 其他选项
+  if (index === 1) return '中等质量';
+  if (index === 2) return '低质量';
+  
+  return resource.label || `${resource.config_width}×${resource.config_height}`;
+}
+
 interface MediaCardProps {
   media: InstagramMedia;
   index: number;
+  isAuthenticated: boolean;
   onImageClick: (url: string, title: string, isVideo?: boolean) => void;
   onDirectDownload: (url: string, filename: string) => void;
   onCopyUrl: () => void;
+  onPremiumUpgrade: () => void;
   t: any;
 }
 
-function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t }: MediaCardProps) {
+function MediaCard({ media, index, isAuthenticated, onImageClick, onDirectDownload, onCopyUrl, onPremiumUpgrade, t }: MediaCardProps) {
+  // 处理分辨率选择
+  const handleResolutionClick = (resource: DisplayResource, resIndex: number) => {
+    // 如果是原图且用户未登录，显示VIP升级模态框
+    if (resIndex === 0 && !isAuthenticated) {
+      onPremiumUpgrade();
+      return;
+    }
+    
+    // 正常选择分辨率
+    setSelectedResolution(resource);
+  };
+  // 获取分辨率选项（未登录用户也显示所有选项，用于引导注册）
+  const getFilteredResolutions = () => {
+    if (!media.display_resources || media.display_resources.length === 0) {
+      return [];
+    }
+    
+    // 所有用户都显示所有分辨率选项
+    return media.display_resources;
+  };
+
+  const filteredResolutions = getFilteredResolutions();
+  
   // 状态管理：当前选中的分辨率
-  const [selectedResolution, setSelectedResolution] = useState(
-    media.display_resources && media.display_resources.length > 0 
-      ? media.display_resources[0] 
-      : null
-  );
+  const getDefaultResolution = () => {
+    if (filteredResolutions.length === 0) return null;
+    
+    // 未登录用户：默认选择第二个选项（中等质量）
+    if (!isAuthenticated && filteredResolutions.length > 1) {
+      return filteredResolutions[1];
+    }
+    
+    // 登录用户：默认选择第一个选项（原图）
+    return filteredResolutions[0];
+  };
+  
+  const [selectedResolution, setSelectedResolution] = useState(getDefaultResolution());
   
   // 获取当前显示的URL和信息
   const currentUrl = selectedResolution?.src || media.url;
   const currentWidth = selectedResolution?.config_width || media.width;
   const currentHeight = selectedResolution?.config_height || media.height;
-  const currentLabel = selectedResolution?.label || '原图';
+  
+  // 获取当前选择分辨率的标签
+  const getCurrentLabel = () => {
+    if (!selectedResolution) return '默认';
+    
+    const currentIndex = filteredResolutions.findIndex(res => res === selectedResolution);
+    if (currentIndex === -1) return selectedResolution.label || '默认';
+    
+    return getResolutionLabel(currentIndex, isAuthenticated, selectedResolution, t);
+  };
+  
+  const currentLabel = getCurrentLabel();
   
 
   // 调试日志
@@ -804,25 +898,33 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
       <div className="p-4">
         
         {/* 分辨率选择器 */}
-        {media.display_resources && media.display_resources.length > 0 && (
+        {filteredResolutions.length > 0 && (
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('download.result.selectResolution')}:
             </label>
             <div className="flex flex-wrap gap-2">
-              {media.display_resources.map((resource: DisplayResource, resIndex: number) => (
-                <button
-                  key={resIndex}
-                  onClick={() => setSelectedResolution(resource)}
-                  className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
-                    selectedResolution === resource
-                      ? 'bg-purple-600 text-white border-purple-600'
-                      : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
-                  }`}
-                >
-                  {resIndex === 0 ? t('download.result.original') : resource.label || `${resource.config_width}×${resource.config_height}`}
-                </button>
-              ))}
+              {filteredResolutions.map((resource: DisplayResource, resIndex: number) => {
+                const isPremiumOption = resIndex === 0 && !isAuthenticated;
+                return (
+                  <button
+                    key={resIndex}
+                    onClick={() => handleResolutionClick(resource, resIndex)}
+                    className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
+                      selectedResolution === resource
+                        ? 'bg-purple-600 text-white border-purple-600'
+                        : isPremiumOption
+                          ? 'bg-gradient-to-r from-yellow-50 to-orange-50 text-gray-700 border-yellow-300 hover:border-yellow-400 cursor-pointer'
+                          : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                    } ${isPremiumOption ? 'relative' : ''}`}
+                  >
+                    {getResolutionLabel(resIndex, isAuthenticated, resource, t)}
+                    {isPremiumOption && (
+                      <span className="ml-1 text-xs text-yellow-600">VIP</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
             {/* 当前选择的分辨率信息 */}
             <div className="mt-2 text-xs text-gray-500">

@@ -80,11 +80,20 @@ export async function verifyPassword(plainPassword: string, hashedPassword: stri
 // 获取当前会话用户 (使用 Supabase Auth)
 export async function getCurrentUser(): Promise<User | null> {
   try {
+    console.log('getCurrentUser: 创建 Supabase 客户端...')
     const supabase = await createServerSupabaseClient()
     
+    console.log('getCurrentUser: 调用 supabase.auth.getUser()...')
     const { data: { user: authUser }, error } = await supabase.auth.getUser()
     
+    console.log('getCurrentUser: Supabase 返回结果:', { 
+      hasUser: !!authUser, 
+      userEmail: authUser?.email, 
+      error: error?.message 
+    })
+    
     if (error || !authUser) {
+      console.log('getCurrentUser: 认证失败，返回 null')
       return null
     }
     

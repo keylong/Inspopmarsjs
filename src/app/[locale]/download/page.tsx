@@ -1,5 +1,8 @@
 'use client';
 
+// 强制动态渲染，避免预渲染错误
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { 

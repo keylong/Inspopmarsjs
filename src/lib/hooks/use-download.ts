@@ -20,7 +20,7 @@ async function validateURL(url: string): Promise<URLValidationResult> {
   return result.data!;
 }
 
-async function downloadInstagramContent(data: DownloadFormData): Promise<DownloadResult> {
+async function downloadInstagramContent(data: DownloadFormData): Promise<any> {
   const response = await fetch('/api/instagram/download', {
     method: 'POST',
     headers: {
@@ -29,13 +29,13 @@ async function downloadInstagramContent(data: DownloadFormData): Promise<Downloa
     body: JSON.stringify(data),
   });
 
-  const result: APIResponse<DownloadResult> = await response.json();
+  const result = await response.json();
   
   if (!result.success) {
     throw new Error(result.error?.message || 'Download failed');
   }
 
-  return result.data!;
+  return result;
 }
 
 // URL 验证 Hook

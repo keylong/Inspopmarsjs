@@ -32,6 +32,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { useInstagramDownloader } from '@/lib/hooks/use-download';
 import { DownloadFormData, URLValidationResult } from '@/types/instagram';
+import { useOptionalAuth } from '@/hooks/useAuth';
 
 // 创建表单验证 Schema（使用固定消息）
 const downloadFormSchema = z.object({
@@ -76,6 +77,10 @@ export function DownloadForm({
   const [validation, setValidation] = useState<URLValidationResult | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [downloadResult, setDownloadResult] = useState<any>(null);
+  
+  // 使用认证状态（可选）
+  const { user, isLoading: authLoading, isAuthenticated } = useOptionalAuth();
   
   useEffect(() => {
     setIsClient(true);
@@ -94,7 +99,7 @@ export function DownloadForm({
     resolver: zodResolver(downloadFormSchema),
     defaultValues: {
       type: 'auto',
-      quality: 'original',
+      quality: 'hd', // 所有用户默认HD，已登录用户可自行选择原画质
       format: 'individual',
     },
   });
@@ -137,6 +142,9 @@ export function DownloadForm({
       onDownloadStart?.(formData);
       
       const result = await download(formData);
+      
+      // 保存下载结果用于显示权限信息
+      setDownloadResult(result);
       
       onDownloadComplete?.(result);
     } catch (err) {
@@ -278,7 +286,14 @@ export function DownloadForm({
 
                 {/* 画质选择 */}
                 <div className="space-y-2">
-                  <Label htmlFor="quality">画质</Label>
+                  <Label htmlFor="quality" className="flex items-center gap-2">
+                    画质
+                    {!isAuthenticated && (
+                      <Badge variant="secondary" className="text-xs">
+                        原图需登录
+                      </Badge>
+                    )}
+                  </Label>
                   <Select
                     value={watch('quality')}
                     onValueChange={(value) => setValue('quality', value as any)}
@@ -287,11 +302,31 @@ export function DownloadForm({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="original">原画质</SelectItem>
+                      {isAuthenticated && (
+                        <SelectItem value="original">
+                          <div className="flex items-center gap-2">
+                            <span>原画质</span>
+                            <span className="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded">
+                              可用
+                            </span>
+                          </div>
+                        </SelectItem>
+                      )}
                       <SelectItem value="hd">高清</SelectItem>
                       <SelectItem value="sd">标清</SelectItem>
                     </SelectContent>
                   </Select>
+                  
+                  {/* 用户状态说明 */}
+                  {isClient && (
+                    <div className="text-xs text-muted-foreground">
+                      {!isAuthenticated ? (
+                        <p>• 未登录用户只能下载高清和标清版本，<a href="/signin" className="text-blue-600 hover:underline">登录</a>后可下载原画质</p>
+                      ) : (
+                        <p>• 已登录用户可下载原画质（消耗使用次数）</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* 下载格式 */}
@@ -346,6 +381,52 @@ export function DownloadForm({
               </>
             )}
           </Button>
+
+          {/* 下载结果的权限提示 */}
+          {downloadResult?.meta?.qualityDowngraded && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg"
+            >
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                <span className="font-medium">画质已调整</span>
+              </div>
+              <p className="mt-1">
+                {downloadResult.meta.needsAuth 
+                  ? "原画质下载需要登录并消耗使用次数。已为您提供高清版本。" 
+                  : "原画质下载需要足够的使用次数。已为您提供高清版本。"}
+              </p>
+              {!isAuthenticated && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => window.location.href = '/signin'}
+                >
+                  立即登录获取原图权限
+                </Button>
+              )}
+            </motion.div>
+          )}
+
+          {/* 使用次数显示（已登录用户） */}
+          {isAuthenticated && downloadResult?.meta?.remainingUsage !== undefined && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-3 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-lg"
+            >
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                <span className="font-medium">剩余使用次数</span>
+              </div>
+              <p className="mt-1">
+                您还有 <strong>{downloadResult.meta.remainingUsage}</strong> 次原图下载机会
+              </p>
+            </motion.div>
+          )}
 
           {/* 错误显示 */}
           {error && (

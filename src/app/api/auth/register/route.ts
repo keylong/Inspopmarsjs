@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createUser, getUserByEmail } from '@/lib/auth'
-import { supabase } from '@/lib/supabase'
+import { userAdmin } from '@/lib/supabase-admin'
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, name } = await req.json()
+    const { email, password, username, sex, phone } = await req.json()
 
     // 验证输入
-    if (!email || !password || !name) {
+    if (!email || !password || !username) {
       return NextResponse.json(
-        { error: '邮箱、密码和姓名都是必填项' },
+        { error: '邮箱、密码和用户名都是必填项' },
         { status: 400 }
       )
     }
@@ -31,60 +30,75 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // 检查用户是否已存在
-    const existingUser = await getUserByEmail(email)
-    if (existingUser) {
+    // 验证用户名格式
+    const usernameRegex = /^[a-zA-Z0-9_]{3,30}$/
+    if (!usernameRegex.test(username)) {
+      return NextResponse.json(
+        { error: '用户名只能包含字母、数字和下划线，长度3-30个字符' },
+        { status: 400 }
+      )
+    }
+
+    // 检查邮箱是否已存在
+    const existingEmailUser = await userAdmin.findByEmail(email)
+    if (existingEmailUser) {
       return NextResponse.json(
         { error: '该邮箱已被注册' },
         { status: 400 }
       )
     }
 
-    // 在 Supabase Auth 中注册用户
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name: name,
-        }
-      }
-    })
-
-    if (authError) {
-      console.error('Supabase 注册错误:', authError)
+    // 检查用户名是否已存在
+    const existingUsernameUser = await userAdmin.findByUsername(username)
+    if (existingUsernameUser) {
       return NextResponse.json(
-        { error: authError.message === 'User already registered' ? '该邮箱已被注册' : '注册失败，请重试' },
+        { error: '该用户名已被使用' },
         { status: 400 }
       )
     }
 
-    // 在数据库中创建用户记录
+    // 创建用户（包含认证和业务数据）
     try {
-      const user = await createUser({
+      const { user, profile } = await userAdmin.createUser({
         email,
-        name,
-        provider: 'email',
+        password,
+        username,
+        sex: sex || null,
+        phone: phone || null,
+        value: 0,
+        buytype: 0,
+        buydate: null
       })
 
       return NextResponse.json(
-        { 
-          message: '注册成功，请检查邮箱进行验证',
+        {
+          message: '注册成功',
           user: {
             id: user.id,
             email: user.email,
-            name: user.name,
-            image: user.image,
+            username: profile.username,
+            name: profile.username,
+            value: profile.value,
+            buytype: profile.buytype,
           }
         },
         { status: 201 }
       )
-    } catch (error) {
-      // 如果数据库创建失败，清理 Supabase 用户
-      if (authData.user) {
-        await supabase.auth.admin.deleteUser(authData.user.id)
+    } catch (error: any) {
+      console.error('注册错误:', error)
+      
+      // 处理 Supabase 特定错误
+      if (error.message?.includes('User already registered')) {
+        return NextResponse.json(
+          { error: '该邮箱已被注册' },
+          { status: 400 }
+        )
       }
-      throw error
+      
+      return NextResponse.json(
+        { error: '注册失败，请重试' },
+        { status: 500 }
+      )
     }
 
   } catch (error) {

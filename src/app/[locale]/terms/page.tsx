@@ -3,6 +3,9 @@ import { notFound } from 'next/navigation';
 import { locales, type Locale } from '@/lib/i18n/config';
 import TermsClient from './terms-client';
 
+// 强制动态渲染，避免预渲染错误
+export const dynamic = 'force-dynamic';
+
 interface TermsPageProps {
   params: Promise<{
     locale: string;

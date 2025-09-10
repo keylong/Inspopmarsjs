@@ -10,6 +10,11 @@ import { ErrorBoundary } from '@/components/providers/error-boundary';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { WebVitalsReporter, ResourceHints } from '@/components/performance/web-vitals';
 
+// 强制所有页面使用动态渲染
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+export const revalidate = 0;
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],

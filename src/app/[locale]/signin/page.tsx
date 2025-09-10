@@ -1,11 +1,14 @@
 'use client';
 
+// 强制动态渲染，避免预渲染错误
+export const dynamic = 'force-dynamic';
+
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function SignInPage() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -17,19 +20,37 @@ export default function SignInPage() {
     setError('');
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          identifier,
+          password,
+        }),
       });
 
-      if (error) {
-        setError(error.message);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || '登录失败');
         return;
       }
 
-      router.push('/');
+      if (data.success) {
+        // 登录成功，服务器已设置正确的 cookies
+        // 强制客户端重新获取用户状态
+        const { data: { user } } = await supabase.auth.getUser()
+        console.log('登录后检查用户状态:', user)
+        
+        // 重定向到首页
+        router.push('/');
+        router.refresh(); // 刷新页面以更新认证状态
+      }
     } catch (error) {
-      setError('登录失败，请重试');
+      console.error('登录错误:', error);
+      setError('登录失败，请检查网络连接后重试');
     } finally {
       setLoading(false);
     }
@@ -51,18 +72,18 @@ export default function SignInPage() {
 
           <form onSubmit={handleSignIn}>
             <div className="mb-4">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                邮箱
+              <label htmlFor="identifier" className="block text-sm font-medium text-gray-700">
+                邮箱或用户名
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
+                id="identifier"
+                name="identifier"
+                type="text"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="请输入邮箱"
+                placeholder="请输入邮箱或用户名"
               />
             </div>
 
