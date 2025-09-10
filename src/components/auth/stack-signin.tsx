@@ -18,7 +18,7 @@ export function StackSignIn() {
   const [loading, setLoading] = useState(false);
   
   // 获取 returnUrl 参数
-  const returnUrl = searchParams.get('returnUrl') || '/zh-CN';
+  const returnUrl = searchParams?.get('returnUrl') || '/zh-CN';
 
   // 如果已登录，重定向
   useEffect(() => {

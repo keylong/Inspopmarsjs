@@ -23,6 +23,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { InstagramMedia, DownloadItem } from '@/types/instagram';
 
+// 判断URL是否为视频文件
+const isVideoUrl = (url: string): boolean => {
+  if (!url) return false;
+  const videoExtensions = ['.mp4', '.webm', '.ogg', '.avi', '.mov'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext)) || 
+         lowerUrl.includes('video') || 
+         lowerUrl.includes('/v/');
+};
+
 interface MediaPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -246,7 +256,11 @@ export function MediaPreviewModal({
               {currentMedia?.is_video && !videoError ? (
                 <video
                   src={currentMedia.video_url || currentMedia.url}
-                  poster={currentMedia.thumbnail || currentMedia.url}
+                  poster={
+                    currentMedia.thumbnail && !isVideoUrl(currentMedia.thumbnail) 
+                      ? currentMedia.thumbnail 
+                      : undefined // 不设置poster，避免使用视频URL
+                  }
                   controls
                   autoPlay={isPlaying}
                   muted={isMuted}
@@ -282,6 +296,37 @@ export function MediaPreviewModal({
                           显示视频缩略图
                         </div>
                       )}
+                    </div>
+                  </div>
+                </div>
+              ) : isVideoUrl(currentMedia?.url || '') ? (
+                <div className="max-w-full max-h-full flex items-center justify-center bg-gray-100 rounded-lg">
+                  <div className="text-center p-8">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-300 rounded-full flex items-center justify-center">
+                      <Play className="w-8 h-8 text-gray-500" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">视频内容</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      检测到视频URL，但未正确标识为视频类型
+                    </p>
+                    <div className="space-y-2">
+                      <video
+                        src={currentMedia?.url}
+                        poster={
+                          currentMedia?.thumbnail && !isVideoUrl(currentMedia.thumbnail) 
+                            ? currentMedia.thumbnail 
+                            : undefined
+                        }
+                        controls
+                        autoPlay={isPlaying}
+                        muted={isMuted}
+                        className="max-w-full max-h-full object-contain"
+                        onPlay={() => setIsPlaying(true)}
+                        onPause={() => setIsPlaying(false)}
+                        onError={(e) => {
+                          console.error('视频加载失败:', e);
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -384,11 +429,21 @@ export function MediaPreviewModal({
                   }`}
                 >
                   <Image
-                    src={mediaItem.thumbnail || mediaItem.url}
+                    src={
+                      mediaItem.thumbnail && !isVideoUrl(mediaItem.thumbnail) 
+                        ? mediaItem.thumbnail 
+                        : (mediaItem.is_video || isVideoUrl(mediaItem.url)) 
+                          ? 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+PHBhdGggZD0iTTIwIDEzLjVWMzQuNUwyOCAyNEwyMCAxMy41WiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg=='
+                          : mediaItem.url
+                    }
                     alt={`缩略图 ${index + 1}`}
                     width={48}
                     height={48}
                     className="object-cover w-full h-full"
+                    onError={(e) => {
+                      const img = e.target as HTMLImageElement;
+                      img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjZjNmNGY2Ii8+CjxwYXRoIGQ9Ik0yNCAzMkwyMCAxNkgyOEwyNCAzMloiIGZpbGw9IiM5Y2EzYWYiLz4KPC9zdmc+Cg==';
+                    }}
                   />
                   {mediaItem.is_video && (
                     <div className="absolute inset-0 flex items-center justify-center">

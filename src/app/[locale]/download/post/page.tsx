@@ -575,8 +575,22 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
   const currentHeight = selectedResolution?.config_height || media.height;
   const currentLabel = selectedResolution?.label || '原图';
   
+  // 判断URL是否为视频文件
+  const isVideoUrl = (url: string): boolean => {
+    if (!url) return false;
+    const videoExtensions = ['.mp4', '.webm', '.ogg', '.avi', '.mov'];
+    const lowerUrl = url.toLowerCase();
+    return videoExtensions.some(ext => lowerUrl.includes(ext)) || 
+           lowerUrl.includes('video') || 
+           lowerUrl.includes('/v/');
+  };
+
   // 对于视频，获取下载URL和预览URL
-  const previewUrl = media.thumbnail || currentUrl; // 预览使用缩略图
+  const previewUrl = media.thumbnail && !isVideoUrl(media.thumbnail) 
+    ? media.thumbnail 
+    : media.is_video || isVideoUrl(currentUrl)
+      ? 'https://via.placeholder.com/400x400?text=视频预览'
+      : currentUrl; // 预览使用缩略图，视频没有缩略图时使用占位图
   const downloadUrl = media.is_video ? (media.video_url || currentUrl) : currentUrl; // 下载使用视频URL或当前选择的分辨率
   
   return (

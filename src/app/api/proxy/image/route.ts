@@ -19,6 +19,19 @@ async function proxyMedia(mediaUrl: string): Promise<NextResponse> {
     }
 
     console.log('代理媒体请求 URL 长度:', mediaUrl.length);
+    console.log('代理媒体请求 URL 预览:', mediaUrl.substring(0, 100) + (mediaUrl.length > 100 ? '...' : ''));
+    
+    // 检测是否为视频URL
+    const isLikelyVideoFromUrl = mediaUrl.includes('.mp4') || 
+                                mediaUrl.includes('video') || 
+                                mediaUrl.includes('/v/') ||
+                                mediaUrl.includes('.webm') ||
+                                mediaUrl.includes('.ogg');
+    
+    if (isLikelyVideoFromUrl) {
+      console.log('⚠️ 检测到视频URL被传递给代理服务器:', mediaUrl.substring(0, 150));
+      console.log('⚠️ 这可能是导致"The requested resource isn\'t a valid image"错误的原因');
+    }
 
     // 解码URL
     let decodedUrl: string;
