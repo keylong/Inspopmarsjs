@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { locales, getLocaleFromCountryCode, isValidLocale } from './lib/i18n/config';
-
-// 辅助函数：从路径中提取语言代码
-function getLocaleFromPathname(pathname: string): string | undefined {
-  const segments = pathname.split('/');
-  const potentialLocale = segments[1];
-  return potentialLocale && isValidLocale(potentialLocale) ? potentialLocale : undefined;
-}
+import { locales, defaultLocale, getLocaleFromCountryCode, isValidLocale } from './lib/i18n/config';
 
 // 辅助函数：从请求中检测首选语言
 function detectPreferredLocale(request: NextRequest): string {
@@ -23,25 +16,27 @@ function detectPreferredLocale(request: NextRequest): string {
   }
 
   // 3. 地理位置检测（Vercel Edge Function提供）
-  const country = (request as any).geo?.country || 'US';
+  const country = (request as any).geo?.country || 'CN';
   const geoLocale = getLocaleFromCountryCode(country);
   
   // 4. Accept-Language header检测
   const acceptLanguage = request.headers.get('accept-language');
   if (acceptLanguage) {
-    for (const locale of locales) {
-      const langCode = locale.split('-')[0];
-      if (acceptLanguage.includes(locale) || (langCode && acceptLanguage.includes(langCode))) {
-        return locale;
-      }
+    // 优先检测中文
+    if (acceptLanguage.includes('zh-CN') || acceptLanguage.includes('zh')) {
+      return 'zh-CN';
+    }
+    if (acceptLanguage.includes('zh-TW') || acceptLanguage.includes('zh-HK')) {
+      return 'zh-TW';
+    }
+    if (acceptLanguage.includes('en')) {
+      return 'en';
     }
   }
 
-  // 5. 返回地理位置推荐或默认语言
-  return geoLocale;
+  // 5. 返回地理位置推荐或默认语言（简体中文）
+  return geoLocale || defaultLocale;
 }
-
-// 注意：认证检查已移至组件级别，不再在中间件中处理
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -56,40 +51,72 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 检查当前路径是否已包含语言代码
-  const currentLocale = getLocaleFromPathname(pathname);
+  // 检查路径中的语言代码
+  const segments = pathname.split('/').filter(Boolean);
+  const potentialLocale = segments[0];
   
-  if (!currentLocale) {
-    // 路径中没有语言代码，需要重定向到带语言代码的路径
-    const preferredLocale = detectPreferredLocale(request);
-    const newUrl = new URL(`/${preferredLocale}${pathname}`, request.url);
+  let locale: string;
+  let pathWithoutLocale: string;
+  
+  // 检查是否有语言前缀
+  if (potentialLocale && isValidLocale(potentialLocale)) {
+    if (potentialLocale === 'zh-CN') {
+      // 如果URL中有 /zh-CN，重定向到没有语言前缀的路径
+      pathWithoutLocale = '/' + segments.slice(1).join('/');
+      const newUrl = new URL(pathWithoutLocale || '/', request.url);
+      newUrl.search = request.nextUrl.search;
+      
+      const response = NextResponse.redirect(newUrl);
+      response.cookies.set('locale', 'zh-CN', {
+        maxAge: 365 * 24 * 60 * 60,
+        path: '/',
+        sameSite: 'lax',
+      });
+      return response;
+    } else {
+      // 其他语言保留前缀
+      locale = potentialLocale;
+      pathWithoutLocale = '/' + segments.slice(1).join('/');
+    }
+  } else {
+    // 没有语言前缀，检测用户偏好
+    const detectedLocale = detectPreferredLocale(request);
     
-    // 保持查询参数
-    newUrl.search = request.nextUrl.search;
-    
-    const response = NextResponse.redirect(newUrl);
-    
-    // 设置Cookie保存语言偏好
-    response.cookies.set('locale', preferredLocale, {
-      maxAge: 365 * 24 * 60 * 60, // 1年
-      path: '/',
-      sameSite: 'lax',
-    });
-    
-    return response;
+    if (detectedLocale === 'zh-CN') {
+      // 简体中文用户，直接使用当前路径
+      locale = 'zh-CN';
+      pathWithoutLocale = pathname;
+    } else {
+      // 其他语言用户，重定向到带语言前缀的路径
+      const newUrl = new URL(`/${detectedLocale}${pathname}`, request.url);
+      newUrl.search = request.nextUrl.search;
+      
+      const response = NextResponse.redirect(newUrl);
+      response.cookies.set('locale', detectedLocale, {
+        maxAge: 365 * 24 * 60 * 60,
+        path: '/',
+        sameSite: 'lax',
+      });
+      return response;
+    }
   }
-
-  // 移除语言代码后的实际路径
-  const pathnameWithoutLocale = pathname.slice(`/${currentLocale}`.length) || '/';
-
-  // 注意：认证检查交给组件级别的 ProtectedRoute 处理，
-  // 因为中间件在 Edge Runtime 中运行时，Supabase 的 cookie 检查可能不可靠
-  // 这样可以确保认证状态检查的一致性
 
   // 设置请求头，以便在组件中获取当前语言
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-pathname', pathnameWithoutLocale);
-  requestHeaders.set('x-locale', currentLocale);
+  requestHeaders.set('x-pathname', pathWithoutLocale || '/');
+  requestHeaders.set('x-locale', locale);
+  
+  // 为没有语言前缀的路径（简体中文）重写URL到 /zh-CN 路径
+  if (locale === 'zh-CN' && !pathname.startsWith('/zh-CN')) {
+    const newUrl = new URL(`/zh-CN${pathname}`, request.url);
+    newUrl.search = request.nextUrl.search;
+    
+    return NextResponse.rewrite(newUrl, {
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  }
 
   return NextResponse.next({
     request: {
@@ -112,6 +139,3 @@ export const config = {
     '/((?!api/auth|api/proxy|_next/static|_next/image|favicon.ico|.*\\..*).*)',
   ],
 };
-
-// 导出类型供其他模块使用
-// export type { SupportedLocale, DetectionMethod, LocaleDetectionResult, MiddlewareContext };

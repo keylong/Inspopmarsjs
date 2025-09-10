@@ -24,10 +24,34 @@ export function LanguageSwitcher({
   const handleLocaleChange = (newLocale: Locale) => {
     if (!pathname) return;
     
-    // 移除当前语言代码并添加新的语言代码
-    const segments = pathname.split('/');
-    segments[1] = newLocale; // 替换语言代码
-    const newPath = segments.join('/');
+    // 处理路径转换
+    const segments = pathname.split('/').filter(Boolean);
+    
+    // 检查当前路径是否有语言前缀
+    const hasLocalePrefix = segments[0] && locales.includes(segments[0] as Locale);
+    
+    let newPath: string;
+    
+    if (newLocale === 'zh-CN') {
+      // 简体中文不需要语言前缀
+      if (hasLocalePrefix) {
+        // 移除语言前缀
+        newPath = '/' + segments.slice(1).join('/');
+      } else {
+        // 已经没有前缀，保持当前路径
+        newPath = pathname;
+      }
+    } else {
+      // 其他语言需要前缀
+      if (hasLocalePrefix) {
+        // 替换现有前缀
+        segments[0] = newLocale;
+        newPath = '/' + segments.join('/');
+      } else {
+        // 添加语言前缀
+        newPath = `/${newLocale}${pathname}`;
+      }
+    }
     
     // 设置Cookie保存语言偏好
     document.cookie = `locale=${newLocale}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;

@@ -12,19 +12,22 @@ import { WebVitalsReporter, ResourceHints } from '@/components/performance/web-v
 import { AdSenseScript } from '@/components/ads/adsense-script';
 import { PWAInstallPrompt } from '@/components/pwa/install-prompt';
 
-// 强制所有页面使用动态渲染
-export const dynamic = 'force-dynamic';
+// 使用增量静态再生 (ISR)
+export const revalidate = 3600; // 每小时重新验证一次
 export const dynamicParams = true;
-export const revalidate = 0;
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+  display: 'swap', // 优化字体加载
+  preload: true,
 });
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+  display: 'swap', // 优化字体加载
+  preload: true,
 });
 
 interface LocaleLayoutProps {
@@ -73,11 +76,9 @@ export async function generateMetadata({
     },
     alternates: {
       languages: {
-        'zh-CN': '/zh-CN',
+        'zh-CN': '/',
         'zh-TW': '/zh-TW',
-        'zh-HK': '/zh-HK',
         'en': '/en',
-        'ja': '/ja',
       },
     },
   };

@@ -126,6 +126,9 @@ const nextConfig: NextConfig = {
   // 压缩配置
   compress: true,
   
+  // 启用生产源映射优化
+  productionBrowserSourceMaps: false,
+  
   // ESLint 配置 - 临时忽略构建时的 ESLint 错误
   eslint: {
     ignoreDuringBuilds: true,
@@ -177,12 +180,16 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // 静态资源缓存
+        // 静态资源缓存 - 长期缓存
         source: '/(.*?)\\.(js|css|woff|woff2|png|jpg|jpeg|gif|svg|ico|webp|avif)$',
         headers: [
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
           },
         ],
       },
@@ -192,17 +199,17 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=300, s-maxage=300, stale-while-revalidate=60',
+            value: 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
           },
         ],
       },
       {
-        // 页面缓存
+        // 页面缓存 - 优化为更长的缓存时间
         source: '/(.*)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=60, s-maxage=300, stale-while-revalidate=60',
+            value: 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
           },
           // 安全头
           {

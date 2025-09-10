@@ -41,8 +41,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const updateUser = (supabaseUser: any) => {
+  const updateUser = async (supabaseUser: any) => {
     if (supabaseUser) {
+      console.log('用户认证状态变化:', { 
+        id: supabaseUser.id, 
+        email: supabaseUser.email,
+        name: supabaseUser.user_metadata?.name
+      })
+
+      // 检查是否是OAuth用户（Google登录）
+      const isOAuthUser = supabaseUser.app_metadata?.providers?.includes('google')
+      console.log('是否是OAuth用户:', isOAuthUser)
+
+      if (isOAuthUser) {
+        try {
+          console.log('开始为OAuth用户创建业务用户记录...')
+          
+          // 调用API创建或更新用户
+          const response = await fetch('/api/sync-google-user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: supabaseUser.id,
+              email: supabaseUser.email,
+              name: supabaseUser.user_metadata?.name || supabaseUser.user_metadata?.full_name,
+              image: supabaseUser.user_metadata?.avatar_url,
+            })
+          })
+
+          const result = await response.json()
+          console.log('用户同步结果:', result)
+        } catch (error) {
+          console.error('同步Google用户失败:', error)
+        }
+      }
+
       setUser({
         id: supabaseUser.id,
         email: supabaseUser.email || '',
@@ -88,7 +123,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setIsLoading(true)
       try {
         const { data: { user: supabaseUser } } = await supabase.auth.getUser()
-        updateUser(supabaseUser)
+        await updateUser(supabaseUser)
       } catch (error) {
         console.error('获取用户信息失败:', error)
         setUser(null)
@@ -99,9 +134,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     getCurrentUser()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      updateUser(session?.user || null)
-      setIsLoading(false)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('认证状态变化:', event, { hasUser: !!session?.user })
+      
+      try {
+        await updateUser(session?.user || null)
+      } catch (error) {
+        console.error('处理认证状态变化失败:', error)
+      } finally {
+        setIsLoading(false)
+      }
     })
 
     return () => subscription.unsubscribe()

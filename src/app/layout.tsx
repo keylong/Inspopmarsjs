@@ -5,10 +5,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/lib/auth-context';
 import './globals.css';
 
-// 强制所有页面使用动态渲染
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
-export const revalidate = 0;
+// 使用增量静态再生 (ISR)
+export const revalidate = 3600; // 每小时重新验证一次
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
