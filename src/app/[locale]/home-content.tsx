@@ -3,17 +3,18 @@
 import dynamic from 'next/dynamic';
 import { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
-// 按需导入图标，减少包大小
-import Download from 'lucide-react/dist/esm/icons/download';
-import Zap from 'lucide-react/dist/esm/icons/zap';
-import Shield from 'lucide-react/dist/esm/icons/shield';
-import Smartphone from 'lucide-react/dist/esm/icons/smartphone';
-import Instagram from 'lucide-react/dist/esm/icons/instagram';
-import Play from 'lucide-react/dist/esm/icons/play';
-import Image from 'lucide-react/dist/esm/icons/image';
-import Star from 'lucide-react/dist/esm/icons/star';
-import Users from 'lucide-react/dist/esm/icons/users';
-import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right';
+import { 
+  Download, 
+  Zap, 
+  Shield, 
+  Smartphone,
+  Instagram,
+  Play,
+  Image,
+  Star,
+  Users,
+  ArrowRight
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
