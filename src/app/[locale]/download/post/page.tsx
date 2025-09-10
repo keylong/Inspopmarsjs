@@ -122,12 +122,16 @@ export default function InstagramPostDownloadPage() {
 
   // 处理媒体点击预览（支持图片和视频）
   const handleMediaClick = (src: string, alt: string, isVideo: boolean = false) => {
+    console.log('🖱️ handleMediaClick 被调用:', { src: src?.substring(0, 100), alt, isVideo });
+    
     if (isVideo) {
+      console.log('🎬 检测到视频，打开视频模态框');
       // 对于视频，直接使用src（已经是正确的代理URL）
       setSelectedVideo({ src: src, title: alt });
       setVideoModalOpen(true);
       return;
     }
+    console.log('🖼️ 检测到图片，打开图片模态框');
     // 只有图片才使用Image组件的模态框
     setSelectedImage({ src, alt });
     setImageModalOpen(true);
@@ -666,7 +670,16 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
           width={400}
           height={400}
           className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
-          onClick={() => onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`, media.is_video)}
+          onClick={() => {
+            console.log('🖱️ 图片卡片被点击:', {
+              is_video: media.is_video,
+              downloadUrl,
+              currentUrl,
+              video_url: media.video_url,
+              传递给onImageClick的URL: media.is_video ? downloadUrl : currentUrl
+            });
+            onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`, media.is_video);
+          }}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             // 避免无限循环：只在不是占位符的情况下设置占位符
@@ -697,8 +710,18 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
         
         {/* 视频播放按钮覆盖层 */}
         {media.is_video && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300">
-            <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+          <div 
+            className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+            onClick={() => {
+              console.log('🖱️ 视频覆盖层被点击:', {
+                is_video: media.is_video,
+                downloadUrl,
+                video_url: media.video_url
+              });
+              onImageClick(downloadUrl, `Instagram 媒体 ${index + 1}`, media.is_video);
+            }}
+          >
+            <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg pointer-events-none">
               <Play className="w-8 h-8 text-gray-800 ml-1" />
             </div>
           </div>
@@ -741,7 +764,16 @@ function MediaCard({ media, index, onImageClick, onDirectDownload, onCopyUrl, t 
             size="sm"
             variant="outline"
             className="flex-1 text-gray-700 hover:text-gray-900"
-            onClick={() => onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`, media.is_video)}
+            onClick={() => {
+              console.log('🖱️ 预览按钮被点击:', {
+                is_video: media.is_video,
+                downloadUrl,
+                currentUrl,
+                video_url: media.video_url,
+                传递给onImageClick的URL: media.is_video ? downloadUrl : currentUrl
+              });
+              onImageClick(media.is_video ? downloadUrl : currentUrl, `Instagram 媒体 ${index + 1}`, media.is_video);
+            }}
           >
             <ZoomIn className="w-4 h-4 mr-1" />
             {t('download.result.preview')}
