@@ -70,3 +70,56 @@
       'calt' 1;
   }
 }
+
+@layer components {
+  /* 移动端优化类 */
+  .mobile-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+  
+  .mobile-text {
+    @apply text-sm sm:text-base;
+  }
+  
+  .mobile-title {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+  
+  .mobile-subtitle {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+  
+  .mobile-button {
+    @apply h-10 sm:h-11 lg:h-12 px-3 sm:px-4 lg:px-6 text-sm sm:text-base;
+  }
+  
+  .mobile-input {
+    @apply h-10 sm:h-11 lg:h-12 text-sm sm:text-base;
+  }
+  
+  .mobile-card {
+    @apply p-3 sm:p-4 lg:p-6;
+  }
+  
+  .mobile-grid {
+    @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  
+  /* 触控优化 */
+  .touch-friendly {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* 移动端隐藏/显示 */
+  .mobile-only {
+    @apply block sm:hidden;
+  }
+  
+  .desktop-only {
+    @apply hidden sm:block;
+  }
+  
+  .tablet-and-up {
+    @apply hidden md:block;
+  }
+}

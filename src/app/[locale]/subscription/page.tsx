@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress'
 import { Loader2, CreditCard, Calendar, Download, Check, Crown, Timer, Zap, Shield } from 'lucide-react'
 import { SubscriptionPlan, UserSubscription } from '@/types/payment'
 import { useI18n } from '@/lib/i18n/client'
+import { PaymentModal } from '@/components/payment-modal'
 
 interface SubscriptionData {
   subscription: UserSubscription | null
@@ -28,10 +29,13 @@ export default function SubscriptionPage() {
   const t = useI18n()
   const [user, setUser] = useState<any>(null)
   const router = useRouter()
+  const params = useParams()
+  const locale = params?.locale as string || 'zh-CN'
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null)
   const [plans, setPlans] = useState<SubscriptionPlan[]>([])
   const [loading, setLoading] = useState(true)
   const [upgrading, setUpgrading] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
   
   // 倒计时状态
   const [timeLeft, setTimeLeft] = useState({
@@ -117,7 +121,7 @@ export default function SubscriptionPage() {
     }
   }
 
-  const handleUpgrade = async (planId: string, paymentMethod: 'stripe' | 'alipay') => {
+  const handleUpgrade = async (planId: string, paymentMethod: 'stripe' | 'alipay' | 'wechat') => {
     // 如果用户未登录，跳转到登录页面
     if (!user) {
       // 保存用户意图到 URL 参数，登录后可以继续
@@ -126,6 +130,13 @@ export default function SubscriptionPage() {
       return
     }
     
+    // 如果是微信支付或支付宝，显示支付弹窗
+    if (paymentMethod === 'wechat' || paymentMethod === 'alipay') {
+      setShowPaymentModal(true)
+      return
+    }
+    
+    // Stripe 支付流程（暂时停用）
     setUpgrading(true)
     
     try {
@@ -493,6 +504,25 @@ export default function SubscriptionPage() {
                   {!isCurrentPlan && (
                     <div className="space-y-3 pt-4">
                       <Button
+                        onClick={() => handleUpgrade(plan.id, 'wechat')}
+                        disabled={upgrading}
+                        className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 transition-all ${
+                          (isYearly || isYearlyVIP)
+                            ? 'bg-white/90 text-green-600 hover:bg-green-50'
+                            : 'bg-green-500 hover:bg-green-600 text-white'
+                        }`}
+                      >
+                        {upgrading ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <>
+                            <span>💸</span>
+                            <span>微信支付</span>
+                          </>
+                        )}
+                      </Button>
+                      
+                      <Button
                         onClick={() => handleUpgrade(plan.id, 'alipay')}
                         disabled={upgrading}
                         className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 transition-all ${
@@ -511,25 +541,6 @@ export default function SubscriptionPage() {
                         )}
                       </Button>
                       
-                      <Button
-                        onClick={() => handleUpgrade(plan.id, 'stripe')}
-                        disabled={upgrading}
-                        className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 transition-all ${
-                          (isYearly || isYearlyVIP)
-                            ? 'bg-white/90 text-green-600 hover:bg-green-50'
-                            : 'bg-green-500 hover:bg-green-600 text-white'
-                        }`}
-                      >
-                        {upgrading ? (
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                        ) : (
-                          <>
-                            <span>💸</span>
-                            <span>微信</span>
-                          </>
-                        )}
-                      </Button>
-                      
                       <p className={`text-center text-sm ${(isYearly || isYearlyVIP) ? 'text-white/80' : 'text-gray-500'}`}>
                         使用帮助
                       </p>
@@ -541,6 +552,13 @@ export default function SubscriptionPage() {
           })}
         </div>
       </div>
+      
+      {/* 支付弹窗 */}
+      <PaymentModal 
+        isOpen={showPaymentModal} 
+        onClose={() => setShowPaymentModal(false)}
+        locale={locale}
+      />
       </div>
     </div>
   )

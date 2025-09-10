@@ -4,7 +4,7 @@
 export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,10 +13,13 @@ import { ProtectedRoute } from '@/components/auth/protected-route'
 import { useAuth } from '@/hooks/useAuth'
 import { useI18n } from '@/lib/i18n/client'
 import { User, Mail, Calendar, Shield, Crown, Download, Key, Clock, Copy, Eye, EyeOff } from 'lucide-react'
+import { PaymentModal } from '@/components/payment-modal'
 
 export default function ProfilePage() {
   const { user } = useAuth()
   const router = useRouter()
+  const params = useParams()
+  const locale = params?.locale as string || 'zh-CN'
   const t = useI18n()
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -26,6 +29,7 @@ export default function ProfilePage() {
   const [profileLoading, setProfileLoading] = useState(true)
   const [showToken, setShowToken] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -284,7 +288,7 @@ export default function ProfilePage() {
                     <Button 
                       variant="default" 
                       size="sm" 
-                      onClick={() => router.push('/subscription')}
+                      onClick={() => setShowPaymentModal(true)}
                       className="w-full"
                     >
                       升级到会员
@@ -500,6 +504,13 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* 支付弹窗 */}
+          <PaymentModal 
+            isOpen={showPaymentModal} 
+            onClose={() => setShowPaymentModal(false)}
+            locale={locale}
+          />
 
         </div>
       </div>

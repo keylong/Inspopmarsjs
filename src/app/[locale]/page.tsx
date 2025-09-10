@@ -49,8 +49,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
-      {/* 背景装饰元素 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* 背景装饰元素 - 在移动端简化 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none desktop-only">
         <motion.div
           className="absolute top-20 left-10 w-20 h-20 bg-blue-200 rounded-full opacity-20"
           animate={{ y: [-20, 20, -20], rotate: 360 }}
@@ -68,10 +68,10 @@ export default function Home() {
         />
       </div>
       
-      <div className="container mx-auto px-4 py-16 relative">
+      <div className="container mx-auto mobile-padding py-8 sm:py-12 lg:py-16 relative">
         {/* Hero Section */}
         <motion.div 
-          className="text-center mb-20"
+          className="text-center mb-12 sm:mb-16 lg:mb-20"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -94,7 +94,7 @@ export default function Home() {
           </motion.div>
           
           <motion.h1 
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent leading-tight px-4 sm:px-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -103,7 +103,7 @@ export default function Home() {
           </motion.h1>
           
           <motion.p 
-            className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed"
+            className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed px-4 sm:px-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -123,28 +123,28 @@ export default function Home() {
           
           {/* 统计数据 */}
           <motion.div 
-            className="flex flex-wrap justify-center gap-6 mb-10"
+            className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-6 mb-10 px-4 sm:px-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.9 }}
           >
             <div className="flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full">
-              <Users className="w-5 h-5 text-blue-600" />
-              <span className="font-semibold text-gray-700">1M+ {t('download.result.trustedUsers')}</span>
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+              <span className="font-semibold text-gray-700 text-sm sm:text-base">1M+ {t('download.result.trustedUsers')}</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full">
-              <Download className="w-5 h-5 text-green-600" />
-              <span className="font-semibold text-gray-700">10M+ {t('download.result.totalDownloads')}</span>
+              <Download className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+              <span className="font-semibold text-gray-700 text-sm sm:text-base">10M+ {t('download.result.totalDownloads')}</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full">
-              <Star className="w-5 h-5 text-yellow-500 fill-current" />
-              <span className="font-semibold text-gray-700">4.8/5 {t('download.result.rating')}</span>
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 fill-current" />
+              <span className="font-semibold text-gray-700 text-sm sm:text-base">4.8/5 {t('download.result.rating')}</span>
             </div>
           </motion.div>
           
           {/* CTA 按钮 */}
           <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 sm:px-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.1 }}
@@ -152,13 +152,14 @@ export default function Home() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="w-full sm:w-auto"
             >
               <Link href={`/${currentLocale}/download`}>
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 group"
                 >
-                  <Download className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+                  <Download className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:animate-bounce" />
                   {content.downloadButton}
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
@@ -168,12 +169,13 @@ export default function Home() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="w-full sm:w-auto"
             >
               <Link href={`/${currentLocale}/about`}>
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="text-lg px-8 py-4 border-2 hover:bg-white/50 backdrop-blur-sm transition-all duration-300"
+                  className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 border-2 hover:bg-white/50 backdrop-blur-sm transition-all duration-300"
                 >
                   {content.aboutButton}
                 </Button>
@@ -194,7 +196,7 @@ export default function Home() {
 
         {/* 功能特色 */}
         <motion.div 
-          className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-20"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto mb-16 lg:mb-20 px-4 sm:px-0"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.3 }}
@@ -280,40 +282,40 @@ export default function Home() {
         
         {/* 支持的内容类型 */}
         <motion.div 
-          className="text-center mb-16"
+          className="text-center mb-12 lg:mb-16 px-4 sm:px-0"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.5 }}
         >
-          <h2 className="text-3xl font-bold text-gray-800 mb-8">{t('download.result.supportedContent')}</h2>
-          <div className="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">{t('download.result.supportedContent')}</h2>
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-3 sm:gap-4 max-w-4xl mx-auto">
             <motion.div 
-              className="flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
+              className="flex items-center gap-2 px-3 sm:px-6 py-2 sm:py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
               whileHover={{ scale: 1.05, y: -2 }}
             >
-              <Image className="w-5 h-5 text-blue-600" />
-              <span className="font-medium text-gray-700">{t('download.result.photoPosts')}</span>
+              <Image className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+              <span className="font-medium text-gray-700 text-sm sm:text-base">{t('download.result.photoPosts')}</span>
             </motion.div>
             <motion.div 
-              className="flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
+              className="flex items-center gap-2 px-3 sm:px-6 py-2 sm:py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
               whileHover={{ scale: 1.05, y: -2 }}
             >
-              <Play className="w-5 h-5 text-red-600" />
-              <span className="font-medium text-gray-700">{t('download.result.videoContent2')}</span>
+              <Play className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
+              <span className="font-medium text-gray-700 text-sm sm:text-base">{t('download.result.videoContent2')}</span>
             </motion.div>
             <motion.div 
-              className="flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
+              className="flex items-center gap-2 px-3 sm:px-6 py-2 sm:py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
               whileHover={{ scale: 1.05, y: -2 }}
             >
-              <Star className="w-5 h-5 text-purple-600" />
-              <span className="font-medium text-gray-700">{t('download.result.stories')}</span>
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
+              <span className="font-medium text-gray-700 text-sm sm:text-base">{t('download.result.stories')}</span>
             </motion.div>
             <motion.div 
-              className="flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
+              className="flex items-center gap-2 px-3 sm:px-6 py-2 sm:py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-md"
               whileHover={{ scale: 1.05, y: -2 }}
             >
-              <Download className="w-5 h-5 text-green-600" />
-              <span className="font-medium text-gray-700">{t('download.result.reels')}</span>
+              <Download className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+              <span className="font-medium text-gray-700 text-sm sm:text-base">{t('download.result.reels')}</span>
             </motion.div>
           </div>
         </motion.div>
