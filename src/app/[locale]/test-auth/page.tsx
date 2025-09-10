@@ -1,7 +1,5 @@
 'use client'
 
-// 强制动态渲染，避免预渲染错误
-export const dynamic = 'force-dynamic';
 
 import { useAuth } from '@/hooks/useAuth'
 import { StackUserButton } from '@/components/auth/user-button'

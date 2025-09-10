@@ -1,7 +1,5 @@
 'use client';
 
-// 强制动态渲染，避免预渲染错误
-export const dynamic = 'force-dynamic';
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -52,12 +50,13 @@ export default function SignUpPage() {
       setError('');
       setMessage('');
       
-      console.log('开始Google注册，重定向URL:', `${window.location.origin}/auth/callback`)
+      const redirectUrl = `${window.location.origin}/auth/callback`
+      console.log('开始Google注册，重定向URL:', redirectUrl)
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -85,12 +84,13 @@ export default function SignUpPage() {
       setError('');
       setMessage('');
       
-      console.log('开始Apple注册，重定向URL:', `${window.location.origin}/auth/callback`)
+      const redirectUrl = `${window.location.origin}/auth/callback`
+      console.log('开始Apple注册，重定向URL:', redirectUrl)
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
         }
       });
 

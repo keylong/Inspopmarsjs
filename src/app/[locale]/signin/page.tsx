@@ -1,7 +1,5 @@
 'use client';
 
-// 强制动态渲染，避免预渲染错误
-export const dynamic = 'force-dynamic';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -60,12 +58,13 @@ export default function SignInPage() {
       setLoading(true);
       setError('');
       
-      console.log('开始Google登录，重定向URL:', `${window.location.origin}/auth/callback`)
+      const redirectUrl = `${window.location.origin}/auth/callback`
+      console.log('开始Google登录，重定向URL:', redirectUrl)
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -92,12 +91,13 @@ export default function SignInPage() {
       setLoading(true);
       setError('');
       
-      console.log('开始Apple登录，重定向URL:', `${window.location.origin}/auth/callback`)
+      const redirectUrl = `${window.location.origin}/auth/callback`
+      console.log('开始Apple登录，重定向URL:', redirectUrl)
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
         }
       });
 

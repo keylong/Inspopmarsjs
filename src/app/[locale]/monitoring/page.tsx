@@ -2,8 +2,6 @@ import { Metadata } from 'next';
 import dynamicComponent from 'next/dynamic';
 import { Suspense } from 'react';
 
-// 强制动态渲染，避免预渲染错误
-export const dynamic = 'force-dynamic';
 
 // 动态导入监控仪表板组件以减少初始包大小
 const MonitoringDashboard = dynamicComponent(

@@ -1,7 +1,5 @@
 'use client'
 
-// 强制动态渲染，避免预渲染错误
-export const dynamic = 'force-dynamic';
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
