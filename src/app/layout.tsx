@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { Metadata } from 'next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/lib/auth-context';
 import './globals.css';
@@ -63,6 +64,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
           <Toaster />
+          <SpeedInsights />
         </AuthProvider>
       </body>
     </html>

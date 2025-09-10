@@ -8,12 +8,14 @@ import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { SupabaseUserButton } from '@/components/auth/user-button';
 import { Crown, Menu, X } from 'lucide-react';
+import { PaymentModal } from '@/components/payment-modal';
 
 export function Navigation() {
   const pathname = usePathname();
   const currentLocale = useCurrentLocale() || 'zh-CN';
   const t = useI18n();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // 使用翻译函数
   const nav = {
@@ -59,24 +61,17 @@ export function Navigation() {
               </Link>
             ))}
             
-            {/* VIP订阅链接 - 特殊样式 */}
-            <Link href={vipNavItem.href}>
-              <Button
-                variant={pathname === vipNavItem.href ? 'default' : 'outline'}
-                size="sm"
-                className={`relative overflow-hidden transition-all duration-300 ${
-                  pathname === vipNavItem.href 
-                    ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg'
-                    : 'border-yellow-400 text-yellow-600 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-orange-500 hover:text-white hover:border-0 hover:shadow-lg hover:scale-105'
-                }`}
-              >
-                <Crown className="h-4 w-4 mr-1" />
-                {vipNavItem.label}
-                {pathname !== vipNavItem.href && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 animate-pulse" />
-                )}
-              </Button>
-            </Link>
+            {/* VIP订阅按钮 - 特殊样式 */}
+            <Button
+              onClick={() => setShowPaymentModal(true)}
+              variant="outline"
+              size="sm"
+              className="relative overflow-hidden transition-all duration-300 border-yellow-400 text-yellow-600 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-orange-500 hover:text-white hover:border-0 hover:shadow-lg hover:scale-105"
+            >
+              <Crown className="h-4 w-4 mr-1" />
+              {vipNavItem.label}
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 animate-pulse" />
+            </Button>
             
             {/* 语言切换器 */}
             <LanguageSwitcher variant="compact" />
@@ -119,36 +114,36 @@ export function Navigation() {
                 </Link>
               ))}
               
-              {/* VIP订阅链接 - 移动端 */}
-              <Link 
-                href={vipNavItem.href}
-                onClick={() => setMobileMenuOpen(false)}
+              {/* VIP订阅按钮 - 移动端 */}
+              <Button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setShowPaymentModal(true);
+                }}
+                variant="outline"
+                size="sm"
+                className="w-full justify-start relative overflow-hidden transition-all duration-300 border-yellow-400 text-yellow-600"
               >
-                <Button
-                  variant={pathname === vipNavItem.href ? 'default' : 'outline'}
-                  size="sm"
-                  className={`w-full justify-start relative overflow-hidden transition-all duration-300 ${
-                    pathname === vipNavItem.href 
-                      ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg'
-                      : 'border-yellow-400 text-yellow-600'
-                  }`}
-                >
-                  <Crown className="h-4 w-4 mr-2" />
-                  {vipNavItem.label}
-                  {pathname !== vipNavItem.href && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 animate-pulse" />
-                  )}
-                </Button>
-              </Link>
+                <Crown className="h-4 w-4 mr-2" />
+                {vipNavItem.label}
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 animate-pulse" />
+              </Button>
 
               {/* 语言切换器 - 移动端 */}
               <div className="pt-2 border-t">
-                <LanguageSwitcher variant="full" />
+                <LanguageSwitcher variant="dropdown" />
               </div>
             </div>
           </div>
         )}
       </div>
+      
+      {/* 支付弹窗 */}
+      <PaymentModal 
+        isOpen={showPaymentModal} 
+        onClose={() => setShowPaymentModal(false)}
+        locale={currentLocale}
+      />
     </nav>
   );
 }
