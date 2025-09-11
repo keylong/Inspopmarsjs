@@ -41,6 +41,7 @@ export function VideoPreviewModal({
   const [volume, setVolume] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [isSafari, setIsSafari] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -174,6 +175,25 @@ export function VideoPreviewModal({
     };
   }, [isOpen, isPlaying, duration]);
 
+  // Safari 浏览器检测
+  useEffect(() => {
+    const detectSafari = () => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const vendor = navigator.vendor?.toLowerCase() || '';
+      
+      // 检测 Safari 浏览器
+      const isSafariBrowser = vendor.includes('apple') && 
+                            (userAgent.includes('safari') && !userAgent.includes('chrome'));
+      
+      // 检测 iOS 设备
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      
+      return isSafariBrowser || isIOS;
+    };
+    
+    setIsSafari(detectSafari());
+  }, []);
+
   // 重置状态当模态框关闭时
   useEffect(() => {
     if (!isOpen) {
@@ -273,16 +293,30 @@ export function VideoPreviewModal({
             {hasError && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                 <div className="text-center text-white">
-                  <p className="text-sm mb-2">视频加载失败</p>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10"
-                    onClick={reloadVideo}
-                  >
-                    <RotateCcw className="w-4 h-4 mr-1" />
-                    重试
-                  </Button>
+                  <p className="text-sm mb-2">
+                    {isSafari ? 'Safari 浏览器可能无法播放此视频' : '视频加载失败'}
+                  </p>
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-white/20 text-white hover:bg-white/10"
+                      onClick={reloadVideo}
+                    >
+                      <RotateCcw className="w-4 h-4 mr-1" />
+                      重试
+                    </Button>
+                    {isSafari && onDownload && (
+                      <Button
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                        onClick={() => onDownload(videoSrc, title)}
+                      >
+                        <Download className="w-4 h-4 mr-1" />
+                        直接下载
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
