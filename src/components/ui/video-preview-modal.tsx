@@ -374,7 +374,11 @@ export function VideoPreviewModal({
               <div>
                 <h3 className="font-semibold text-gray-800 mb-1">{title}</h3>
                 <p className="text-sm text-gray-500">
-                  使用空格键播放/暂停，M键静音，F键全屏，←→键快进/快退
+                  {
+                    isSafari 
+                      ? 'Safari 浏览器可能无法正常播放视频，建议直接下载'
+                      : '使用空格键播放/暂停，M键静音，F键全屏，←→键快进/快退'
+                  }
                 </p>
               </div>
               <div className="flex gap-2">

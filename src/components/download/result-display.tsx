@@ -20,7 +20,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Grid3X3,
-  Play
+  Play,
+  Loader2
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ import { MediaPreviewModal } from './media-preview-modal';
 import { generateDownloadItems } from '@/lib/utils/instagram-data-transformer';
 import { useI18n } from '@/lib/i18n/client';
 import { generateImageSrc } from '@/lib/utils/media-proxy';
+import { useToast } from '@/lib/hooks/use-toast';
 
 interface ResultDisplayProps {
   result: {
@@ -320,7 +322,9 @@ interface MediaDownloadCardProps {
 function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownloadCardProps) {
   const [selectedResolution, setSelectedResolution] = useState<string>(item.defaultResolution || '');
   const [copied, setCopied] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const t = useI18n();
+  const { toast, dismiss } = useToast();
 
 
   const formatFileSize = (bytes: number) => {
@@ -337,9 +341,38 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
     try {
       await navigator.clipboard.writeText(currentResolution.url);
       setCopied(true);
+      toast.success('链接已复制', '下载链接已复制到剪贴板');
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('复制失败:', err);
+      toast.error('复制失败', '无法复制链接到剪贴板');
+    }
+  };
+  
+  const handleDownload = async (resolution: DownloadResolution) => {
+    if (isDownloading) {
+      toast.warning('正在下载中', '请等待当前下载完成');
+      return;
+    }
+    
+    setIsDownloading(true);
+    const loadingId = toast.loading(
+      `正在下载${item.type === 'video' ? '视频' : '图片'}`, 
+      `正在下载 ${resolution.label} 分辨率...`
+    );
+    
+    try {
+      // 调用父组件的下载函数
+      await onDownload(resolution);
+      
+      // 成功提示
+      dismiss(loadingId);
+      toast.success('开始下载！', `${item.type === 'video' ? '视频' : '图片'}正在下载到您的设备`);
+    } catch (err) {
+      dismiss(loadingId);
+      toast.error('下载失败', '请稍后重试或尝试其他分辨率');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -464,12 +497,22 @@ function MediaDownloadCard({ item, index, onDownload, onPreview }: MediaDownload
           
           <Button 
             size="sm" 
-            onClick={() => currentResolution && onDownload(currentResolution)}
-            className="flex-1 bg-green-500 hover:bg-green-600 text-white flex items-center gap-2"
-            disabled={!currentResolution}
+            onClick={() => currentResolution && handleDownload(currentResolution)}
+            className="flex-1 bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 relative overflow-hidden"
+            disabled={!currentResolution || isDownloading}
           >
-            <Download className="w-4 h-4" />
-            下载
+            {isDownloading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                下载中
+                <span className="absolute inset-0 bg-white/10 animate-pulse" />
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                下载
+              </>
+            )}
           </Button>
           
           <Button

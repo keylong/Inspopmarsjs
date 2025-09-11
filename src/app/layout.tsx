@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from '@/components/ui/toaster';
+import { ToastContainer } from '@/components/download/toast-container';
 import { AuthProvider } from '@/lib/auth-context';
 import './globals.css';
 
@@ -71,6 +72,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
           <Toaster />
+          <ToastContainer />
           <SpeedInsights />
         </AuthProvider>
       </body>

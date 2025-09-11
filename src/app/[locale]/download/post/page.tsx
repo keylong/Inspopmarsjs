@@ -28,6 +28,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 import { useSearchParams } from 'next/navigation';
 import { useOptionalAuth } from '@/hooks/useAuth';
+import { useToast } from '@/lib/hooks/use-toast';
 
 import { InstagramPost, DownloadItem } from '@/types/instagram';
 import { generateImageSrc, isVideoUrl, generateVideoSrc } from '@/lib/utils/media-proxy';
@@ -78,8 +79,10 @@ export default function InstagramPostDownloadPage() {
   const t = useI18n();
   const searchParams = useSearchParams();
   const { isAuthenticated } = useOptionalAuth();
+  const { toast, dismiss } = useToast();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [downloadingItems, setDownloadingItems] = useState<Set<string>>(new Set());
   const [result, setResult] = useState<DownloadResult | null>(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{src: string; alt: string} | null>(null);
@@ -258,10 +261,11 @@ export default function InstagramPostDownloadPage() {
       // 生成下载页面链接，使用原始Instagram URL
       const downloadPageUrl = `${window.location.origin}/${currentLocale}/download/post?url=${encodeURIComponent(url)}`;
       await navigator.clipboard.writeText(downloadPageUrl);
-      // 可以添加成功提示
+      toast.success('链接已复制', '下载链接已复制到剪贴板');
       console.log('复制的链接:', downloadPageUrl);
     } catch (error) {
       console.error('复制失败:', error);
+      toast.error('复制失败', '无法复制链接到剪贴板');
     }
   };
 
@@ -283,14 +287,53 @@ export default function InstagramPostDownloadPage() {
   };
 
   // 处理直接下载
-  const handleDirectDownload = (url: string, filename?: string) => {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename || 'instagram-image';
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDirectDownload = async (url: string, filename?: string) => {
+    // 防止重复点击
+    const downloadKey = `${url}-${filename}`;
+    if (downloadingItems.has(downloadKey)) {
+      toast.warning('正在下载中', '请等待当前下载完成');
+      return;
+    }
+    
+    // 添加到下载中集合
+    setDownloadingItems(prev => new Set(prev).add(downloadKey));
+    
+    // 判断媒体类型
+    const isVideo = url.includes('video') || filename?.includes('video') || filename?.includes('.mp4');
+    const mediaType = isVideo ? '视频' : '图片';
+    
+    // 显示下载开始提示
+    const loadingId = toast.loading(`正在下载${mediaType}`, `正在处理您的下载请求...`);
+    
+    try {
+      // 创建下载链接
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename || 'instagram-media';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // 下载成功提示
+      setTimeout(() => {
+        dismiss(loadingId);
+        toast.success('开始下载！', `${mediaType}正在下载到您的设备`);
+      }, 500);
+    } catch (error) {
+      console.error('下载失败:', error);
+      dismiss(loadingId);
+      toast.error('下载失败', '请稍后重试或尝试其他分辨率');
+    } finally {
+      // 3秒后从下载中集合移除
+      setTimeout(() => {
+        setDownloadingItems(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(downloadKey);
+          return newSet;
+        });
+      }, 3000);
+    }
   };
 
   // 处理VIP升级模态框操作
@@ -602,6 +645,7 @@ export default function InstagramPostDownloadPage() {
                                 media={media}
                                 index={index}
                                 isAuthenticated={isAuthenticated}
+                                isDownloading={downloadingItems.has(`${media.is_video ? media.video_url : media.url}-instagram-${media.id || index}-${media.is_video ? 'video' : `${media.display_resources?.[0]?.config_width}x${media.display_resources?.[0]?.config_height}`}.${media.is_video ? 'mp4' : 'jpg'}`)}
                                 onImageClick={handleMediaClick}
                                 onDirectDownload={handleDirectDownload}
                                 onCopyUrl={handleCopyUrl}
@@ -902,6 +946,7 @@ interface MediaCardProps {
   media: InstagramMedia;
   index: number;
   isAuthenticated: boolean;
+  isDownloading: boolean;
   onImageClick: (url: string, title: string, isVideo?: boolean) => void;
   onDirectDownload: (url: string, filename: string) => void;
   onCopyUrl: () => void;
@@ -909,7 +954,7 @@ interface MediaCardProps {
   t: any;
 }
 
-function MediaCard({ media, index, isAuthenticated, onImageClick, onDirectDownload, onCopyUrl, onPremiumUpgrade, t }: MediaCardProps) {
+function MediaCard({ media, index, isAuthenticated, isDownloading, onImageClick, onDirectDownload, onCopyUrl, onPremiumUpgrade, t }: MediaCardProps) {
   // 处理分辨率选择
   const handleResolutionClick = (resource: DisplayResource, resIndex: number) => {
     // 如果是原图且用户未登录，显示VIP升级模态框
@@ -1123,14 +1168,25 @@ function MediaCard({ media, index, isAuthenticated, onImageClick, onDirectDownlo
           </Button>
           <Button
             size="sm"
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white relative overflow-hidden"
+            disabled={isDownloading}
             onClick={() => onDirectDownload(
               downloadUrl, 
               `instagram-${media.id || index}-${media.is_video ? 'video' : `${currentWidth}x${currentHeight}`}.${media.is_video ? 'mp4' : 'jpg'}`
             )}
           >
-            <Download className="w-4 h-4 mr-1" />
-            {t('common.download')}
+            {isDownloading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                下载中
+                <span className="absolute inset-0 bg-white/10 animate-pulse" />
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4 mr-1" />
+                {t('common.download')}
+              </>
+            )}
           </Button>
           <Button
             size="sm"

@@ -16,13 +16,15 @@ import {
   Volume2,
   VolumeX,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Loader2
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { InstagramMedia, DownloadItem } from '@/types/instagram';
 import { createSafeMediaConfig, generateVideoSrc, generateImageSrc, isVideoUrl } from '@/lib/utils/media-proxy';
+import { useToast } from '@/lib/hooks/use-toast';
 
 interface MediaPreviewModalProps {
   isOpen: boolean;
@@ -48,6 +50,8 @@ export function MediaPreviewModal({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [videoError, setVideoError] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const { toast, dismiss } = useToast();
 
   const currentMedia = media[currentIndex];
   
@@ -154,6 +158,40 @@ export function MediaPreviewModal({
 
   const getCurrentMediaDownloads = () => {
     return downloads.filter(item => item.mediaId === currentMedia?.id);
+  };
+
+  const handleDownload = async () => {
+    if (isDownloading) {
+      toast.warning('正在下载中', '请等待当前下载完成');
+      return;
+    }
+
+    const firstItem = getCurrentMediaDownloads()[0];
+    if (!firstItem) {
+      toast.error('下载失败', '没有可用的下载选项');
+      return;
+    }
+
+    setIsDownloading(true);
+    const mediaType = currentMedia?.is_video ? '视频' : '图片';
+    const loadingId = toast.loading(
+      `正在下载${mediaType}`,
+      `正在处理您的下载请求...`
+    );
+
+    try {
+      // 调用父组件的下载函数
+      await onDownload?.(firstItem);
+      
+      // 成功提示
+      dismiss(loadingId);
+      toast.success('开始下载！', `${mediaType}正在下载到您的设备`);
+    } catch (err) {
+      dismiss(loadingId);
+      toast.error('下载失败', '请稍后重试或尝试其他分辨率');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -389,14 +427,22 @@ export function MediaPreviewModal({
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => {
-                    const firstItem = getCurrentMediaDownloads()[0];
-                    if (firstItem) onDownload?.(firstItem);
-                  }}
-                  className="flex items-center gap-2"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                  className="flex items-center gap-2 relative overflow-hidden"
                 >
-                  <Download className="w-4 h-4" />
-                  下载
+                  {isDownloading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      下载中
+                      <span className="absolute inset-0 bg-white/10 animate-pulse" />
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4" />
+                      下载
+                    </>
+                  )}
                 </Button>
               )}
             </div>

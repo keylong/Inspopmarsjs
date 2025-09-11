@@ -33,6 +33,7 @@ import { Badge } from '@/components/ui/badge';
 import { useInstagramDownloader } from '@/lib/hooks/use-download';
 import { DownloadFormData, URLValidationResult } from '@/types/instagram';
 import { useOptionalAuth } from '@/hooks/useAuth';
+import { useToast } from '@/lib/hooks/use-toast';
 
 // 创建表单验证 Schema（使用固定消息）
 const downloadFormSchema = z.object({
@@ -78,9 +79,11 @@ export function DownloadForm({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [downloadResult, setDownloadResult] = useState<any>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
   
   // 使用认证状态（可选）
   const { user, isLoading: authLoading, isAuthenticated } = useOptionalAuth();
+  const { toast, dismiss } = useToast();
   
   useEffect(() => {
     setIsClient(true);
@@ -138,6 +141,15 @@ export function DownloadForm({
 
   // 表单提交处理
   const onSubmit = async (formData: FormData) => {
+    // 防止重复点击
+    if (isDownloading) {
+      toast.warning('正在处理中', '请等待当前下载完成');
+      return;
+    }
+    
+    setIsDownloading(true);
+    const loadingId = toast.loading('正在获取内容', '正在解析您的 Instagram 链接...');
+    
     try {
       onDownloadStart?.(formData);
       
@@ -146,10 +158,21 @@ export function DownloadForm({
       // 保存下载结果用于显示权限信息
       setDownloadResult(result);
       
+      // 成功提示
+      dismiss(loadingId);
+      toast.success('获取成功！', '内容已准备好，请选择分辨率进行下载');
+      
       onDownloadComplete?.(result);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '下载失败';
+      
+      // 错误提示
+      dismiss(loadingId);
+      toast.error('获取失败', errorMessage);
+      
       onDownloadError?.(errorMessage);
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -365,14 +388,15 @@ export function DownloadForm({
           {/* 提交按钮 */}
           <Button
             type="submit"
-            disabled={isLoading || !validation?.isValid}
-            className="w-full"
+            disabled={isDownloading || isLoading || !validation?.isValid}
+            className="w-full relative overflow-hidden"
             size="lg"
           >
-            {isLoading ? (
+            {(isDownloading || isLoading) ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                下载中...
+                正在获取...
+                <span className="absolute inset-0 bg-primary/10 animate-pulse" />
               </>
             ) : (
               <>
