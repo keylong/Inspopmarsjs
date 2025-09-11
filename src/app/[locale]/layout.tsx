@@ -8,7 +8,7 @@ import { Footer } from '@/components/footer';
 import { AnalyticsProvider } from '@/components/providers/analytics-provider';
 import { ErrorBoundary } from '@/components/providers/error-boundary';
 import { QueryProvider } from '@/components/providers/query-provider';
-import { AdSenseScript } from '@/components/ads/adsense-script';
+// import { AdSenseScript } from '@/components/ads/adsense-script';
 import { PWAInstallPrompt } from '@/components/pwa/install-prompt';
 
 // 使用增量静态再生 (ISR)
@@ -116,11 +116,11 @@ export default async function LocaleLayout({
             `,
           }}
         />
-      </head>
+      </head>ß
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <AdSenseScript />
+        {/* <AdSenseScript /> */}
           <AnalyticsProvider>
             <ErrorBoundary>
               <QueryProvider>
