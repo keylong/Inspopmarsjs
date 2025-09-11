@@ -116,7 +116,7 @@ export default async function LocaleLayout({
             `,
           }}
         />
-      </head>ß
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
