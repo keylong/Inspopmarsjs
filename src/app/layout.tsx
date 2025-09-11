@@ -1,9 +1,18 @@
 import { ReactNode } from 'react';
 import { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/lib/auth-context';
 import './globals.css';
+
+// 优化字体加载 - 使用 next/font
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+  preload: true,
+});
 
 // 使用增量静态再生 (ISR)
 export const revalidate = 3600; // 每小时重新验证一次
@@ -57,8 +66,8 @@ export default function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="zh-CN">
-      <body className="min-h-screen bg-background font-sans antialiased">
+    <html lang="zh-CN" className={inter.variable}>
+      <body className={`${inter.className} min-h-screen bg-background antialiased`}>
         <AuthProvider>
           {children}
           <Toaster />

@@ -8,7 +8,6 @@ import { Footer } from '@/components/footer';
 import { AnalyticsProvider } from '@/components/providers/analytics-provider';
 import { ErrorBoundary } from '@/components/providers/error-boundary';
 import { QueryProvider } from '@/components/providers/query-provider';
-import { WebVitalsReporter, ResourceHints } from '@/components/performance/web-vitals';
 import { AdSenseScript } from '@/components/ads/adsense-script';
 import { PWAInstallPrompt } from '@/components/pwa/install-prompt';
 
@@ -103,7 +102,6 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir="ltr">
       <head>
-        <ResourceHints />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -122,7 +120,6 @@ export default async function LocaleLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <WebVitalsReporter />
         <AdSenseScript />
           <AnalyticsProvider>
             <ErrorBoundary>
