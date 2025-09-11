@@ -119,33 +119,16 @@ export function HomeContent() {
           >
             {content.subtitle}
           </motion.p>
-          
+
+          {/* Download Section with Form */}
           <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 px-6 sm:px-0"
-            initial={{ opacity: 0, y: 20 }}
+            id="download-section"
+            className="mb-12"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
           >
-            <Link href="#download-section">
-              <Button 
-                size="lg" 
-                className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              >
-                <Download className="mr-2 h-5 w-5" />
-                {content.downloadButton}
-              </Button>
-            </Link>
-            
-            <Link href="/about">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="w-full sm:w-auto border-2 border-gray-300 hover:border-purple-600 px-8 py-6 text-lg rounded-xl hover:scale-105 transition-all duration-300"
-              >
-                {content.aboutButton}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <DownloadForm />
           </motion.div>
           
           {/* Trust Indicators */}
@@ -180,16 +163,6 @@ export function HomeContent() {
           <AdSenseBanner />
         </motion.div>
 
-        {/* Download Section with Form */}
-        <motion.div 
-          id="download-section"
-          className="mb-16 lg:mb-20"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-        >
-          <DownloadForm />
-        </motion.div>
 
         {/* Features Grid */}
         <motion.div 

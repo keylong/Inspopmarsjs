@@ -179,7 +179,7 @@ export default {
       urlValidationFailed: 'URL验证失败',
       downloadFailed: '下载失败',
       downloading: '下载中...',
-      analyze: '解析链接',
+      analyze: '立即下载',
       analyzing: '正在解析...',
       paste: '粘贴',
       startDownload: '开始下载',
