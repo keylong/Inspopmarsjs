@@ -131,7 +131,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         requestKey,
         async () => {
           console.log(`获取用户 Profile: ${currentUserId}`)
-          const response = await fetch('/api/profile')
+          const response = await fetch('/api/profile', {
+            // 确保不使用缓存，总是获取最新数据
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache',
+            }
+          })
           if (!response.ok) {
             throw new Error('获取 Profile 失败')
           }
@@ -236,7 +242,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         requestKey,
         async () => {
           console.log(`强制刷新用户 Profile: ${currentUserId}`)
-          const response = await fetch('/api/profile')
+          const response = await fetch('/api/profile', {
+            // 确保不使用缓存，总是获取最新数据
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache',
+            }
+          })
           if (!response.ok) {
             throw new Error('获取 Profile 失败')
           }

@@ -97,9 +97,12 @@ export async function getCurrentUser(): Promise<User | null> {
       return null
     }
     
+    console.log('getCurrentUser: 使用 Supabase 用户 ID 查询数据库:', authUser.id)
+    
     // 从 Prisma 获取用户详细信息
+    // 使用 Supabase 的用户 ID 而不是 email，确保获取正确的用户
     const user = await prisma.user.findUnique({
-      where: { email: authUser.email! },
+      where: { id: authUser.id },
       select: {
         id: true,
         email: true,
