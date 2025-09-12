@@ -122,7 +122,7 @@ export default function ProfilePage() {
   }
 
   // 检查是否是VIP会员 (buytype >= 2)
-  const isVip = userProfile?.buytype >= 2 && userProfile?.membership?.isActive
+  const isVip = userProfile?.buytype !== undefined && userProfile.buytype >= 2 && userProfile?.membership?.isActive
 
   if (profileLoading) {
     return (

@@ -14,12 +14,18 @@ interface User {
 
 interface UserProfile {
   id: string
+  email?: string
+  name?: string
   value: number
   buytype?: number
   buydate?: Date | null
+  token?: string | null
   membership?: {
+    type: string
     typeName: string
     isActive: boolean
+    daysRemaining: number | null
+    expiresAt: string | null
   }
 }
 

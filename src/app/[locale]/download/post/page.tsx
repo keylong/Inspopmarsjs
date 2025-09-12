@@ -98,6 +98,7 @@ export default function InstagramPostDownloadPage() {
   const resultsRef = useRef<HTMLDivElement>(null);
   const [autoSubmitted, setAutoSubmitted] = useState(false);
   const [showLoadingPrompt, setShowLoadingPrompt] = useState(false);
+  const isSubmittingRef = useRef(false); // 添加防重复提交标记
 
   // 创建智能错误处理器
   const errorHandler = createErrorHandler(
@@ -111,15 +112,25 @@ export default function InstagramPostDownloadPage() {
   // 检查URL参数并自动填充和提交
   useEffect(() => {
     const urlParam = searchParams?.get('url');
-    if (urlParam && !autoSubmitted) {
+    let timer: NodeJS.Timeout | undefined;
+    
+    if (urlParam && !autoSubmitted && !isSubmittingRef.current) {
       setUrl(urlParam);
       setAutoSubmitted(true);
       // 延迟提交，让UI先渲染
-      setTimeout(() => {
-        handleAutoSubmit(urlParam);
+      timer = setTimeout(() => {
+        if (!isSubmittingRef.current) {
+          handleAutoSubmit(urlParam);
+        }
       }, 100);
     }
-  }, [searchParams, autoSubmitted]);
+    
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [searchParams]); // 移除 autoSubmitted 依赖，避免重复触发
 
   // 滚动到结果区域
   const scrollToResults = () => {
@@ -132,7 +143,10 @@ export default function InstagramPostDownloadPage() {
   };
 
   const handleAutoSubmit = async (autoUrl: string) => {
-    if (!autoUrl.trim()) return;
+    if (!autoUrl.trim() || isSubmittingRef.current) return;
+    
+    // 设置提交标记，防止重复提交
+    isSubmittingRef.current = true;
 
     setLoading(true);
     setResult(null);
@@ -206,19 +220,25 @@ export default function InstagramPostDownloadPage() {
     } finally {
       setLoading(false);
       setShowLoadingPrompt(false);
+      isSubmittingRef.current = false; // 重置提交标记
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!url.trim()) {
-      setResult({
-        success: false,
-        error: t('download.form.urlRequired')
-      });
+    if (!url.trim() || isSubmittingRef.current) {
+      if (!url.trim()) {
+        setResult({
+          success: false,
+          error: t('download.form.urlRequired')
+        });
+      }
       return;
     }
+    
+    // 设置提交标记，防止重复提交
+    isSubmittingRef.current = true;
 
     setLoading(true);
     setResult(null);
@@ -292,6 +312,7 @@ export default function InstagramPostDownloadPage() {
     } finally {
       setLoading(false);
       setShowLoadingPrompt(false);
+      isSubmittingRef.current = false; // 重置提交标记
     }
   };
 
