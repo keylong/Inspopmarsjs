@@ -1,7 +1,7 @@
 export default {
   // Site information
   site: {
-    title: 'Instagram 下載器',
+    title: 'Instagram圖片/影片下載軟體',
   },
 
   // Common UI elements

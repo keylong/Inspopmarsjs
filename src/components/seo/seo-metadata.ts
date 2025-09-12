@@ -64,20 +64,22 @@ export function generateSEOMetadata(
   };
 }
 
-// 用于首页的特殊 SEO 配置
+// 用于首页的特殊 SEO 配置 - 优化CTR
 export function generateHomeMetadata(locale: string = 'zh-CN'): Metadata {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://inspopmars.com';
   
+  // 优化标题 - 添加吸引点击的元素
   const titles = {
-    'zh-CN': 'Instagram下载器 - 免费下载Instagram视频、图片、Reels和Stories',
-    'zh-TW': 'Instagram下載器 - 免費下載Instagram影片、圖片、Reels和Stories',
-    'en': 'Instagram Downloader - Free Download Instagram Videos, Photos, Reels & Stories'
+    'zh-CN': 'Instagram图片/视频下载软件 - 免费批量下载工具 | 2025最新',
+    'zh-TW': 'Instagram圖片/影片下載軟體 - 免費批量下載工具 | 2025最新',
+    'en': 'Instagram Photo/Video Downloader - Free Bulk Download Tool | 2025'
   };
   
+  // 优化描述 - 突出独特价值和数字
   const descriptions = {
-    'zh-CN': '最好的Instagram下载工具，支持下载Instagram视频、图片、Reels、Stories和IGTV。高清质量，快速安全，完全免费。',
-    'zh-TW': '最好的Instagram下載工具，支援下載Instagram影片、圖片、Reels、Stories和IGTV。高清品質，快速安全，完全免費。',
-    'en': 'The best Instagram downloader for videos, photos, Reels, Stories and IGTV. HD quality, fast and secure, completely free.'
+    'zh-CN': '⚡秒速下载Instagram图片视频，支持批量100+链接同时处理。✅无水印✅高清原图✅Stories匿名下载。跨境电商卖家首选，已服务10万+用户。',
+    'zh-TW': '⚡秒速下載IG圖片影片，支援批量100+連結同時處理。✅無浮水印✅高清原圖✅限時動態匿名下載。跨境賣家首選，已服務10萬+用戶。',
+    'en': '⚡Download Instagram content in seconds. Bulk download 100+ links. ✅No watermark ✅HD quality ✅Anonymous Stories. Trusted by 100K+ e-commerce sellers.'
   };
   
   return {
@@ -96,7 +98,7 @@ export function generateHomeMetadata(locale: string = 'zh-CN'): Metadata {
       title: titles[locale as keyof typeof titles] || titles['zh-CN'],
       description: descriptions[locale as keyof typeof descriptions] || descriptions['zh-CN'],
       url: baseUrl,
-      siteName: 'Inspopmars',
+      siteName: 'Instagram图片/视频下载软件',
       type: 'website',
       images: [
         {

@@ -1,18 +1,18 @@
 import type { NextSeoProps } from 'next-seo';
 
-// 基础SEO配置
+// 基础SEO配置 - 优化CTR
 export const baseSEOConfig: NextSeoProps = {
-  defaultTitle: 'Instagram下载软件 - 快速下载Instagram图片、视频、Stories',
-  titleTemplate: '%s | Instagram下载软件',
-  description: '免费的Instagram下载工具，支持下载Instagram图片、视频、Stories、Reels、IGTV等内容。无需登录，快速安全，保持原画质量。',
+  defaultTitle: 'Instagram图片/视频下载软件 - 免费批量下载工具',
+  titleTemplate: '%s | Instagram图片/视频下载软件',
+  description: '专业的Instagram图片/视频下载软件，支持批量下载100+链接。✅无水印✅高清原图✅匿名下载。跨境电商卖家必备，已服务10万+用户。',
   canonical: 'https://ins.popmars.com',
   openGraph: {
     type: 'website',
     locale: 'zh_CN',
     url: 'https://ins.popmars.com',
-    site_name: 'Instagram下载软件',
-    title: 'Instagram下载软件 - 快速下载Instagram图片、视频、Stories',
-    description: '免费的Instagram下载工具，支持下载Instagram图片、视频、Stories、Reels、IGTV等内容。无需登录，快速安全，保持原画质量。',
+    site_name: 'Instagram图片/视频下载软件',
+    title: 'Instagram图片/视频下载软件 - 免费批量下载工具',
+    description: '专业的Instagram图片/视频下载软件，支持批量下载图片、视频、Stories、Reels、IGTV等内容。无需登录，快速安全，保持原画质量。',
     images: [
       {
         url: 'https://ins.popmars.com/og-image.png',

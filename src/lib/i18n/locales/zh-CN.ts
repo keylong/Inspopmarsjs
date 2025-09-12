@@ -1,7 +1,7 @@
 export default {
   // 网站信息
   site: {
-    title: 'Instagram 下载软件',
+    title: 'Instagram图片/视频下载软件',
   },
 
   // Common UI elements
@@ -97,7 +97,7 @@ export default {
 
   // Download page
   download: {
-    title: 'Instagram 下载软件',
+    title: 'Instagram图片/视频下载软件',
     subtitle: '快速下载 Instagram 图片、视频、Stories 和 IGTV',
     urlLabel: 'Instagram URL',
     urlPlaceholder: '粘贴 Instagram 链接...',
@@ -257,8 +257,8 @@ export default {
 
   // SEO and meta
   seo: {
-    siteName: 'InstagramDown - Instagram 下载软件',
-    defaultTitle: 'Instagram 下载软件 - 免费下载 Instagram 图片和视频',
+    siteName: 'Instagram图片/视频下载软件',
+    defaultTitle: 'Instagram图片/视频下载软件 - 免费下载 Instagram 图片和视频',
     defaultDescription: '免费的 Instagram 下载软件，支持下载图片、视频、Stories、IGTV 和 Reels，高清无水印，简单易用。',
     keywords: 'Instagram 下载软件, Instagram 图片下载, Instagram 视频下载, Stories 下载, IGTV 下载, Reels 下载',
   },
@@ -496,7 +496,7 @@ export default {
 
   // Footer
   footer: {
-    company: 'Instagram下载软件',
+    company: 'Instagram图片/视频下载软件',
     copyright: '版权所有',
     allRightsReserved: '保留所有权利',
     links: {

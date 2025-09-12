@@ -15,8 +15,14 @@ function detectPreferredLocale(request: NextRequest): string {
     return cookieLocale;
   }
 
-  // 3. 地理位置检测（Vercel Edge Function提供）
-  const country = (request as any).geo?.country || 'CN';
+  // 3. 地理位置检测（Vercel Edge Function提供）- 增强版
+  const geo = (request as any).geo || {};
+  const country = geo.country || 'CN';
+  const city = geo.city || '';
+  const region = geo.region || '';
+  
+  // 为跨境电商用户优化
+  const isEcommerceCountry = ['US', 'CN', 'HK', 'MY', 'SG', 'JP'].includes(country);
   const geoLocale = getLocaleFromCountryCode(country);
   
   // 4. Accept-Language header检测
@@ -104,10 +110,29 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // 设置请求头，以便在组件中获取当前语言
+  // 设置请求头，以便在组件中获取当前语言和地理位置
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-pathname', pathWithoutLocale || '/');
   requestHeaders.set('x-locale', locale);
+  
+  // 添加地理位置信息headers（用于个性化内容）
+  const geo = (request as any).geo || {};
+  requestHeaders.set('x-geo-country', geo.country || 'unknown');
+  requestHeaders.set('x-geo-city', geo.city || 'unknown');
+  requestHeaders.set('x-geo-region', geo.region || 'unknown');
+  
+  // 为跨境电商用户添加特殊标记
+  const isEcommerceUser = ['US', 'CN', 'HK', 'MY', 'SG', 'JP'].includes(geo.country);
+  if (isEcommerceUser) {
+    requestHeaders.set('x-user-type', 'ecommerce');
+  }
+  
+  // 检测海外华人（英语国家但语言偏好是中文）
+  const isOverseasChinese = ['US', 'CA', 'GB', 'AU', 'NZ'].includes(geo.country) && 
+                            (locale === 'zh-CN' || locale === 'zh-TW');
+  if (isOverseasChinese) {
+    requestHeaders.set('x-user-segment', 'overseas-chinese');
+  }
   
   // 为没有语言前缀的路径（简体中文）重写URL到 /zh-CN 路径
   if (locale === 'zh-CN' && !pathname.startsWith('/zh-CN')) {

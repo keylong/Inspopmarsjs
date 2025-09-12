@@ -1,7 +1,7 @@
 export default {
   // Site information
   site: {
-    title: 'Instagram Downloader',
+    title: 'Instagram Photo/Video Downloader',
   },
 
   // Common UI elements

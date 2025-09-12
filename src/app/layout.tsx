@@ -35,8 +35,8 @@ export const revalidate = 3600; // 每小时重新验证一次
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  title: 'InstaDownPro - Instagram 视频图片下载器',
-  description: '免费的 Instagram 下载工具，支持下载图片、视频、Stories 等多种内容格式，简单易用，安全可靠。',
+  title: 'Instagram图片/视频下载软件 - 免费在线下载工具',
+  description: '专业的Instagram图片/视频下载软件，支持批量下载图片、视频、Stories、Reels等内容。无水印、高清原图、完全免费。',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -56,15 +56,15 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'InstaDownPro - Instagram 视频图片下载器',
-    description: '免费下载 Instagram 照片、视频、Reels 和 Stories',
+    title: 'Instagram图片/视频下载软件 - 免费在线下载工具',
+    description: '专业的Instagram图片/视频下载软件，支持批量下载图片、视频、Stories、Reels等内容',
     images: ['/og-image.svg'],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'InstaDownPro - Instagram 视频图片下载器',
-    description: '免费下载 Instagram 照片、视频、Reels 和 Stories',
+    title: 'Instagram图片/视频下载软件',
+    description: '专业的Instagram图片/视频下载软件，支持批量下载各类内容',
     images: ['/og-image.svg'],
   },
 };

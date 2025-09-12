@@ -191,6 +191,104 @@ const nextConfig: NextConfig = {
     } : false,
   },
   
+  // Redirects for URL canonicalization and SEO
+  async redirects() {
+    return [
+      // 强制HTTPS（针对生产环境）
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'header',
+            key: 'x-forwarded-proto',
+            value: 'http',
+          },
+        ],
+        destination: 'https://ins.popmars.com/:path*',
+        permanent: true,
+      },
+      // 清理老的PHP页面
+      {
+        source: '/download-private-post.php',
+        destination: '/download/private',
+        permanent: true,
+      },
+      {
+        source: '/download-profile-photo.php',
+        destination: '/download/profile',
+        permanent: true,
+      },
+      {
+        source: '/download-post.php',
+        destination: '/download/post',
+        permanent: true,
+      },
+      {
+        source: '/download-stories.php',
+        destination: '/download/stories',
+        permanent: true,
+      },
+      {
+        source: '/download-highlights.php',
+        destination: '/download/highlights',
+        permanent: true,
+      },
+      {
+        source: '/download-igtv-videos.php',
+        destination: '/download/igtv',
+        permanent: true,
+      },
+      {
+        source: '/download-latest-posts.php',
+        destination: '/download/latest',
+        permanent: true,
+      },
+      // 系统页面重定向
+      {
+        source: '/system/help.php',
+        destination: '/help',
+        permanent: true,
+      },
+      {
+        source: '/system/userlogin.php',
+        destination: '/auth/signin',
+        permanent: true,
+      },
+      {
+        source: '/system/usereg.php',
+        destination: '/auth/signup',
+        permanent: true,
+      },
+      {
+        source: '/system/userinfo.php',
+        destination: '/profile',
+        permanent: true,
+      },
+      {
+        source: '/tos.php',
+        destination: '/terms',
+        permanent: true,
+      },
+      {
+        source: '/privacy.html',
+        destination: '/privacy',
+        permanent: true,
+      },
+      // 统一www和非www域名
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.ins.popmars.com',
+          },
+        ],
+        destination: 'https://ins.popmars.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
+  
   // Headers for caching and security
   async headers() {
     return [
