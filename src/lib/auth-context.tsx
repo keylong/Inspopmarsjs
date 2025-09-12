@@ -14,6 +14,8 @@ interface User {
 interface UserProfile {
   id: string
   value: number
+  buytype?: number
+  buydate?: Date | null
   membership?: {
     typeName: string
     isActive: boolean

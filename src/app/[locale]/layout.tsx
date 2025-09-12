@@ -83,10 +83,15 @@ export async function generateMetadata({
   };
 }
 
+// Viewport 配置
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#8B5CF6',
 };
+
 
 export default async function LocaleLayout({
   children,
@@ -100,40 +105,20 @@ export default async function LocaleLayout({
   }
 
   return (
-    <html lang={locale} dir="ltr">
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // 预加载关键资源
-              if ('requestIdleCallback' in window) {
-                requestIdleCallback(() => {
-                  document.querySelectorAll('[data-critical]').forEach(el => {
-                    el.style.display = 'block';
-                  });
-                });
-              }
-            `,
-          }}
-        />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
-      >
-        {/* <AdSenseScript /> */}
-          <AnalyticsProvider>
-            <ErrorBoundary>
-              <QueryProvider>
-                <I18nProviderClient locale={locale as Locale}>
-                  <Navigation />
-                  <main className="flex-1">{children}</main>
-                  <Footer />
-                  <PWAInstallPrompt />
-                </I18nProviderClient>
-              </QueryProvider>
-            </ErrorBoundary>
-          </AnalyticsProvider>
-      </body>
-    </html>
+    <>
+      {/* <AdSenseScript /> */}
+      <AnalyticsProvider>
+        <ErrorBoundary>
+          <QueryProvider>
+            <I18nProviderClient locale={locale as Locale}>
+              <Navigation />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <PWAInstallPrompt />
+            </I18nProviderClient>
+          </QueryProvider>
+        </ErrorBoundary>
+      </AnalyticsProvider>
+    </>
   );
 }

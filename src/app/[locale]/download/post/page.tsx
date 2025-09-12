@@ -35,6 +35,7 @@ import { generateImageSrc, isVideoUrl, generateVideoSrc } from '@/lib/utils/medi
 import { VideoPreviewModal } from '@/components/ui/video-preview-modal';
 import { PremiumUpgradeModal } from '@/components/ui/premium-upgrade-modal';
 import { IPLimitModal } from '@/components/ui/ip-limit-modal';
+import { createErrorHandler, showSuccessToast, showSmartSuggestion } from '@/lib/error-handler';
 
 // 生成内联SVG占位符
 const generatePlaceholder = (width: number, height: number, text: string) => {
@@ -59,12 +60,15 @@ interface DownloadResult {
   error?: string;
   _mode?: string;
   needsUpgrade?: boolean;
+  showUpgradeButton?: boolean; // 新增：是否显示升级按钮
+  membershipStatus?: any; // 新增：会员状态信息
   meta?: {
     remainingUsage?: number;
     usageDeducted?: boolean;
     userAuthenticated?: boolean;
     actualQuality?: string;
     requestedQuality?: string;
+    membershipExpired?: boolean; // 新增：会员是否过期
     ipDownloads?: {
       downloadCount: number;
       remainingDownloads: number;
@@ -94,6 +98,15 @@ export default function InstagramPostDownloadPage() {
   const resultsRef = useRef<HTMLDivElement>(null);
   const [autoSubmitted, setAutoSubmitted] = useState(false);
   const [showLoadingPrompt, setShowLoadingPrompt] = useState(false);
+
+  // 创建智能错误处理器
+  const errorHandler = createErrorHandler(
+    toast,
+    isAuthenticated,
+    () => setPremiumModalOpen(true),
+    () => window.location.href = '/signin',
+    () => window.location.href = '/signup'
+  );
 
   // 检查URL参数并自动填充和提交
   useEffect(() => {
@@ -142,16 +155,8 @@ export default function InstagramPostDownloadPage() {
 
       const data: DownloadResult = await response.json();
       
-      // 如果是次数不足错误，显示升级模态框
-      if (!data.success && data.needsUpgrade) {
-        setPremiumModalOpen(true);
-        setLoading(false);
-        return;
-      }
-      
-      // 如果是IP限制错误，显示IP限制弹窗
-      if (!data.success && data.ipLimited) {
-        setIpLimitModalOpen(true);
+      // 使用智能错误处理器处理所有错误
+      if (!errorHandler.handleError(data)) {
         setLoading(false);
         return;
       }
@@ -165,8 +170,32 @@ export default function InstagramPostDownloadPage() {
       
       if (!data.success) {
         console.error('下载失败:', data.error);
-      } else if (data.meta?.usageDeducted) {
-        console.log('自动下载成功，已扣除1次下载次数，剩余:', data.meta.remainingUsage);
+      } else {
+        // 显示成功提示
+        const successMessage = isAuthenticated 
+          ? "内容解析成功，请查看下方下载链接" 
+          : "内容解析成功，已为您提供HD画质版本";
+        
+        const extraInfo = data.meta?.usageDeducted 
+          ? `已扣除1次下载，剩余 ${data.meta.remainingUsage} 次`
+          : undefined;
+          
+        errorHandler.showSuccess(successMessage, extraInfo);
+        
+        // 智能建议系统 - 为频繁用户提供升级建议
+        if (isAuthenticated && data.meta?.remainingUsage !== undefined) {
+          const shouldShowSuggestion = data.meta.remainingUsage < 5 && data.meta.remainingUsage > 0;
+            
+          if (shouldShowSuggestion) {
+            errorHandler.showSuggestion({
+              downloadCount: 10 - data.meta.remainingUsage, // 估算已使用次数
+              isFrequentUser: true,
+              lastUpgradePrompt: null
+            });
+          }
+        }
+        
+        console.log('下载成功:', data);
       }
     } catch (error) {
       console.error('API请求失败:', error);
@@ -212,16 +241,8 @@ export default function InstagramPostDownloadPage() {
 
       const data: DownloadResult = await response.json();
       
-      // 如果是次数不足错误，显示升级模态框
-      if (!data.success && data.needsUpgrade) {
-        setPremiumModalOpen(true);
-        setLoading(false);
-        return;
-      }
-      
-      // 如果是IP限制错误，显示IP限制弹窗
-      if (!data.success && data.ipLimited) {
-        setIpLimitModalOpen(true);
+      // 使用智能错误处理器处理所有错误
+      if (!errorHandler.handleError(data)) {
         setLoading(false);
         return;
       }
@@ -235,8 +256,32 @@ export default function InstagramPostDownloadPage() {
       
       if (!data.success) {
         console.error('下载失败:', data.error);
-      } else if (data.meta?.usageDeducted) {
-        console.log('下载成功，已扣除1次下载次数，剩余:', data.meta.remainingUsage);
+      } else {
+        // 显示成功提示
+        const successMessage = isAuthenticated 
+          ? "内容解析成功，请查看下方下载链接" 
+          : "内容解析成功，已为您提供HD画质版本";
+        
+        const extraInfo = data.meta?.usageDeducted 
+          ? `已扣除1次下载，剩余 ${data.meta.remainingUsage} 次`
+          : undefined;
+          
+        errorHandler.showSuccess(successMessage, extraInfo);
+        
+        // 智能建议系统 - 为频繁用户提供升级建议
+        if (isAuthenticated && data.meta?.remainingUsage !== undefined) {
+          const shouldShowSuggestion = data.meta.remainingUsage < 5 && data.meta.remainingUsage > 0;
+            
+          if (shouldShowSuggestion) {
+            errorHandler.showSuggestion({
+              downloadCount: 10 - data.meta.remainingUsage, // 估算已使用次数
+              isFrequentUser: true,
+              lastUpgradePrompt: null
+            });
+          }
+        }
+        
+        console.log('下载成功:', data);
       }
     } catch (error) {
       console.error('API请求失败:', error);
@@ -699,6 +744,7 @@ export default function InstagramPostDownloadPage() {
                   </CardContent>
                 </Card>
               ) : (
+                // 对于一般错误，也使用Toast提示，这里显示简单的错误状态
                 <Alert variant="destructive" className="mb-8">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>

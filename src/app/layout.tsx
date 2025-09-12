@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from '@/components/ui/toaster';
 import { ToastContainer } from '@/components/download/toast-container';
@@ -15,6 +16,20 @@ const inter = Inter({
   preload: true,
 });
 
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+});
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+});
+
 // 使用增量静态再生 (ISR)
 export const revalidate = 3600; // 每小时重新验证一次
 
@@ -23,17 +38,10 @@ export const metadata: Metadata = {
   title: 'InstaDownPro - Instagram 视频图片下载器',
   description: '免费的 Instagram 下载工具，支持下载图片、视频、Stories 等多种内容格式，简单易用，安全可靠。',
   manifest: '/manifest.json',
-  themeColor: '#8B5CF6',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'Ins下载器',
-  },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
   },
   icons: {
     icon: [
@@ -67,8 +75,24 @@ export default function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="zh-CN" className={inter.variable}>
-      <body className={`${inter.className} min-h-screen bg-background antialiased`}>
+    <html lang="zh-CN" className={`${inter.variable} ${geistSans.variable} ${geistMono.variable}`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // 预加载关键资源
+              if ('requestIdleCallback' in window) {
+                requestIdleCallback(() => {
+                  document.querySelectorAll('[data-critical]').forEach(el => {
+                    el.style.display = 'block';
+                  });
+                });
+              }
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.className} ${geistSans.variable} ${geistMono.variable} min-h-screen bg-background antialiased flex flex-col`}>
         <AuthProvider>
           {children}
           <Toaster />

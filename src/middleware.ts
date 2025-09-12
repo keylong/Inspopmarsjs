@@ -45,8 +45,11 @@ export default async function middleware(request: NextRequest) {
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
-    pathname.includes('.') ||
-    pathname.startsWith('/favicon')
+    pathname.startsWith('/favicon') ||
+    pathname === '/manifest.json' ||
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml' ||
+    pathname.match(/\.(ico|png|jpg|jpeg|gif|svg|webp|css|js|woff|woff2|ttf|eot)$/i)
   ) {
     return NextResponse.next();
   }
@@ -130,12 +133,15 @@ export const config = {
     /*
      * 匹配所有路径，除了：
      * - api/auth (Stack Auth API routes)
-     * - api/proxy (图片代理API)
+     * - api/proxy (图片代理API)  
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - manifest.json (PWA manifest)
+     * - robots.txt (robots file)
+     * - sitemap.xml (sitemap file)
      * - 其他静态资源文件
      */
-    '/((?!api/auth|api/proxy|_next/static|_next/image|favicon.ico|.*\\..*).*)',
+    '/((?!api/auth|api/proxy|_next/static|_next/image|favicon.ico|manifest.json|robots.txt|sitemap.xml|.*\\.(?:ico|png|jpg|jpeg|gif|svg|webp|css|js|woff|woff2|ttf|eot)$).*)',
   ],
 };

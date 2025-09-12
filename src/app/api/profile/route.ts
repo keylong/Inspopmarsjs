@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { getMembershipStatus } from '@/lib/membership'
 
 export async function GET(req: NextRequest) {
   try {
@@ -60,67 +61,3 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// 计算会员状态的辅助函数
-function getMembershipStatus(buytype: number, buydate: Date | null) {
-  if (buytype === 0) {
-    return {
-      type: 'free',
-      typeName: '免费用户',
-      isActive: false,
-      expiresAt: null,
-      daysRemaining: null
-    }
-  }
-
-  if (!buydate) {
-    return {
-      type: 'expired',
-      typeName: '已过期',
-      isActive: false,
-      expiresAt: null,
-      daysRemaining: 0
-    }
-  }
-
-  // 计算到期时间
-  const startDate = new Date(buydate)
-  let expiresAt: Date
-  let typeName: string
-
-  if (buytype === 1) {
-    // 月费：1个月有效
-    expiresAt = new Date(startDate)
-    expiresAt.setMonth(expiresAt.getMonth() + 1)
-    typeName = '月度会员'
-  } else if (buytype === 2) {
-    // 年费：1年有效
-    expiresAt = new Date(startDate)
-    expiresAt.setFullYear(expiresAt.getFullYear() + 1)
-    typeName = '年度会员'
-  } else if (buytype === 3) {
-    // 超级年费：1年有效
-    expiresAt = new Date(startDate)
-    expiresAt.setFullYear(expiresAt.getFullYear() + 1)
-    typeName = '超级年度会员'
-  } else {
-    return {
-      type: 'unknown',
-      typeName: '未知类型',
-      isActive: false,
-      expiresAt: null,
-      daysRemaining: null
-    }
-  }
-
-  const now = new Date()
-  const isActive = now < expiresAt
-  const daysRemaining = Math.max(0, Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
-
-  return {
-    type: isActive ? 'active' : 'expired',
-    typeName,
-    isActive,
-    expiresAt,
-    daysRemaining
-  }
-}

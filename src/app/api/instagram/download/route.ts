@@ -4,6 +4,7 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { userAdmin } from '@/lib/supabase-admin';
 import { ipLimiter, getClientIP } from '@/lib/ip-limiter';
+import { checkMembershipPermission } from '@/lib/membership';
 
 // 画质过滤辅助函数
 function filterMediaQuality(data: any, allowedQuality: string) {
@@ -150,10 +151,22 @@ export async function POST(request: NextRequest) {
 
     // 权限判断
     const isAuthenticated = !!user;
-    const hasUsage = user && userProfile && userProfile.value > 0;
+    const membershipCheck = checkMembershipPermission(userProfile);
     const requestedOriginal = quality === 'original';
 
-    // 首先检查是否为登录用户且有下载次数
+    console.log('会员状态检查:', {
+      isAuthenticated,
+      hasPermission: membershipCheck.hasPermission,
+      membershipStatus: membershipCheck.status,
+      hasUsage: membershipCheck.hasUsage,
+      userProfile: userProfile ? {
+        buytype: userProfile.buytype,
+        buydate: userProfile.buydate,
+        value: userProfile.value
+      } : null
+    });
+
+    // 首先检查是否为登录用户且有有效会员权限
     if (!isAuthenticated) {
       // 未登录用户：检查IP限制
       const ipCheck = ipLimiter.canDownload(clientIP);
@@ -186,26 +199,41 @@ export async function POST(request: NextRequest) {
       // 未登录用户：限制为HD质量，需要登录提示
       finalQuality = requestedOriginal ? 'hd' : (quality || 'hd');
       needsAuth = true;
-    } else if (!hasUsage) {
-      // 登录但无使用次数：拒绝下载
+    } else if (!membershipCheck.hasPermission) {
+      // 登录但无有效会员权限：根据具体情况给出提示
+      let errorMessage = '下载失败';
+      let needsUpgrade = true;
+      
+      if (!membershipCheck.hasUsage) {
+        errorMessage = '下载次数不足，请购买VIP会员';
+      } else if (!membershipCheck.status.isActive) {
+        if (membershipCheck.status.type === 'expired') {
+          errorMessage = `${membershipCheck.status.typeName}已过期，请续费后继续使用`;
+        } else {
+          errorMessage = '请购买VIP会员后使用';
+        }
+      }
+      
       return NextResponse.json(
         { 
           success: false, 
-          error: '下载次数不足，请购买VIP会员',
-          needsUpgrade: true,
+          error: errorMessage,
+          needsUpgrade: needsUpgrade,
+          membershipStatus: membershipCheck.status,
           data: null,
           downloads: [],
           meta: {
             timestamp: new Date().toISOString(),
             url: url,
             remainingUsage: userProfile?.value || 0,
-            userAuthenticated: isAuthenticated
+            userAuthenticated: isAuthenticated,
+            membershipExpired: membershipCheck.status.type === 'expired'
           }
         },
         { status: 403 }
       );
     } else {
-      // 登录用户有使用次数：先不扣除，等解析成功后再扣除
+      // 登录用户有有效会员权限：先不扣除，等解析成功后再扣除
       finalQuality = requestedOriginal ? 'original' : (quality || 'hd');
     }
 
@@ -221,8 +249,8 @@ export async function POST(request: NextRequest) {
 
     if (result.success) {
       // 解析成功！现在记录下载
-      if (isAuthenticated && hasUsage) {
-        // 登录用户：扣除下载次数
+      if (isAuthenticated && membershipCheck.hasPermission) {
+        // 登录用户有有效权限：扣除下载次数
         try {
           await userAdmin.decrementUsage(userProfile.id);
           usageDeducted = true;
@@ -269,7 +297,9 @@ export async function POST(request: NextRequest) {
           // 调试信息
           debugInfo: {
             isAuthenticated,
-            hasUsage,
+            hasPermission: membershipCheck.hasPermission,
+            membershipStatus: membershipCheck.status,
+            hasUsage: membershipCheck.hasUsage,
             requestedOriginal,
             finalQuality
           }
