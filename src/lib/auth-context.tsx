@@ -111,8 +111,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } else {
       setUser(null)
       setUserProfile(null)
-      // 清除用户相关缓存
-      requestManager.clearCache(`profile-${user?.id}`)
+      // 用户登出时清除所有缓存
+      console.log('[AuthContext] updateUser - 用户为空，清理所有缓存')
+      requestManager.clearCache()
     }
   }
 
@@ -185,9 +186,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // 只在真正的状态变化时更新（避免初始化时的重复）
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
         try {
-          // 如果是登出，清除缓存
-          if (event === 'SIGNED_OUT') {
+          // 如果是登出或登录，清除所有缓存
+          // 确保切换用户时不会使用旧的缓存数据
+          if (event === 'SIGNED_OUT' || event === 'SIGNED_IN') {
+            console.log(`[AuthContext] ${event} - 清理所有缓存`)
             requestManager.clearCache()
+            // 重置初始化标记，确保新用户登录时重新获取数据
+            if (event === 'SIGNED_IN') {
+              initialFetchDone.current = false
+            }
           }
           
           await updateUser(session?.user || null)
@@ -204,11 +211,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut()
+      // 先清理所有缓存和状态，确保数据不会泄露到下一个用户
+      console.log('[AuthContext] 用户登出 - 清理所有数据')
+      requestManager.clearCache()
       setUser(null)
       setUserProfile(null)
-      requestManager.clearCache()
       initialFetchDone.current = false
+      
+      // 执行登出
+      await supabase.auth.signOut()
     } catch (error) {
       console.error('退出登录失败:', error)
     }
