@@ -1,7 +1,8 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
+import { requestManager } from '@/lib/request-manager'
 
 interface User {
   id: string
@@ -30,6 +31,7 @@ interface AuthContextType {
   signOut: () => Promise<void>
   refresh: () => Promise<void>
   refreshProfile: () => Promise<void>
+  forceRefreshProfile?: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -42,6 +44,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<any>(null)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const initialFetchDone = useRef(false)
 
   const updateUser = async (supabaseUser: any) => {
     if (supabaseUser) {
@@ -97,21 +100,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
       })
       // 用户登录后自动获取profile
       if (supabaseUser) {
-        fetchUserProfile()
+        fetchUserProfile(supabaseUser.id)
       }
     } else {
       setUser(null)
       setUserProfile(null)
+      // 清除用户相关缓存
+      requestManager.clearCache(`profile-${user?.id}`)
     }
   }
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = async (userId?: string) => {
+    const currentUserId = userId || user?.id
+    if (!currentUserId) {
+      console.log('没有用户ID，跳过获取 Profile')
+      return
+    }
+
+    const requestKey = `profile-${currentUserId}`
+    
     try {
-      const response = await fetch('/api/profile')
-      if (response.ok) {
-        const data = await response.json()
-        setUserProfile(data.user)
-      }
+      const data = await requestManager.request(
+        requestKey,
+        async () => {
+          console.log(`获取用户 Profile: ${currentUserId}`)
+          const response = await fetch('/api/profile')
+          if (!response.ok) {
+            throw new Error('获取 Profile 失败')
+          }
+          const result = await response.json()
+          return result.user
+        },
+        true // 使用缓存
+      )
+      
+      setUserProfile(data)
     } catch (error) {
       console.error('获取用户资料失败:', error)
       setUserProfile(null)
@@ -129,30 +152,44 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   useEffect(() => {
-    const getCurrentUser = async () => {
+    const initAuth = async () => {
       setIsLoading(true)
       try {
         const { data: { user: supabaseUser } } = await supabase.auth.getUser()
-        await updateUser(supabaseUser)
+        
+        // 只在初始化时调用一次
+        if (!initialFetchDone.current) {
+          await updateUser(supabaseUser)
+          initialFetchDone.current = true
+        }
       } catch (error) {
-        console.error('获取用户信息失败:', error)
+        console.error('初始化认证失败:', error)
         setUser(null)
       } finally {
         setIsLoading(false)
       }
     }
 
-    getCurrentUser()
+    initAuth()
 
+    // 监听认证状态变化
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('认证状态变化:', event, { hasUser: !!session?.user })
       
-      try {
-        await updateUser(session?.user || null)
-      } catch (error) {
-        console.error('处理认证状态变化失败:', error)
-      } finally {
-        setIsLoading(false)
+      // 只在真正的状态变化时更新（避免初始化时的重复）
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        try {
+          // 如果是登出，清除缓存
+          if (event === 'SIGNED_OUT') {
+            requestManager.clearCache()
+          }
+          
+          await updateUser(session?.user || null)
+        } catch (error) {
+          console.error('处理认证状态变化失败:', error)
+        } finally {
+          setIsLoading(false)
+        }
       }
     })
 
@@ -163,8 +200,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await supabase.auth.signOut()
       setUser(null)
+      setUserProfile(null)
+      requestManager.clearCache()
+      initialFetchDone.current = false
     } catch (error) {
       console.error('退出登录失败:', error)
+    }
+  }
+  
+  // 强制刷新 Profile（清除缓存并重新获取）
+  const forceRefreshProfile = async () => {
+    const currentUserId = user?.id
+    if (!currentUserId) return
+    
+    const requestKey = `profile-${currentUserId}`
+    try {
+      const data = await requestManager.refresh(
+        requestKey,
+        async () => {
+          console.log(`强制刷新用户 Profile: ${currentUserId}`)
+          const response = await fetch('/api/profile')
+          if (!response.ok) {
+            throw new Error('获取 Profile 失败')
+          }
+          const result = await response.json()
+          return result.user
+        }
+      )
+      
+      setUserProfile(data)
+    } catch (error) {
+      console.error('刷新用户资料失败:', error)
+      setUserProfile(null)
     }
   }
 
@@ -175,7 +242,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isAuthenticated: !!user,
     signOut,
     refresh: refreshUser,
-    refreshProfile: fetchUserProfile,
+    refreshProfile: () => fetchUserProfile(),
+    forceRefreshProfile, // 新增：强制刷新
   }
 
   return (

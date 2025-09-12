@@ -1,10 +1,7 @@
 'use client';
 
-import { useEffect, useState, memo } from 'react';
-import dynamic from 'next/dynamic';
-
-// 延迟加载 Supabase 客户端
-const getSupabase = () => import('@/lib/supabase').then(mod => mod.supabase);
+import { useEffect, memo } from 'react';
+import { useAuth } from '@/lib/auth-context';
 
 interface AdSenseProps {
   slot?: string;
@@ -28,50 +25,12 @@ export const AdSense = memo(function AdSense({
   style = { display: 'block' },
   className = ''
 }: AdSenseProps) {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // 检查用户登录状态
-    const checkUser = async () => {
-      try {
-        const supabase = await getSupabase();
-        const { data: { user } } = await supabase.auth.getUser();
-        setUser(user);
-      } catch (error) {
-        console.error('Error checking user:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkUser();
-
-    // 监听登录状态变化
-    const setupSubscription = async () => {
-      const supabase = await getSupabase();
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        setUser(session?.user || null);
-      });
-      
-      return subscription;
-    };
-
-    let subscription: any;
-    setupSubscription().then(sub => {
-      subscription = sub;
-    });
-
-    return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-    };
-  }, []);
+  // 使用全局的 AuthContext，避免重复请求
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
     // 只有在非登录状态下才初始化广告
-    if (!loading && !user && typeof window !== 'undefined') {
+    if (!isLoading && !user && typeof window !== 'undefined') {
       try {
         // 等待 AdSense 脚本加载完成
         const initAd = () => {
@@ -88,10 +47,10 @@ export const AdSense = memo(function AdSense({
         console.error('AdSense 初始化错误:', error);
       }
     }
-  }, [loading, user]);
+  }, [isLoading, user]);
 
   // 如果正在加载或用户已登录，不显示广告
-  if (loading || user) {
+  if (isLoading || user) {
     return null;
   }
 

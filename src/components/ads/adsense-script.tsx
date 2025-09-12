@@ -1,42 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useEffect } from 'react';
+import { useAuth } from '@/lib/auth-context';
 import Script from 'next/script';
 
 export function AdSenseScript() {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  // 使用全局的 AuthContext，避免重复请求
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    // 检查用户登录状态
-    const checkUser = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        setUser(user);
-        console.log('AdSense 脚本加载检查:', user ? '已登录 - 不加载脚本' : '未登录 - 加载脚本');
-      } catch (error) {
-        console.error('Error checking user for AdSense script:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkUser();
-
-    // 监听登录状态变化
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-      console.log('AdSense 脚本状态变化:', event, session?.user ? '已登录 - 移除脚本' : '未登录 - 加载脚本');
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+    // 只在状态改变时打印日志
+    if (!isLoading) {
+      console.log('AdSense 脚本加载检查:', user ? '已登录 - 不加载脚本' : '未登录 - 加载脚本');
+    }
+  }, [isLoading, user]);
 
   // 如果正在加载或用户已登录，不加载 AdSense 脚本
-  if (loading || user) {
+  if (isLoading || user) {
     return null;
   }
 

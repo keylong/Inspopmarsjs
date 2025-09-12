@@ -17,7 +17,7 @@ import { MembershipCard } from '@/components/profile/membership-card'
 import { ApiTokenCard } from '@/components/profile/api-token-card'
 
 export default function ProfilePage() {
-  const { user } = useAuth()
+  const { user, userProfile, refreshProfile } = useAuth()
   const router = useRouter()
   const params = useParams()
   const locale = params?.locale as string || 'zh-CN'
@@ -26,7 +26,6 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [userProfile, setUserProfile] = useState<any>(null)
   const [profileLoading, setProfileLoading] = useState(true)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [formData, setFormData] = useState({
@@ -34,30 +33,24 @@ export default function ProfilePage() {
     email: user?.email || '',
   })
 
-  // 获取用户完整资料信息
+  // 使用 Context 中的 userProfile，如果没有则触发一次获取
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (!user?.id) return
-      
-      try {
-        const response = await fetch('/api/profile')
-        if (response.ok) {
-          const data = await response.json()
-          setUserProfile(data.user)
-          setFormData({
-            name: data.user.name || '',
-            email: data.user.email || '',
-          })
-        }
-      } catch (error) {
-        console.error('获取用户资料失败:', error)
-      } finally {
+    if (userProfile) {
+      // Context 中已有数据，直接使用
+      setFormData({
+        name: userProfile.name || user?.name || '',
+        email: userProfile.email || user?.email || '',
+      })
+      setProfileLoading(false)
+    } else if (user?.id) {
+      // 没有 profile 数据但已登录，调用刷新
+      refreshProfile().finally(() => {
         setProfileLoading(false)
-      }
+      })
+    } else {
+      setProfileLoading(false)
     }
-
-    fetchUserProfile()
-  }, [user?.id])
+  }, [userProfile, user, refreshProfile])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
