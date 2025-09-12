@@ -1,0 +1,50 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /profile/
+Disallow: /subscription/cancel
+Disallow: /*?*
+Crawl-delay: 1
+
+# Googlebot
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /profile/
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /profile/
+Crawl-delay: 2
+
+# GPTBot
+User-agent: GPTBot
+Allow: /
+
+# ChatGPT-User
+User-agent: ChatGPT-User
+Allow: /
+
+# CCBot
+User-agent: CCBot
+Allow: /
+
+# BadBot
+User-agent: BadBot
+Disallow: /
+
+# Host
+Host: https://ins.popmars.com
+
+# Sitemaps
+Sitemap: https://ins.popmars.com/sitemap.xml
+Sitemap: https://ins.popmars.com/sitemap-0.xml

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <!-- 背景 -->
+  <defs>
+    <linearGradient id="apple-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FDB913"/>
+      <stop offset="20%" style="stop-color:#F58529"/>
+      <stop offset="40%" style="stop-color:#DD2A7B"/>
+      <stop offset="70%" style="stop-color:#8134AF"/>
+      <stop offset="100%" style="stop-color:#515BD4"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 圆角矩形背景（iOS风格） -->
+  <rect width="180" height="180" rx="40" ry="40" fill="url(#apple-gradient)"/>
+  
+  <!-- 白色图标 -->
+  <g transform="translate(90, 90)">
+    <!-- 相机外框 -->
+    <rect x="-50" y="-50" width="100" height="100" rx="25" ry="25" fill="none" stroke="white" stroke-width="8" opacity="0.95"/>
+    
+    <!-- 镜头 -->
+    <circle cx="0" cy="-10" r="20" fill="none" stroke="white" stroke-width="6"/>
+    
+    <!-- 闪光灯 -->
+    <circle cx="30" cy="-30" r="6" fill="white"/>
+    
+    <!-- 下载箭头 -->
+    <g transform="translate(0, 28)">
+      <path d="M -14 -14 L -14 0 L -20 0 L 0 20 L 20 0 L 14 0 L 14 -14 Z" 
+            fill="white" stroke="white" stroke-width="1" stroke-linejoin="round"/>
+      <rect x="-20" y="23" width="40" height="5" rx="2.5" fill="white"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- 定义渐变和效果 -->
+  <defs>
+    <linearGradient id="square-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FDB913"/>
+      <stop offset="15%" style="stop-color:#F58529"/>
+      <stop offset="35%" style="stop-color:#DD2A7B"/>
+      <stop offset="65%" style="stop-color:#8134AF"/>
+      <stop offset="100%" style="stop-color:#515BD4"/>
+    </linearGradient>
+    
+    <!-- 光泽效果 -->
+    <linearGradient id="gloss" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff" stop-opacity="0.3"/>
+      <stop offset="50%" style="stop-color:#ffffff" stop-opacity="0.1"/>
+      <stop offset="100%" style="stop-color:#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    
+    <!-- 阴影 -->
+    <filter id="drop-shadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  
+  <!-- 主背景 -->
+  <rect x="56" y="56" width="400" height="400" rx="80" ry="80" fill="url(#square-gradient)" filter="url(#drop-shadow)"/>
+  
+  <!-- 光泽层 -->
+  <rect x="56" y="56" width="400" height="200" rx="80" ry="80" fill="url(#gloss)" opacity="0.5"/>
+  
+  <!-- 白色内框 -->
+  <rect x="96" y="96" width="320" height="320" rx="60" ry="60" fill="none" stroke="white" stroke-width="20" opacity="0.9"/>
+  
+  <!-- 相机镜头 -->
+  <circle cx="256" cy="200" r="50" fill="none" stroke="white" stroke-width="18"/>
+  
+  <!-- 闪光灯 -->
+  <circle cx="360" cy="150" r="18" fill="white"/>
+  
+  <!-- 下载图标 -->
+  <g transform="translate(256, 320)">
+    <!-- 箭头 -->
+    <path d="M -35 -25 L -35 5 L -50 5 L 0 55 L 50 5 L 35 5 L 35 -25 Z" 
+          fill="white" opacity="0.95"/>
+    
+    <!-- 底线 -->
+    <rect x="-55" y="60" width="110" height="14" rx="7" fill="white" opacity="0.95"/>
+  </g>
+  
+  <!-- 品牌名称（可选，较小的文字） -->
+  <text x="256" y="450" font-family="'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif" 
+        font-size="32" font-weight="700" text-anchor="middle" fill="white" opacity="0.8">
+    InstaDown
+  </text>
+</svg>
