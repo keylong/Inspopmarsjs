@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { SupabaseUserButton } from '@/components/auth/user-button';
-import { Crown, Menu, X } from 'lucide-react';
+import { Crown, Menu, X, Gift } from 'lucide-react';
 
 export function Navigation() {
   const pathname = usePathname();
@@ -21,6 +21,7 @@ export function Navigation() {
     download: t('nav.download'),
     about: t('nav.about'),
     subscription: t('nav.subscription'),
+    checkin: '签到',
   };
 
   // 创建本地化的导航项
@@ -29,6 +30,13 @@ export function Navigation() {
     { href: `/${currentLocale}/download`, label: nav.download },
     { href: `/${currentLocale}/about`, label: nav.about },
   ];
+
+  // 签到链接
+  const checkinNavItem = {
+    href: `/${currentLocale}/checkin`,
+    label: nav.checkin,
+    isCheckin: true
+  };
 
   // VIP订阅链接（特殊样式）
   const vipNavItem = {
@@ -58,6 +66,18 @@ export function Navigation() {
                 </Button>
               </Link>
             ))}
+            
+            {/* 签到按钮 */}
+            <Link href={checkinNavItem.href}>
+              <Button
+                variant={pathname === checkinNavItem.href ? 'default' : 'ghost'}
+                size="sm"
+                className="text-green-600 hover:bg-green-50"
+              >
+                <Gift className="h-4 w-4 mr-1" />
+                {checkinNavItem.label}
+              </Button>
+            </Link>
             
             {/* VIP订阅按钮 - 跳转到订阅页面 */}
             <Link href={vipNavItem.href}>
@@ -112,6 +132,21 @@ export function Navigation() {
                   </Button>
                 </Link>
               ))}
+              
+              {/* 签到按钮 - 移动端 */}
+              <Link 
+                href={checkinNavItem.href}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Button
+                  variant={pathname === checkinNavItem.href ? 'default' : 'ghost'}
+                  size="sm"
+                  className="w-full justify-start text-green-600"
+                >
+                  <Gift className="h-4 w-4 mr-2" />
+                  {checkinNavItem.label}
+                </Button>
+              </Link>
               
               {/* VIP订阅按钮 - 移动端 */}
               <Link 

@@ -19,6 +19,7 @@ export interface MembershipStatus {
  */
 export function getMembershipStatus(buytype: number, buydate: Date | null, value?: number): MembershipStatus {
   if (buytype === 0) {
+    // buytype = 0 的用户都是免费用户，无论是否有剩余次数
     return {
       type: 'free',
       typeName: '免费用户',
@@ -119,8 +120,12 @@ export function checkMembershipPermission(userProfile: any): {
   const status = getMembershipStatus(userProfile.buytype, userProfile.buydate, userProfile.value)
   const hasUsage = userProfile.value > 0
   
-  // 只有会员状态活跃且有剩余次数才有权限
-  const hasPermission = status.isActive && hasUsage
+  // 权限判断逻辑：
+  // 1. 如果是活跃会员且有剩余次数 -> 有权限
+  // 2. 如果是免费用户(buytype=0)但有剩余次数 -> 有权限（次数卡用户）
+  // 3. 其他情况 -> 无权限
+  const hasPermission = (status.isActive && hasUsage) || 
+                       (status.type === 'free' && hasUsage)
 
   return {
     hasPermission,

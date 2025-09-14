@@ -8,12 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Loader2, CreditCard, Calendar, Download, Check, Crown, Timer, Zap, Shield, MessageCircle, Copy } from 'lucide-react'
+import { Loader2, CreditCard, Calendar, Download, Check, Crown, Timer, Zap, Shield, MessageCircle, Copy, Star } from 'lucide-react'
 import { SubscriptionPlan } from '@/types/payment'
 import { useI18n } from '@/lib/i18n/client'
 import { GatewayPaymentModal } from '@/components/gateway-payment-modal'
 import { MembershipStatus } from '@/lib/membership'
-import { CheckinCard } from '@/components/checkin/checkin-card'
 
 interface UserProfile {
   id: string
@@ -339,80 +338,32 @@ export default function SubscriptionPage() {
             </div>
           </CardContent>
         </Card>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>开通VIP会员</CardTitle>
-            <CardDescription>
-              选择适合的套餐开通会员服务
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      )}
+      ) : null}
 
-      {/* 免费套餐 */}
+      {/* 限时优惠提醒 - 仅未订阅用户显示 */}
       {!hasActiveMembership && (
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-center">免费套餐</h2>
-          
-          <Card className="overflow-hidden border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50 to-indigo-50">
-            <CardHeader className="text-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-              <CardTitle className="flex items-center justify-center gap-2">
-                <Crown className="h-6 w-6 text-yellow-300" />
-                免费用户 - 每日签到获取下载次数
-              </CardTitle>
-              <CardDescription className="text-blue-100">
-                坚持每日签到，免费获取下载机会！连续签到奖励更丰厚
-              </CardDescription>
-            </CardHeader>
-            
-            <CardContent className="p-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* 免费套餐介绍 */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3">✨ 免费套餐特权</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <Check className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-800">每日签到</p>
-                        <p className="text-sm text-gray-600">基础奖励：3次下载机会</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-                      <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                        <Zap className="h-5 w-5 text-orange-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-800">连续签到奖励</p>
-                        <p className="text-sm text-gray-600">连续7天：5次 | 15天：10次 | 30天：15次</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
-                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                        <Download className="h-5 w-5 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-800">永久免费</p>
-                        <p className="text-sm text-gray-600">无需付费，坚持签到即可使用</p>
-                      </div>
-                    </div>
+        <div className="mb-6">
+          <Card className="bg-gradient-to-r from-red-600 to-orange-600 text-white border-0">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
+                    <Zap className="h-6 w-6 text-yellow-300" />
                   </div>
-                  
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
-                    <p className="text-sm text-yellow-800">
-                      💡 <strong>温馨提示：</strong>签到获得的下载次数会累积，不会过期！坚持签到让您的免费下载次数越来越多。
-                    </p>
+                  <div>
+                    <p className="font-bold text-lg">🔥 限时特惠进行中！</p>
+                    <p className="text-sm text-white/90">新用户专享，年度SVIP立减270元，仅限今日！</p>
                   </div>
                 </div>
-                
-                {/* 签到功能 */}
-                <div>
-                  <CheckinCard />
+                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2">
+                  <Timer className="h-4 w-4 text-yellow-300" />
+                  <div className="flex gap-1 text-sm font-mono font-bold">
+                    <span>{String(timeLeft.hours).padStart(2, '0')}</span>
+                    <span>:</span>
+                    <span>{String(timeLeft.minutes).padStart(2, '0')}</span>
+                    <span>:</span>
+                    <span>{String(timeLeft.seconds).padStart(2, '0')}</span>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -420,11 +371,30 @@ export default function SubscriptionPage() {
         </div>
       )}
 
+      {/* 免费用户引导 */}
+      {!hasActiveMembership && (
+        <div className="mb-6 text-center">
+          <p className="text-gray-600 mb-2">还在犹豫？</p>
+          <p className="text-sm text-gray-500">
+            我们也提供免费下载次数，
+            <a href={`/${locale}/checkin`} className="text-blue-600 hover:underline font-medium">
+              点击这里每日签到
+            </a>
+            即可获得
+          </p>
+        </div>
+      )}
+
       {/* 套餐选择 - 新设计 */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-center">
-          {hasActiveMembership ? '升级套餐' : 'VIP套餐'}
-        </h2>
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-2">
+            {hasActiveMembership ? '升级套餐' : '选择您的VIP套餐'}
+          </h2>
+          <p className="text-gray-600">
+            超过<span className="text-orange-600 font-bold">10,000+</span>用户的选择，立即加入他们
+          </p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.filter(plan => plan.id !== 'yearly-vip').map((plan, index) => {
             // 根据用户的 buytype 和下载次数判断是否是当前套餐
@@ -759,8 +729,93 @@ export default function SubscriptionPage() {
         </div>
       </div>
       
+      {/* 用户评价展示 */}
+      <div className="mt-12">
+        <h3 className="text-xl font-bold text-center mb-6">用户真实评价</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="bg-gradient-to-br from-yellow-50 to-orange-50">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-1 mb-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                ))}
+              </div>
+              <p className="text-sm text-gray-700 mb-2">
+                "超级VIP太值了！无限下载，再也不用担心次数不够用了。"
+              </p>
+              <p className="text-xs text-gray-500">— 李先生，设计师</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-1 mb-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                ))}
+              </div>
+              <p className="text-sm text-gray-700 mb-2">
+                "客服响应很快，支付很方便，下载速度也很给力！"
+              </p>
+              <p className="text-xs text-gray-500">— 王女士，营销经理</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-purple-50 to-pink-50">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-1 mb-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                ))}
+              </div>
+              <p className="text-sm text-gray-700 mb-2">
+                "年度会员性价比很高，一年5000次完全够用了。"
+              </p>
+              <p className="text-xs text-gray-500">— 张同学，大学生</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* 安全保障 */}
+      <div className="mt-12">
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+          <CardContent className="p-6">
+            <div className="text-center space-y-4">
+              <h3 className="text-xl font-bold flex items-center justify-center gap-2">
+                <Shield className="h-6 w-6 text-green-600" />
+                100% 安全保障
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2">
+                    <Check className="h-6 w-6 text-green-600" />
+                  </div>
+                  <p className="font-medium text-gray-800">即时开通</p>
+                  <p className="text-xs text-gray-600">支付成功立即生效</p>
+                </div>
+                <div className="text-center">
+                  <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+                    <Shield className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <p className="font-medium text-gray-800">安全支付</p>
+                  <p className="text-xs text-gray-600">官方支付通道保障</p>
+                </div>
+                <div className="text-center">
+                  <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-2">
+                    <MessageCircle className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <p className="font-medium text-gray-800">售后保障</p>
+                  <p className="text-xs text-gray-600">7×24小时客服支持</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* 客服联系区域 */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200 mt-8">
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-2 mb-4">
             <MessageCircle className="h-6 w-6 text-blue-600" />

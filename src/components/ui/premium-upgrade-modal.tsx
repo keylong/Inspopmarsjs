@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Crown, Star, Zap, Shield, Download, ArrowRight } from 'lucide-react';
+import { X, Crown, Star, Zap, Shield, Download, ArrowRight, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n/client';
 
@@ -15,6 +15,43 @@ interface PremiumUpgradeModalProps {
 
 export function PremiumUpgradeModal({ isOpen, onClose, onSignUp, onLogin }: PremiumUpgradeModalProps) {
   const t = useI18n();
+  
+  // 倒计时状态
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+  
+  // 倒计时逻辑 - 24小时倒计时
+  useEffect(() => {
+    // 设定结束时间为当天晚上23:59:59
+    const today = new Date();
+    const endTime = new Date(today);
+    endTime.setHours(23, 59, 59, 999);
+    
+    const updateCountdown = () => {
+      const now = new Date();
+      const timeDiff = endTime.getTime() - now.getTime();
+      
+      if (timeDiff > 0) {
+        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+        
+        setTimeLeft({ hours, minutes, seconds });
+      } else {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+    
+    if (isOpen) {
+      updateCountdown();
+      const timer = setInterval(updateCountdown, 1000);
+      
+      return () => clearInterval(timer);
+    }
+  }, [isOpen]);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -71,10 +108,10 @@ export function PremiumUpgradeModal({ isOpen, onClose, onSignUp, onLogin }: Prem
 
               {/* 标题 */}
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {t('premiumUpgrade.title')}
+                解锁原图画质
               </h2>
               <p className="text-gray-600 mb-6">
-                {t('premiumUpgrade.subtitle')}
+                升级至VIP会员，享受无限制图下载
               </p>
 
               {/* 功能特色 */}
@@ -89,8 +126,8 @@ export function PremiumUpgradeModal({ isOpen, onClose, onSignUp, onLogin }: Prem
                     <Download className="w-4 h-4 text-green-600" />
                   </div>
                   <div className="text-left">
-                    <p className="font-medium text-gray-900">{t('premiumUpgrade.features.originalQuality.title')}</p>
-                    <p className="text-sm text-gray-500">{t('premiumUpgrade.features.originalQuality.description')}</p>
+                    <p className="font-medium text-gray-900">原图画质下载</p>
+                    <p className="text-sm text-gray-500">获得高清分辨率图片</p>
                   </div>
                 </motion.div>
 
@@ -104,8 +141,8 @@ export function PremiumUpgradeModal({ isOpen, onClose, onSignUp, onLogin }: Prem
                     <Zap className="w-4 h-4 text-blue-600" />
                   </div>
                   <div className="text-left">
-                    <p className="font-medium text-gray-900">{t('premiumUpgrade.features.unlimitedDownloads.title')}</p>
-                    <p className="text-sm text-gray-500">{t('premiumUpgrade.features.unlimitedDownloads.description')}</p>
+                    <p className="font-medium text-gray-900">无限下载次数</p>
+                    <p className="text-sm text-gray-500">不再受限制约束</p>
                   </div>
                 </motion.div>
 
@@ -119,8 +156,8 @@ export function PremiumUpgradeModal({ isOpen, onClose, onSignUp, onLogin }: Prem
                     <Shield className="w-4 h-4 text-purple-600" />
                   </div>
                   <div className="text-left">
-                    <p className="font-medium text-gray-900">{t('premiumUpgrade.features.prioritySupport.title')}</p>
-                    <p className="text-sm text-gray-500">{t('premiumUpgrade.features.prioritySupport.description')}</p>
+                    <p className="font-medium text-gray-900">优先支持</p>
+                    <p className="text-sm text-gray-500">专属客服优先处理</p>
                   </div>
                 </motion.div>
               </div>
@@ -128,12 +165,16 @@ export function PremiumUpgradeModal({ isOpen, onClose, onSignUp, onLogin }: Prem
               {/* 操作按钮 */}
               <div className="space-y-3">
                 <Button
-                  onClick={onSignUp}
+                  onClick={() => {
+                    onClose();
+                    // 跳转到订阅页面
+                    window.location.href = '/subscription';
+                  }}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105"
                   size="lg"
                 >
                   <Crown className="w-4 h-4 mr-2" />
-                  {t('premiumUpgrade.buttons.signUp')}
+                  立即注册成为VIP
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
 
@@ -143,16 +184,38 @@ export function PremiumUpgradeModal({ isOpen, onClose, onSignUp, onLogin }: Prem
                   className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-xl transition-all duration-300"
                   size="lg"
                 >
-                  {t('premiumUpgrade.buttons.login')}
+                  已有账户？立即登录
                 </Button>
               </div>
 
               {/* 底部提示 */}
-              <div className="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
-                <p className="text-sm text-yellow-800">
-                  <span className="font-medium">{t('premiumUpgrade.promotion.title')}</span>
-                  {t('premiumUpgrade.promotion.description')}
-                </p>
+              <div className="mt-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border border-red-200">
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <Timer className="w-5 h-5 text-red-600" />
+                    <span className="font-bold text-red-800 text-lg">🔥 限时优惠进行中！</span>
+                  </div>
+                  
+                  <div className="flex justify-center gap-2 mb-3">
+                    <div className="bg-red-600 text-white rounded-lg px-3 py-2 min-w-[50px] text-center">
+                      <div className="text-xl font-bold">{String(timeLeft.hours).padStart(2, '0')}</div>
+                      <div className="text-xs">小时</div>
+                    </div>
+                    <div className="bg-red-600 text-white rounded-lg px-3 py-2 min-w-[50px] text-center">
+                      <div className="text-xl font-bold">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                      <div className="text-xs">分钟</div>
+                    </div>
+                    <div className="bg-red-600 text-white rounded-lg px-3 py-2 min-w-[50px] text-center">
+                      <div className="text-xl font-bold">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                      <div className="text-xs">秒</div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-red-800">
+                    <span className="font-medium">💰 限时优惠：</span>
+                    新用户首次开通VIP会员¥9.9，立省¥18.1
+                  </p>
+                </div>
               </div>
             </div>
           </motion.div>
