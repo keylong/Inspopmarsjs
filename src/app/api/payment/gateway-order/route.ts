@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { createGatewayOrder } from '@/lib/payment-gateway'
-import { getSubscriptionPlanById, createPaymentOrder } from '@/lib/payment-db'
+import { getSubscriptionPlanById, createPaymentOrder } from '@/lib/payment-db-prisma'
 
 export async function POST(request: NextRequest) {
   try {

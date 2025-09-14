@@ -1,6 +1,3 @@
-// This is your Prisma schema file for Neon PostgreSQL
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,22 +8,20 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// NextAuth.js required tables
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id")
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -43,31 +38,29 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String             @id @default(cuid())
   name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
+  email         String?            @unique
+  emailVerified DateTime?          @map("email_verified")
   image         String?
-  password      String?   // for credentials login
-  
-  // 业务相关字段（从旧表迁移）
-  username      String?   @unique @db.VarChar(30)
-  sex           String?   @db.VarChar(20)
-  phone         String?   @db.VarChar(20)
-  value         Int       @default(0)
-  token         String?   @unique @db.VarChar(50)
-  buytype       Int       @default(0)
-  buydate       DateTime? @db.Date
-  downloading   String?   @db.VarChar(200)
+  password      String?
+  username      String?            @unique @db.VarChar(30)
+  sex           String?            @db.VarChar(20)
+  phone         String?            @db.VarChar(20)
+  value         Int                @default(0)
+  token         String?            @unique @db.VarChar(50)
+  buytype       Int                @default(0)
+  buydate       DateTime?          @db.Date
+  downloading   String?            @db.VarChar(200)
   account       Int?
-  
-  // 时间戳
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-
-  accounts Account[]
-  sessions Session[]
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  accounts      Account[]
   checkinRecords CheckinRecord[]
+  paymentOrders PaymentOrder[]
+  sessions      Session[]
+  usageStats    UsageStats[]
+  subscriptions UserSubscription[]
 
   @@map("users")
 }
@@ -81,7 +74,6 @@ model VerificationToken {
   @@map("verificationtokens")
 }
 
-// 应用特定的表（保持旧的结构但适配 PostgreSQL）
 model UserSession {
   id        Int    @id @default(autoincrement())
   session   String @unique @db.VarChar(100)
@@ -91,17 +83,101 @@ model UserSession {
   @@map("user_sessions")
 }
 
-// 签到记录表
+model SubscriptionPlan {
+  id              String             @id @default(cuid())
+  name            String             @db.VarChar(100)
+  nameEn          String?            @map("name_en") @db.VarChar(100)
+  description     String
+  descriptionEn   String?            @map("description_en")
+  price           Decimal            @db.Decimal(10, 2)
+  currency        String             @default("CNY") @db.VarChar(10)
+  duration        String             @db.VarChar(20)
+  features        Json
+  featuresEn      Json?              @map("features_en")
+  downloadLimit   Int                @map("download_limit")
+  stripeProductId String?            @map("stripe_product_id") @db.VarChar(100)
+  stripePriceId   String?            @map("stripe_price_id") @db.VarChar(100)
+  alipayProductId String?            @map("alipay_product_id") @db.VarChar(100)
+  isActive        Boolean            @default(true) @map("is_active")
+  sortOrder       Int                @default(0) @map("sort_order")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+  paymentOrders   PaymentOrder[]
+  subscriptions   UserSubscription[]
+
+  @@index([isActive])
+  @@map("subscription_plans")
+}
+
+model UserSubscription {
+  id                 String           @id @default(cuid())
+  userId             String           @map("user_id")
+  planId             String           @map("plan_id")
+  status             String           @db.VarChar(20)
+  paymentMethod      String           @map("payment_method") @db.VarChar(20)
+  currentPeriodStart DateTime         @map("current_period_start")
+  currentPeriodEnd   DateTime         @map("current_period_end")
+  cancelAtPeriodEnd  Boolean          @default(false) @map("cancel_at_period_end")
+  downloadCount      Int              @default(0) @map("download_count")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+  usageStats         UsageStats[]
+  plan               SubscriptionPlan @relation(fields: [planId], references: [id])
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([userId])
+  @@map("user_subscriptions")
+}
+
+model PaymentOrder {
+  id              String           @id @default(cuid())
+  userId          String           @map("user_id")
+  planId          String           @map("plan_id")
+  amount          Decimal          @db.Decimal(10, 2)
+  currency        String           @default("CNY") @db.VarChar(10)
+  paymentMethod   String           @map("payment_method") @db.VarChar(20)
+  status          String           @db.VarChar(20)
+  paymentIntentId String?          @map("payment_intent_id") @db.VarChar(200)
+  alipayTradeNo   String?          @map("alipay_trade_no") @db.VarChar(200)
+  metadata        Json?
+  paidAt          DateTime?        @map("paid_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  plan            SubscriptionPlan @relation(fields: [planId], references: [id])
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([userId])
+  @@map("payment_orders")
+}
+
+model UsageStats {
+  id             String           @id @default(cuid())
+  userId         String           @map("user_id")
+  subscriptionId String           @map("subscription_id")
+  downloadCount  Int              @default(0) @map("download_count")
+  lastResetAt    DateTime         @map("last_reset_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  subscription   UserSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, subscriptionId])
+  @@map("usage_stats")
+}
+
 model CheckinRecord {
-  id             String   @id @default(cuid())
-  userId         String   @map("user_id")
-  checkinDate    DateTime @map("checkin_date") @db.Date
-  reward         Int      // 获得的下载次数
-  consecutiveDays Int     @map("consecutive_days") // 连续签到天数
-  createdAt      DateTime @default(now()) @map("created_at")
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  checkinDate     DateTime @map("checkin_date") @db.Date
+  reward          Int
+  consecutiveDays Int      @map("consecutive_days")
+  createdAt       DateTime @default(now()) @map("created_at")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, checkinDate]) // 每个用户每天只能签到一次
+  @@unique([userId, checkinDate])
+  @@index([userId, checkinDate])
+  @@index([checkinDate])
   @@map("checkin_records")
 }
