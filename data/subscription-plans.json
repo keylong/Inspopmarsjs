@@ -5,8 +5,8 @@
     "nameEn": "Basic Monthly",
     "description": "每月100次下载，支持图片和视频",
     "descriptionEn": "100 downloads per month, supports images and videos",
-    "price": 9.99,
-    "currency": "USD",
+    "price": 28,
+    "currency": "CNY",
     "duration": "monthly",
     "features": [
       "每月100次下载",
@@ -31,12 +31,12 @@
   },
   {
     "id": "pro-monthly",
-    "name": "专业月度套餐",
+    "name": "专业年度套餐",
     "nameEn": "Pro Monthly",
     "description": "每月500次下载，高清画质，批量下载",
     "descriptionEn": "500 downloads per month, HD quality, batch download",
-    "price": 19.99,
-    "currency": "USD",
+    "price": 188,
+    "currency": "CNY",
     "duration": "monthly",
     "features": [
       "每月500次下载",
@@ -61,12 +61,12 @@
   },
   {
     "id": "unlimited-monthly",
-    "name": "无限月度套餐",
+    "name": "年SVIP套餐",
     "nameEn": "Unlimited Monthly",
     "description": "无限下载，最高画质，API访问",
     "descriptionEn": "Unlimited downloads, highest quality, API access",
-    "price": 39.99,
-    "currency": "USD",
+    "price": 398,
+    "currency": "CNY",
     "duration": "monthly",
     "features": [
       "无限下载",
