@@ -66,6 +66,9 @@ export async function POST(request: NextRequest) {
       currency: plan.currency,
       paymentMethod: paymentMethod,
       status: 'pending',
+      paymentIntentId: null,
+      alipayTradeNo: null,
+      paidAt: null,
       metadata: {
         gatewayOrderData: gatewayOrder,
         planName: plan.name,

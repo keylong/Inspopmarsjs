@@ -150,7 +150,7 @@ export default function InstagramPostDownloadPage() {
 
     setLoading(true);
     setResult(null);
-    // 如果是未登录用户，立即显示注册提示
+    // 如果是未注册用户，立即显示注册提示
     if (!isAuthenticated) {
       setShowLoadingPrompt(true);
     }
@@ -163,7 +163,7 @@ export default function InstagramPostDownloadPage() {
         },
         body: JSON.stringify({ 
           url: autoUrl.trim(),
-          quality: isAuthenticated ? 'original' : 'hd'  // 登录用户请求原图，未登录用户限制为HD
+          quality: isAuthenticated ? 'original' : 'hd'  // 登录用户请求原图，未注册用户限制为HD
         }),
       });
 
@@ -242,7 +242,7 @@ export default function InstagramPostDownloadPage() {
 
     setLoading(true);
     setResult(null);
-    // 如果是未登录用户，立即显示注册提示
+    // 如果是未注册用户，立即显示注册提示
     if (!isAuthenticated) {
       setShowLoadingPrompt(true);
     }
@@ -255,7 +255,7 @@ export default function InstagramPostDownloadPage() {
         },
         body: JSON.stringify({ 
           url: url.trim(),
-          quality: isAuthenticated ? 'original' : 'hd'  // 登录用户请求原图，未登录用户限制为HD
+          quality: isAuthenticated ? 'original' : 'hd'  // 登录用户请求原图，未注册用户限制为HD
         }),
       });
 
@@ -569,7 +569,7 @@ export default function InstagramPostDownloadPage() {
                     </div>
                     <div>
                       <h4 className="font-bold text-orange-800 text-lg">正在为您解析内容...</h4>
-                      <p className="text-orange-700 text-sm">免费用户需要等待，注册会员立即享受极速下载！</p>
+                      <p className="text-orange-700 text-sm">未注册用户需要等待，注册会员立即享受极速下载！</p>
                     </div>
                   </div>
                   
@@ -1033,7 +1033,7 @@ function MediaCard({ media, index, isAuthenticated, isDownloading, onImageClick,
     // 正常选择分辨率
     setSelectedResolution(resource);
   };
-  // 获取分辨率选项（未登录用户也显示所有选项，用于引导注册）
+  // 获取分辨率选项（未注册用户也显示所有选项，用于引导注册）
   const getFilteredResolutions = () => {
     if (!media.display_resources || media.display_resources.length === 0) {
       return [];
@@ -1049,7 +1049,7 @@ function MediaCard({ media, index, isAuthenticated, isDownloading, onImageClick,
   const getDefaultResolution = () => {
     if (filteredResolutions.length === 0) return null;
     
-    // 未登录用户：默认选择第二个选项（中等质量）
+    // 未注册用户：默认选择第二个选项（中等质量）
     if (!isAuthenticated && filteredResolutions.length > 1) {
       return filteredResolutions[1];
     }

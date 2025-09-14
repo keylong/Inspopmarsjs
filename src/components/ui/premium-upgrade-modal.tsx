@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Crown, Star, Zap, Shield, Download, ArrowRight, Timer } from 'lucide-react';
+import { X, Crown, Star, Zap, Shield, Download, ArrowRight, Timer, TrendingUp, Users, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n/client';
 
@@ -51,6 +51,9 @@ export function PremiumUpgradeModal({ isOpen, onClose, onSignUp, onLogin }: Prem
       
       return () => clearInterval(timer);
     }
+    
+    // 当模态框关闭时，返回空的清理函数
+    return () => {};
   }, [isOpen]);
   return (
     <AnimatePresence>
@@ -83,138 +86,168 @@ export function PremiumUpgradeModal({ isOpen, onClose, onSignUp, onLogin }: Prem
               <X className="w-4 h-4" />
             </Button>
 
+            {/* 顶部状态栏 - 显示剩余次数 */}
+            <div className="bg-gradient-to-r from-red-500 to-orange-500 px-6 py-3">
+              <div className="flex items-center justify-center gap-2 text-white">
+                <Sparkles className="w-5 h-5" />
+                <span className="font-bold text-lg">下载次数不足！</span>
+                <Sparkles className="w-5 h-5" />
+              </div>
+            </div>
+
             {/* 内容区域 */}
-            <div className="relative p-8 text-center">
+            <div className="relative p-6 text-center">
               {/* VIP图标 */}
               <motion.div
-                className="flex justify-center mb-6"
+                className="flex justify-center mb-4"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
               >
                 <div className="relative">
-                  <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                    <Crown className="w-8 h-8 text-white" />
+                  <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-xl">
+                    <Crown className="w-10 h-10 text-white" />
                   </div>
                   <motion.div
-                    className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
-                    animate={{ scale: [1, 1.2, 1] }}
+                    className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center shadow-lg"
+                    animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <Star className="w-3 h-3 text-white" />
+                    <span className="text-white font-bold text-xs">HOT</span>
                   </motion.div>
                 </div>
               </motion.div>
 
               {/* 标题 */}
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                解锁原图画质
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                立即解锁无限下载
               </h2>
-              <p className="text-gray-600 mb-6">
-                升级至VIP会员，享受无限制图下载
+              <p className="text-gray-600 mb-1">
+                超过10,000+用户的选择
               </p>
+              
+              {/* 用户数量展示 */}
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Users className="w-4 h-4 text-green-600" />
+                <span className="text-sm text-green-600 font-medium">
+                  当前在线：<span className="font-bold">3,258</span> 人
+                </span>
+              </div>
 
-              {/* 功能特色 */}
-              <div className="space-y-4 mb-8">
-                <motion.div
-                  className="flex items-center gap-3 p-3 bg-white/80 rounded-lg border border-gray-100"
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <Download className="w-4 h-4 text-green-600" />
+              {/* 价格对比卡片 */}
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 mb-4 border-2 border-purple-200">
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div className="text-center">
+                    <p className="text-xs text-gray-600 mb-1">月度VIP</p>
+                    <p className="text-lg font-bold text-gray-900">¥28</p>
+                    <p className="text-xs text-gray-500">500次/月</p>
                   </div>
-                  <div className="text-left">
-                    <p className="font-medium text-gray-900">原图画质下载</p>
-                    <p className="text-sm text-gray-500">获得高清分辨率图片</p>
+                  <div className="text-center relative">
+                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">最优惠</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mb-1 mt-3">年度VIP</p>
+                    <p className="text-lg font-bold text-purple-600">¥188</p>
+                    <p className="text-xs text-gray-500">5000次/年</p>
                   </div>
-                </motion.div>
+                  <div className="text-center">
+                    <p className="text-xs text-gray-600 mb-1">超级VIP</p>
+                    <p className="text-lg font-bold text-gray-900">¥398</p>
+                    <p className="text-xs text-gray-500">无限次/年</p>
+                  </div>
+                </div>
+                
+                {/* 优势列表 */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <Download className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="text-gray-700">原图画质下载，高清无水印</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                      <Zap className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="text-gray-700">极速下载，无需等待</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
+                      <Shield className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="text-gray-700">7×24小时专属客服</span>
+                  </div>
+                </div>
+              </div>
 
-                <motion.div
-                  className="flex items-center gap-3 p-3 bg-white/80 rounded-lg border border-gray-100"
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-blue-600" />
+              {/* 限时优惠倒计时 */}
+              <div className="bg-gradient-to-r from-red-500 to-orange-500 rounded-xl p-3 mb-4">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Timer className="w-4 h-4 text-white animate-pulse" />
+                  <span className="text-white font-bold">🔥 限时特惠进行中！</span>
+                </div>
+                <div className="flex justify-center gap-1">
+                  <div className="bg-white/20 backdrop-blur rounded px-2 py-1 min-w-[40px] text-center">
+                    <div className="text-lg font-bold text-white">{String(timeLeft.hours).padStart(2, '0')}</div>
+                    <div className="text-xs text-white/80">小时</div>
                   </div>
-                  <div className="text-left">
-                    <p className="font-medium text-gray-900">无限下载次数</p>
-                    <p className="text-sm text-gray-500">不再受限制约束</p>
+                  <span className="text-white text-lg font-bold self-center">:</span>
+                  <div className="bg-white/20 backdrop-blur rounded px-2 py-1 min-w-[40px] text-center">
+                    <div className="text-lg font-bold text-white">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                    <div className="text-xs text-white/80">分钟</div>
                   </div>
-                </motion.div>
-
-                <motion.div
-                  className="flex items-center gap-3 p-3 bg-white/80 rounded-lg border border-gray-100"
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                    <Shield className="w-4 h-4 text-purple-600" />
+                  <span className="text-white text-lg font-bold self-center">:</span>
+                  <div className="bg-white/20 backdrop-blur rounded px-2 py-1 min-w-[40px] text-center">
+                    <div className="text-lg font-bold text-white">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                    <div className="text-xs text-white/80">秒</div>
                   </div>
-                  <div className="text-left">
-                    <p className="font-medium text-gray-900">优先支持</p>
-                    <p className="text-sm text-gray-500">专属客服优先处理</p>
-                  </div>
-                </motion.div>
+                </div>
+                <p className="text-white text-sm mt-2 text-center">
+                  <span className="font-bold">💎 年度超级VIP：</span>
+                  原价¥668，现仅需¥398，立省¥270！
+                </p>
               </div>
 
               {/* 操作按钮 */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <Button
                   onClick={() => {
                     onClose();
                     // 跳转到订阅页面
                     window.location.href = '/subscription';
                   }}
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl shadow-xl transition-all duration-300 transform hover:scale-105 text-lg"
                   size="lg"
                 >
-                  <Crown className="w-4 h-4 mr-2" />
-                  立即注册成为VIP
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <Crown className="w-5 h-5 mr-2" />
+                  立即开通VIP会员
+                  <ArrowRight className="w-5 h-5 ml-2 animate-pulse" />
                 </Button>
 
-                <Button
-                  variant="outline"
-                  onClick={onLogin}
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-xl transition-all duration-300"
-                  size="lg"
-                >
-                  已有账户？立即登录
-                </Button>
+                <p className="text-xs text-gray-500 text-center">
+                  已有账户？
+                  <button 
+                    onClick={onLogin}
+                    className="text-blue-600 hover:underline font-medium"
+                  >
+                    立即登录
+                  </button>
+                </p>
               </div>
 
-              {/* 底部提示 */}
-              <div className="mt-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border border-red-200">
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-3">
-                    <Timer className="w-5 h-5 text-red-600" />
-                    <span className="font-bold text-red-800 text-lg">🔥 限时优惠进行中！</span>
-                  </div>
-                  
-                  <div className="flex justify-center gap-2 mb-3">
-                    <div className="bg-red-600 text-white rounded-lg px-3 py-2 min-w-[50px] text-center">
-                      <div className="text-xl font-bold">{String(timeLeft.hours).padStart(2, '0')}</div>
-                      <div className="text-xs">小时</div>
-                    </div>
-                    <div className="bg-red-600 text-white rounded-lg px-3 py-2 min-w-[50px] text-center">
-                      <div className="text-xl font-bold">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                      <div className="text-xs">分钟</div>
-                    </div>
-                    <div className="bg-red-600 text-white rounded-lg px-3 py-2 min-w-[50px] text-center">
-                      <div className="text-xl font-bold">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                      <div className="text-xs">秒</div>
-                    </div>
-                  </div>
-                  
-                  <p className="text-sm text-red-800">
-                    <span className="font-medium">💰 限时优惠：</span>
-                    新用户首次开通VIP会员¥9.9，立省¥18.1
-                  </p>
+              {/* 底部信任标识 */}
+              <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500">
+                <div className="flex items-center gap-1">
+                  <Shield className="w-3 h-3" />
+                  <span>安全支付</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>即时生效</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Users className="w-3 h-3" />
+                  <span>10000+用户</span>
                 </div>
               </div>
             </div>

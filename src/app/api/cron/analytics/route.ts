@@ -3,7 +3,7 @@
  * 每小时运行，处理和汇总分析数据
  */
 
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 
 interface AnalyticsResult {
   success: boolean;
@@ -120,16 +120,13 @@ async function calculatePerformanceMetrics(): Promise<{ avgResponseTime: number;
 /**
  * 分析数据处理 Cron 任务处理器
  */
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<AnalyticsResult>
-) {
+export async function POST(request: NextRequest) {
   // 验证请求来源
-  const authHeader = req.headers.authorization;
+  const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.CRON_SECRET || 'default-cron-secret';
   
   if (authHeader !== `Bearer ${expectedToken}`) {
-    return res.status(401).json({
+    return NextResponse.json({
       success: false,
       timestamp: new Date().toISOString(),
       data: {
@@ -139,23 +136,7 @@ export default async function handler(
         performance: { avgResponseTime: 0, errorRate: 0 },
       },
       duration: 0,
-    });
-  }
-
-  // 只允许 POST 请求
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).json({
-      success: false,
-      timestamp: new Date().toISOString(),
-      data: {
-        pageViews: { processed: 0, total: 0 },
-        downloads: { processed: 0, total: 0 },
-        users: { active: 0, new: 0 },
-        performance: { avgResponseTime: 0, errorRate: 0 },
-      },
-      duration: 0,
-    });
+    }, { status: 401 });
   }
 
   const startTime = Date.now();
@@ -187,14 +168,14 @@ export default async function handler(
 
     console.log('Analytics cron job completed:', result);
 
-    return res.status(200).json(result);
+    return NextResponse.json(result);
     
   } catch (error) {
     console.error('Analytics cron job failed:', error);
     
     const duration = Date.now() - startTime;
 
-    return res.status(500).json({
+    return NextResponse.json({
       success: false,
       timestamp: new Date().toISOString(),
       data: {
@@ -204,6 +185,6 @@ export default async function handler(
         performance: { avgResponseTime: 0, errorRate: 0 },
       },
       duration,
-    });
+    }, { status: 500 });
   }
 }

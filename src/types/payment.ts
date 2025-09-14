@@ -2,22 +2,22 @@
 export interface SubscriptionPlan {
   id: string
   name: string
-  nameEn: string
+  nameEn: string | null
   description: string
-  descriptionEn: string
+  descriptionEn: string | null
   price: number
-  currency: 'USD' | 'CNY'
-  duration: 'monthly' | 'yearly' | 'lifetime'
+  currency: string
+  duration: string
   features: string[]
-  featuresEn: string[]
+  featuresEn: string[] | null
   downloadLimit: number // -1 表示无限制
-  stripeProductId?: string
-  stripePriceId?: string
-  alipayProductId?: string
+  stripeProductId?: string | null
+  stripePriceId?: string | null
+  alipayProductId?: string | null
   isActive: boolean
   sortOrder: number
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 // 用户订阅信息
@@ -43,7 +43,7 @@ export interface PaymentOrder {
   userId: string
   planId: string
   amount: number
-  currency: 'USD' | 'CNY'
+  currency: string
   paymentMethod: 'stripe' | 'alipay'
   status: 'pending' | 'paid' | 'failed' | 'canceled' | 'refunded'
   paymentIntentId?: string // Stripe payment intent ID
@@ -62,7 +62,7 @@ export interface Invoice {
   orderId: string
   invoiceNumber: string
   amount: number
-  currency: 'USD' | 'CNY'
+  currency: string
   tax: number
   totalAmount: number
   status: 'draft' | 'sent' | 'paid' | 'void'

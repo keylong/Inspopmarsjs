@@ -1,5 +1,8 @@
 'use client'
 
+// 强制动态渲染，禁用静态生成
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useParams } from 'next/navigation'
@@ -35,7 +38,9 @@ export default function CheckinPage() {
       
       if (!user) {
         // 未登录用户重定向到登录页
-        router.push(`/${locale}/login?redirect=/checkin`)
+        const redirectPath = locale === 'zh-CN' ? '/checkin' : `/${locale}/checkin`
+        const signupPath = locale === 'zh-CN' ? '/signup' : `/${locale}/signup`
+        router.push(`${signupPath}?redirect=${redirectPath}`)
       }
     }
     getCurrentUser()
@@ -224,7 +229,7 @@ export default function CheckinPage() {
                   <span>超级VIP无限下载</span>
                 </li>
               </ul>
-              <Link href={`/${locale}/subscription`}>
+              <Link href={locale === 'zh-CN' ? '/subscription' : `/${locale}/subscription`}>
                 <Button className="w-full bg-white text-purple-600 hover:bg-gray-100">
                   查看VIP套餐
                 </Button>

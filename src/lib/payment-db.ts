@@ -60,7 +60,7 @@ export async function getSubscriptionPlanById(planId: string): Promise<Subscript
 }
 
 async function getDefaultPlans(): Promise<SubscriptionPlan[]> {
-  const currentTime = new Date().toISOString();
+  const currentTime = new Date();
   const defaultPlans: SubscriptionPlan[] = [
     {
       id: 'basic-monthly',

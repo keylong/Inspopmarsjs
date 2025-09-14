@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Loader2, CreditCard, Calendar, Download, Check, Crown, Timer, Zap, Shield, MessageCircle, Copy, Star } from 'lucide-react'
+import { Loader2, Calendar, Download, Check, Crown, Timer, Zap, Shield, MessageCircle, Copy, Star, Sparkles } from 'lucide-react'
+import { WechatPayIcon, AlipayIcon } from '@/components/payment-icons'
 import { SubscriptionPlan } from '@/types/payment'
 import { useI18n } from '@/lib/i18n/client'
 import { GatewayPaymentModal } from '@/components/gateway-payment-modal'
@@ -437,14 +438,21 @@ export default function SubscriptionPage() {
             return (
               <Card key={plan.id} className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl ${
                 isCurrentPlan ? 'ring-2 ring-blue-500' : ''
-              } ${isYearly ? 'bg-gradient-to-br from-purple-600 to-pink-600 text-white transform hover:scale-105 border-0' : 
+              } ${isYearly ? 'bg-gradient-to-br from-purple-700 to-purple-900 text-white transform hover:scale-105 border-2 border-purple-500/30 shadow-xl' : 
                  isYearlyVIP ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white transform hover:scale-105 border-0' : 'bg-white border border-gray-200'}`}>
                 
                 {/* 角标 */}
-                {isYearly && (
+                {isYearlyVIP && (
                   <div className="absolute -top-1 -right-1">
                     <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-4 py-2 rounded-bl-xl font-bold text-sm shadow-lg">
                       🔥 最受欢迎
+                    </div>
+                  </div>
+                )}
+                {isYearly && (
+                  <div className="absolute -top-1 -right-1">
+                    <div className="bg-gradient-to-r from-purple-700 to-purple-900 text-white px-4 py-2 rounded-bl-xl font-bold text-sm shadow-lg">
+                      👑 尊贵SVIP
                     </div>
                   </div>
                 )}
@@ -457,10 +465,10 @@ export default function SubscriptionPage() {
                         {isYearly ? '年度超级VIP' : isYearlyVIP ? '一年 VIP会员' : isMonthlyBasic ? '一个月 VIP会员' : plan.name}
                       </h3>
                       {isYearly && (
-                        <div className="bg-gradient-to-r from-yellow-300 to-yellow-500 text-purple-800 px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg animate-pulse">
-                          <Crown className="h-3 w-3" />
+                        <Badge className="bg-gradient-to-r from-yellow-400 to-amber-500 text-purple-900 px-2 py-1">
+                          <Crown className="h-3 w-3 mr-1" />
                           SVIP
-                        </div>
+                        </Badge>
                       )}
                     </div>
                     {isYearly && (
@@ -492,11 +500,11 @@ export default function SubscriptionPage() {
                   {/* SVIP专属标识 */}
                   {isYearly && (
                     <div className="mb-4 flex justify-center">
-                      <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-purple-900 px-4 py-2 rounded-xl shadow-lg border-2 border-yellow-300">
+                      <div className="bg-gradient-to-r from-yellow-400 to-amber-500 text-purple-900 px-4 py-2 rounded-lg shadow-md">
                         <div className="flex items-center gap-2">
-                          <Crown className="h-5 w-5 text-purple-900" />
+                          <Crown className="h-4 w-4" />
                           <span className="font-bold text-sm">超级VIP会员专享</span>
-                          <Crown className="h-5 w-5 text-purple-900" />
+                          <Crown className="h-4 w-4" />
                         </div>
                       </div>
                     </div>
@@ -504,33 +512,75 @@ export default function SubscriptionPage() {
                   
                   {/* 价格展示 */}
                   <div className="mb-6">
-                    <div className="flex items-center justify-center gap-3 mb-2">
-                      <span className={`text-4xl font-bold ${(isYearly || isYearlyVIP) ? 'text-white' : 'text-gray-900'}`}>
-                        ¥{displayPrice}
-                      </span>
-                      {originalPrice > 0 && (
-                        <span className={`text-xl line-through decoration-2 ${(isYearly || isYearlyVIP) ? 'text-white/60' : 'text-gray-400'}`}>
-                          ¥{originalPrice}
-                        </span>
-                      )}
-                    </div>
-                    
-                    {isYearly && (
-                      <Badge className="bg-red-500 text-white">省270元</Badge>
-                    )}
-                    
-                    {isYearly && (
-                      <p className="text-white/90 text-sm mt-2">年度无限下载特权</p>
-                    )}
-                    
-                    {isYearlyVIP && (
-                      <p className="text-white/90 text-sm mt-2">5000次，一年内有效</p>
-                    )}
-                    
-                    {isMonthlyBasic && (
-                      <p className="text-gray-500 text-sm">
-                        500次，一个月内有效
-                      </p>
+                    {/* 年度套餐显示月均价格 */}
+                    {(isYearly || isYearlyVIP) ? (
+                      <>
+                        <div className="flex flex-col items-center">
+                          {/* 月均价格（主要显示） */}
+                          <div className="flex items-baseline gap-1 mb-2">
+                            <span className="text-xl text-white/70">¥</span>
+                            <span className="text-5xl font-bold text-white">
+                              {isYearly ? '33' : '16'}
+                            </span>
+                            <span className="text-lg text-white/90">/月</span>
+                          </div>
+                          
+                          {/* 年度总价（次要显示） */}
+                          <div className="flex items-center gap-2 mb-3">
+                            {originalPrice > 0 ? (
+                              <>
+                                <span className="text-sm line-through text-white/50">¥{originalPrice}</span>
+                                <span className="text-lg font-semibold text-white">¥{displayPrice}/年</span>
+                              </>
+                            ) : (
+                              <span className="text-lg font-semibold text-white">¥{displayPrice}/年</span>
+                            )}
+                          </div>
+                          
+                          {/* 节省金额标签 */}
+                          <div className="flex items-center gap-2">
+                            {isYearly && (
+                              <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 text-sm">
+                                限时立减¥270
+                              </Badge>
+                            )}
+                            {isYearlyVIP && (
+                              <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 text-sm">
+                                年付特惠 省¥80
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* 使用说明 */}
+                        {isYearly && (
+                          <p className="text-white/90 text-sm mt-2 text-center font-medium">
+                            ∞ 无限下载额度
+                          </p>
+                        )}
+                        
+                        {isYearlyVIP && (
+                          <p className="text-white/90 text-sm mt-2 text-center font-medium">
+                            5000次下载额度
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      // 月度套餐保持原样
+                      <>
+                        <div className="flex items-baseline justify-center gap-1 mb-2">
+                          <span className="text-lg text-gray-500">¥</span>
+                          <span className="text-4xl font-bold text-gray-900">
+                            {displayPrice}
+                          </span>
+                          <span className="text-lg text-gray-600">/月</span>
+                        </div>
+                        {isMonthlyBasic && (
+                          <p className="text-gray-500 text-sm text-center">
+                            500次下载额度
+                          </p>
+                        )}
+                      </>
                     )}
                   </div>
                 </CardHeader>
@@ -542,58 +592,58 @@ export default function SubscriptionPage() {
                       // 年度VIP功能列表
                       <>
                         <div className="text-center mb-4">
-                          <div className="bg-gradient-to-r from-yellow-300/20 to-yellow-500/20 rounded-lg p-3 border border-yellow-300/30">
+                          <div className="bg-purple-800/20 rounded-lg p-3 border border-purple-400/30">
                             <div className="flex items-center justify-center gap-2 mb-1">
-                              <Crown className="h-4 w-4 text-yellow-300" />
-                              <span className="text-yellow-300 font-bold text-sm">SVIP超级会员特权</span>
-                              <Crown className="h-4 w-4 text-yellow-300" />
+                              <Crown className="h-4 w-4 text-yellow-400" />
+                              <span className="text-yellow-400 font-bold text-sm">SVIP超级会员特权</span>
+                              <Crown className="h-4 w-4 text-yellow-400" />
                             </div>
-                            <p className="text-white/90 text-xs">👥 已有3000+用户享受SVIP特权</p>
+                            <p className="text-white/80 text-xs">👥 已有3000+用户享受SVIP特权</p>
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
-                            <div className="w-8 h-8 bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center">
-                              <Download className="h-4 w-4 text-purple-800" />
+                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-purple-800/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
+                            <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full flex items-center justify-center">
+                              <Download className="h-4 w-4 text-purple-900" />
                             </div>
                             <span className="text-white text-sm">
-                              <span className="inline-block bg-yellow-400 text-purple-800 text-xs px-1 rounded mr-2 font-bold">SVIP</span>
+                              <Badge className="bg-yellow-400 text-purple-900 text-xs px-1.5 py-0 mr-2">SVIP</Badge>
                               支持下载 图片/视频
                             </span>
                           </div>
-                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
-                            <div className="w-8 h-8 bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center">
-                              <Zap className="h-4 w-4 text-purple-800" />
+                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-purple-800/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
+                            <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full flex items-center justify-center">
+                              <Zap className="h-4 w-4 text-purple-900" />
                             </div>
                             <span className="text-white text-sm">
-                              <span className="inline-block bg-yellow-400 text-purple-800 text-xs px-1 rounded mr-2 font-bold">SVIP</span>
-                              支持下载 多张图片/视频
+                              <Badge className="bg-yellow-400 text-purple-900 text-xs px-1.5 py-0 mr-2">SVIP</Badge>
+                              无限下载 多张图片/视频
                             </span>
                           </div>
-                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
+                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-purple-800/10 backdrop-blur-sm' : 'bg-gray-50'}`}>
                             <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
-                              <Crown className="h-4 w-4 text-orange-500" />
+                              <Crown className="h-4 w-4 text-amber-500" />
                             </div>
                             <span className="text-white text-sm">
-                              <span className="text-yellow-300 font-bold">[新功能]</span> 网页端 一键打包下载功能
+                              <span className="text-yellow-400 font-bold">[独家]</span> 网页端 一键打包下载
                             </span>
                           </div>
-                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/10 backdrop-blur-sm border border-yellow-300/30' : 'bg-gray-50'}`}>
-                            <div className="w-8 h-8 bg-gradient-to-r from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center">
-                              <Shield className="h-4 w-4 text-purple-800" />
+                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-purple-800/10 backdrop-blur-sm border border-yellow-400/20' : 'bg-gray-50'}`}>
+                            <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full flex items-center justify-center">
+                              <Shield className="h-4 w-4 text-purple-900" />
                             </div>
                             <span className="text-white text-sm">
-                              <span className="inline-block bg-yellow-400 text-purple-800 text-xs px-1 rounded mr-1 font-bold">SVIP专享</span>
-                              <span className="text-green-300 font-bold">[新上线]</span> 批量下载指定博主帖子
+                              <Badge className="bg-gradient-to-r from-yellow-400 to-amber-500 text-purple-900 text-xs px-1.5 py-0 mr-1">专享</Badge>
+                              <span className="text-green-400 font-semibold">[热门]</span> 批量下载博主帖子
                             </span>
                           </div>
-                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-white/10 backdrop-blur-sm border border-cyan-300/30' : 'bg-gray-50'}`}>
-                            <div className="w-8 h-8 bg-gradient-to-r from-cyan-300 to-blue-400 rounded-full flex items-center justify-center">
-                              <Timer className="h-4 w-4 text-purple-800" />
+                          <div className={`flex items-center gap-3 p-2 rounded-lg ${isYearly ? 'bg-purple-800/10 backdrop-blur-sm border border-cyan-400/20' : 'bg-gray-50'}`}>
+                            <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center">
+                              <Timer className="h-4 w-4 text-white" />
                             </div>
                             <span className="text-white text-sm">
-                              <span className="inline-block bg-cyan-400 text-purple-800 text-xs px-1 rounded mr-1 font-bold">SVIP专享</span>
-                              <span className="text-cyan-300 font-bold">[即将上线]</span> 图片提升清晰度功能
+                              <Badge className="bg-cyan-500 text-white text-xs px-1.5 py-0 mr-1">即将上线</Badge>
+                              <span className="text-cyan-400 font-semibold">AI提升清晰度</span>
                             </span>
                           </div>
                         </div>
@@ -682,18 +732,18 @@ export default function SubscriptionPage() {
                       <Button
                         onClick={() => handleUpgrade(plan.id, 'wechat')}
                         disabled={upgrading || isCreatingOrder || showGatewayPayment}
-                        className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 transition-all ${
+                        className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg ${
                           (isYearly || isYearlyVIP)
-                            ? 'bg-white/90 text-green-600 hover:bg-green-50'
-                            : 'bg-green-500 hover:bg-green-600 text-white'
+                            ? 'bg-white text-gray-800 border-2 border-green-500 hover:bg-green-50'
+                            : 'bg-white text-gray-800 border-2 border-green-500 hover:bg-green-50'
                         }`}
                       >
                         {(upgrading || isCreatingOrder) ? (
-                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <Loader2 className="h-5 w-5 animate-spin text-green-600" />
                         ) : (
                           <>
-                            <span>💸</span>
-                            <span>微信支付</span>
+                            <WechatPayIcon className="h-5 w-5" />
+                            <span className="font-medium text-gray-800">微信支付</span>
                           </>
                         )}
                       </Button>
@@ -701,25 +751,33 @@ export default function SubscriptionPage() {
                       <Button
                         onClick={() => handleUpgrade(plan.id, 'alipay')}
                         disabled={upgrading || isCreatingOrder || showGatewayPayment}
-                        className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 transition-all ${
+                        className={`w-full h-12 text-base font-semibold flex items-center justify-center gap-2 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg ${
                           (isYearly || isYearlyVIP)
-                            ? 'bg-white text-blue-600 hover:bg-blue-50'
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            ? 'bg-white text-gray-800 border-2 border-blue-500 hover:bg-blue-50'
+                            : 'bg-white text-gray-800 border-2 border-blue-500 hover:bg-blue-50'
                         }`}
                       >
                         {(upgrading || isCreatingOrder) ? (
-                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
                         ) : (
                           <>
-                            <CreditCard className="h-5 w-5" />
-                            <span>支付宝</span>
+                            <AlipayIcon className="h-5 w-5" />
+                            <span className="font-medium text-gray-800">支付宝</span>
                           </>
                         )}
                       </Button>
                       
-                      <p className={`text-center text-sm ${(isYearly || isYearlyVIP) ? 'text-white/80' : 'text-gray-500'}`}>
-                        使用帮助
-                      </p>
+                      <div className="flex items-center justify-center gap-2 mt-2">
+                        <div className="flex items-center gap-1">
+                          <Shield className="h-3 w-3 text-green-600" />
+                          <span className="text-xs text-gray-600">100%安全支付</span>
+                        </div>
+                        <span className="text-xs text-gray-400">|</span>
+                        <div className="flex items-center gap-1">
+                          <Check className="h-3 w-3 text-blue-600" />
+                          <span className="text-xs text-gray-600">即时开通</span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </CardContent>

@@ -15,6 +15,7 @@ import {
   CheckCircle,
   Download
 } from 'lucide-react'
+import { useToast } from '@/lib/hooks/use-toast'
 
 interface CheckinStatus {
   hasCheckedToday: boolean
@@ -29,6 +30,7 @@ export function CheckinCard() {
   const [status, setStatus] = useState<CheckinStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [checkinLoading, setCheckinLoading] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     fetchCheckinStatus()
@@ -63,14 +65,14 @@ export function CheckinCard() {
         // 刷新状态
         await fetchCheckinStatus()
         
-        // 显示成功消息（可以用toast）
-        alert(result.data.message)
+        // 显示成功消息
+        toast.success('签到成功！', result.data.message)
       } else {
-        alert(result.error || '签到失败')
+        toast.error('签到失败', result.error || '请稍后重试')
       }
     } catch (error) {
       console.error('签到失败:', error)
-      alert('签到失败，请稍后重试')
+      toast.error('签到失败', '网络错误，请稍后重试')
     } finally {
       setCheckinLoading(false)
     }

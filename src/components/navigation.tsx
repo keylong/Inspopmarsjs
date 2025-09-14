@@ -26,21 +26,21 @@ export function Navigation() {
 
   // 创建本地化的导航项
   const navItems = [
-    { href: `/${currentLocale}`, label: nav.home },
-    { href: `/${currentLocale}/download`, label: nav.download },
-    { href: `/${currentLocale}/about`, label: nav.about },
+    { href: currentLocale === 'zh-CN' ? '/' : `/${currentLocale}`, label: nav.home },
+    { href: currentLocale === 'zh-CN' ? '/download' : `/${currentLocale}/download`, label: nav.download },
+    { href: currentLocale === 'zh-CN' ? '/about' : `/${currentLocale}/about`, label: nav.about },
   ];
 
   // 签到链接
   const checkinNavItem = {
-    href: `/${currentLocale}/checkin`,
+    href: currentLocale === 'zh-CN' ? '/checkin' : `/${currentLocale}/checkin`,
     label: nav.checkin,
     isCheckin: true
   };
 
   // VIP订阅链接（特殊样式）
   const vipNavItem = {
-    href: `/${currentLocale}/subscription`,
+    href: currentLocale === 'zh-CN' ? '/subscription' : `/${currentLocale}/subscription`,
     label: nav.subscription,
     isVip: true
   };
@@ -50,7 +50,7 @@ export function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href={`/${currentLocale}`} className="font-bold text-xl text-primary">
+          <Link href={currentLocale === 'zh-CN' ? '/' : `/${currentLocale}`} className="font-bold text-xl text-primary">
             {t('site.title')}
           </Link>
           

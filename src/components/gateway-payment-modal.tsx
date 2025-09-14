@@ -11,8 +11,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { QrCode, Check, Loader2, AlertCircle, X } from 'lucide-react'
+import { QrCode, Check, Loader2, AlertCircle, X, Shield, Timer, BadgeCheck } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { WechatPayIcon, AlipayIcon, WechatSecureIcon, AlipaySecureIcon } from '@/components/payment-icons'
 
 interface GatewayPaymentModalProps {
   isOpen: boolean
@@ -51,6 +52,10 @@ export function GatewayPaymentModal({
   const getPaymentMethodColor = () => {
     return paymentMethod === 'alipay' ? 'text-blue-600' : 'text-green-600'
   }
+
+  // 获取支付图标组件
+  const PaymentIcon = paymentMethod === 'alipay' ? AlipayIcon : WechatPayIcon
+  const PaymentSecureIcon = paymentMethod === 'alipay' ? AlipaySecureIcon : WechatSecureIcon
 
   // 获取收款二维码
   const fetchPaymentQRCode = async (orderData: any) => {
@@ -230,19 +235,32 @@ export function GatewayPaymentModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <QrCode className={`w-5 h-5 ${getPaymentMethodColor()}`} />
-            {getPaymentMethodName()}支付
+          <DialogTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <PaymentIcon className={`w-6 h-6 ${getPaymentMethodColor()}`} />
+              <span>{getPaymentMethodName()}官方支付</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <BadgeCheck className="w-4 h-4 text-green-600" />
+              <span className="text-xs text-green-600 font-medium">安全认证</span>
+            </div>
           </DialogTitle>
-          <DialogDescription>
-            {planName} - ¥{orderData?.gatewayAmount || planPrice}
-            {orderData?.gatewayAmount && orderData.gatewayAmount !== planPrice && (
-              <span className="text-orange-600 ml-2 text-sm">
-                (实际支付: ¥{orderData.gatewayAmount})
-              </span>
-            )}
+          <DialogDescription className="flex items-center justify-between">
+            <div>
+              <span className="font-medium">{planName}</span>
+              <span className="ml-2 text-lg font-bold text-gray-900">¥{orderData?.gatewayAmount || planPrice}</span>
+              {orderData?.gatewayAmount && orderData.gatewayAmount !== planPrice && (
+                <span className="text-orange-600 ml-2 text-sm">
+                  (原价: ¥{planPrice})
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+              <Shield className="w-3 h-3" />
+              <span>加密保护</span>
+            </div>
           </DialogDescription>
         </DialogHeader>
 
@@ -257,16 +275,39 @@ export function GatewayPaymentModal({
           {step === 'qr' && orderData && (
             <div className="space-y-4">
               {/* 支付提示 */}
-              <Alert>
-                <QrCode className="w-4 h-4" />
-                <AlertDescription>
-                  请使用{getPaymentMethodName()}扫描下方二维码完成支付
-                </AlertDescription>
-              </Alert>
+              <div className="space-y-3">
+                {/* 官方认证提示 */}
+                <div className={`flex items-center gap-2 p-3 rounded-lg ${paymentMethod === 'wechat' ? 'bg-green-50' : 'bg-blue-50'}`}>
+                  <div className="flex items-center gap-2">
+                    {paymentMethod === 'wechat' ? (
+                      <>
+                        <WechatPayIcon className="h-5 w-5" />
+                        <span className="text-sm font-medium text-gray-700">微信支付官方支付</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlipayIcon className="h-5 w-5" />
+                        <span className="text-sm font-medium text-gray-700">支付宝官方支付</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="ml-auto flex items-center gap-1">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span className="text-xs text-green-600">安全认证</span>
+                  </div>
+                </div>
+                
+                {/* 扫码提示 */}
+                <Alert className="border border-gray-200">
+                  <AlertDescription className="text-sm">
+                    请使用{getPaymentMethodName()}扫描下方二维码完成支付
+                  </AlertDescription>
+                </Alert>
+              </div>
 
               {/* 二维码展示区域 */}
-              <div className="bg-gray-50 rounded-lg p-6 text-center">
-                <div className="bg-white rounded-lg p-4 inline-block shadow-sm border">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-6 text-center">
+                <div className="bg-white rounded-lg p-4 inline-block shadow-lg border-2 border-gray-200">
                   {qrCodeUrl ? (
                     <img 
                       src={qrCodeUrl} 
@@ -286,7 +327,10 @@ export function GatewayPaymentModal({
                 
                 <div className="mt-4">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-gray-900 mb-1">¥{orderData.gatewayAmount || orderData.amount}</p>
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <PaymentIcon className={`w-5 h-5 ${getPaymentMethodColor()}`} />
+                      <p className="text-2xl font-bold text-gray-900">¥{orderData.gatewayAmount || orderData.amount}</p>
+                    </div>
                     {orderData.gatewayAmount && orderData.gatewayAmount !== orderData.amount && (
                       <div className="text-sm text-gray-600 mb-2">
                         <span className="line-through">套餐价: ¥{orderData.amount}</span>
@@ -318,17 +362,25 @@ export function GatewayPaymentModal({
                 等待支付完成，请勿关闭此窗口...
               </div>
 
-              {/* 支付说明 */}
-              <div className="text-xs text-gray-500 bg-gray-50 rounded p-3">
-                <p>• 请在15分钟内完成支付</p>
-                <p>• 支付成功后系统会自动激活会员权益</p>
-                <p>• 转账时请确保金额准确无误</p>
-                <p>• 如有问题请联系客服</p>
-                {!qrCodeUrl.startsWith('http') && qrCodeUrl && (
-                  <p className="mt-2 text-orange-600">
-                    • 当前显示的是演示二维码，实际使用需要在支付网关后台配置收款码
-                  </p>
-                )}
+              {/* 支付说明和保障 */}
+              <div className="space-y-3">
+                {/* 退款保证 */}
+                <div className="flex items-center justify-center gap-2 p-2 bg-orange-50 rounded-lg border border-orange-200">
+                  <Shield className="w-4 h-4 text-orange-600" />
+                  <span className="text-sm text-orange-700 font-medium">当前显示的是演示二维码，实际使用请关闭此窗口</span>
+                </div>
+                
+                <div className="text-xs text-gray-500 bg-gray-50 rounded p-3">
+                  <div className="font-medium text-gray-700 mb-2">• 请在15分钟内完成支付</div>
+                  <p>• 支付成功后系统会超快自动激活会员权益</p>
+                  <p>• 转账时请确保金额准确无误</p>
+                  <p>• 如有问题请联系客服</p>
+                  <div className="mt-2 pt-2 border-t border-gray-200">
+                    <p className="text-orange-600 font-medium">
+                      • 当前显示的演示二维码，供参考外观和布局，实际使用请在开发者后台配置收款码
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           )}

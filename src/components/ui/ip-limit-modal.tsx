@@ -79,7 +79,7 @@ export function IPLimitModal({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
-                免费用户每日最多下载 3 次
+                未注册用户每日最多下载 1 次
               </motion.p>
             </div>
           </div>

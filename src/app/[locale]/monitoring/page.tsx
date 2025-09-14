@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   description: '实时监控系统状态、性能指标和错误报告',
 };
 
+// 强制动态渲染，禁用静态生成
+export const dynamic = 'force-dynamic';
+
 export default function MonitoringPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">

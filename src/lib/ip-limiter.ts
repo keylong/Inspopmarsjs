@@ -1,6 +1,6 @@
 /**
  * IP限制管理工具
- * 未登录用户每个IP地址24小时内最多下载3次
+ * 未注册用户每个IP地址24小时内最多下载1次
  */
 
 interface IPRecord {
@@ -12,7 +12,7 @@ interface IPRecord {
 
 class IPLimiter {
   private records: Map<string, IPRecord> = new Map();
-  private readonly MAX_DOWNLOADS = 3;
+  private readonly MAX_DOWNLOADS = 1;
   private readonly TIME_WINDOW = 24 * 60 * 60 * 1000; // 24小时（毫秒）
   
   constructor() {

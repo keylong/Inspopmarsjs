@@ -3,7 +3,7 @@
  * 每天凌晨 2 点运行，清理临时文件和过期数据
  */
 
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 
 interface CleanupResult {
   success: boolean;
@@ -94,16 +94,13 @@ async function archiveAnalyticsData(): Promise<{ archived: number; errors: numbe
 /**
  * Cron 任务处理器
  */
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<CleanupResult>
-) {
+export async function POST(request: NextRequest) {
   // 验证请求来源 (Vercel Cron 会发送特定的 header)
-  const authHeader = req.headers.authorization;
+  const authHeader = request.headers.get('authorization');
   const expectedToken = process.env.CRON_SECRET || 'default-cron-secret';
   
   if (authHeader !== `Bearer ${expectedToken}`) {
-    return res.status(401).json({
+    return NextResponse.json({
       success: false,
       timestamp: new Date().toISOString(),
       tasks: {
@@ -112,22 +109,7 @@ export default async function handler(
         analytics: { archived: 0, errors: 1 },
       },
       duration: 0,
-    });
-  }
-
-  // 只允许 POST 请求
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).json({
-      success: false,
-      timestamp: new Date().toISOString(),
-      tasks: {
-        tempFiles: { cleaned: 0, errors: 1 },
-        sessions: { expired: 0, errors: 1 },
-        analytics: { archived: 0, errors: 1 },
-      },
-      duration: 0,
-    });
+    }, { status: 401 });
   }
 
   const startTime = Date.now();
@@ -158,14 +140,14 @@ export default async function handler(
 
     console.log('Cleanup cron job completed:', result);
 
-    return res.status(200).json(result);
+    return NextResponse.json(result);
     
   } catch (error) {
     console.error('Cleanup cron job failed:', error);
     
     const duration = Date.now() - startTime;
 
-    return res.status(500).json({
+    return NextResponse.json({
       success: false,
       timestamp: new Date().toISOString(),
       tasks: {
@@ -174,6 +156,6 @@ export default async function handler(
         analytics: { archived: 0, errors: 1 },
       },
       duration,
-    });
+    }, { status: 500 });
   }
 }

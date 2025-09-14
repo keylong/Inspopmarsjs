@@ -75,7 +75,7 @@ function filterDisplayResources(resources: any[], allowedQuality: string) {
     filteredResources = sortedResources;
   }
   
-  // 为未登录用户更新标签
+  // 为未注册用户更新标签
   return filteredResources.map((resource, index) => ({
     ...resource,
     label: allowedQuality === 'original' ? resource.label : 
@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
 
     // 首先检查是否为登录用户且有有效会员权限
     if (!isAuthenticated) {
-      // 未登录用户：检查IP限制
+      // 未注册用户：检查IP限制
       const ipCheck = ipLimiter.canDownload(clientIP);
       
       if (!ipCheck.allowed) {
@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { 
             success: false, 
-            error: `今日下载次数已用完（3次），请 ${remainingHours} 小时后再试，或注册登录获得更多下载次数`,
+            error: `未注册用户今日下载次数已用完（1次），请 ${remainingHours} 小时后再试，或立即注册获得更多下载次数`,
             needsAuth: true,
             ipLimited: true,
             data: null,
@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      // 未登录用户：限制为HD质量，需要登录提示
+      // 未注册用户：限制为HD质量，需要注册提示
       finalQuality = requestedOriginal ? 'hd' : (quality || 'hd');
       needsAuth = true;
     } else if (!membershipCheck.hasPermission) {
@@ -237,11 +237,11 @@ export async function POST(request: NextRequest) {
       finalQuality = requestedOriginal ? 'original' : (quality || 'hd');
     }
 
-    // 对未登录用户添加6秒延迟
+    // 对未注册用户添加6秒延迟
     if (!isAuthenticated) {
-      console.log(`未登录用户 ${clientIP} 开始6秒延迟...`);
+      console.log(`未注册用户 ${clientIP} 开始6秒延迟...`);
       await new Promise(resolve => setTimeout(resolve, 6000)); // 6秒延迟
-      console.log(`未登录用户 ${clientIP} 延迟结束，开始解析...`);
+      console.log(`未注册用户 ${clientIP} 延迟结束，开始解析...`);
     }
 
     // 调用下载服务
@@ -259,10 +259,10 @@ export async function POST(request: NextRequest) {
           console.error('扣除使用次数错误:', error);
         }
       } else if (!isAuthenticated) {
-        // 未登录用户：记录IP下载次数
+        // 未注册用户：记录IP下载次数
         ipLimiter.recordDownload(clientIP);
         const ipStatus = ipLimiter.getIPStatus(clientIP);
-        console.log(`未登录用户 ${clientIP} 解析成功，剩余IP下载次数: ${ipStatus.remainingDownloads}`);
+        console.log(`未注册用户 ${clientIP} 解析成功，剩余IP下载次数: ${ipStatus.remainingDownloads}`);
       }
     
       // 根据最终确定的权限应用内容过滤
@@ -290,7 +290,7 @@ export async function POST(request: NextRequest) {
           needsAuth: needsAuth,
           userAuthenticated: isAuthenticated,
           remainingUsage: usageDeducted ? (userProfile?.value - 1) : (userProfile?.value || 0),
-          // 为未登录用户添加IP限制信息
+          // 为未注册用户添加IP限制信息
           ipDownloads: !isAuthenticated ? ipLimiter.getIPStatus(clientIP) : undefined,
           contentFiltered: finalQuality !== 'original',
           usageDeducted: usageDeducted,
