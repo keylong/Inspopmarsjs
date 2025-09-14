@@ -67,6 +67,7 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  checkinRecords CheckinRecord[]
 
   @@map("users")
 }
@@ -88,4 +89,19 @@ model UserSession {
   state     Int
 
   @@map("user_sessions")
+}
+
+// 签到记录表
+model CheckinRecord {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  checkinDate    DateTime @map("checkin_date") @db.Date
+  reward         Int      // 获得的下载次数
+  consecutiveDays Int     @map("consecutive_days") // 连续签到天数
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, checkinDate]) // 每个用户每天只能签到一次
+  @@map("checkin_records")
 }

@@ -11,7 +11,6 @@ import { ProtectedRoute } from '@/components/auth/protected-route'
 import { useAuth } from '@/hooks/useAuth'
 import { useI18n } from '@/lib/i18n/client'
 import { User, Mail, Calendar, Shield, Crown } from 'lucide-react'
-import { PaymentModal } from '@/components/payment-modal'
 import { ProfileSkeleton } from '@/components/profile/profile-skeleton'
 import { MembershipCard } from '@/components/profile/membership-card'
 import { ApiTokenCard } from '@/components/profile/api-token-card'
@@ -27,7 +26,6 @@ export default function ProfilePage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [profileLoading, setProfileLoading] = useState(true)
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -161,7 +159,7 @@ export default function ProfilePage() {
           <MembershipCard 
             data={userProfile}
             isLoading={false}
-            onUpgrade={() => setShowPaymentModal(true)}
+            onUpgrade={() => router.push(`/${locale}/subscription`)}
           />
 
           {/* API令牌卡片 */}
@@ -296,13 +294,6 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
-
-          {/* 支付弹窗 */}
-          <PaymentModal 
-            isOpen={showPaymentModal} 
-            onClose={() => setShowPaymentModal(false)}
-            locale={locale}
-          />
 
         </div>
       </div>

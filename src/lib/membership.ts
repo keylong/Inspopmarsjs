@@ -12,11 +12,12 @@ export interface MembershipStatus {
 
 /**
  * 计算会员状态
- * @param buytype 购买类型：0=免费，1=月度，2=年度，3=终身
+ * @param buytype 购买类型：0=免费，1=月度，2=年度，3=终身(已停售)
  * @param buydate 购买日期
+ * @param value 下载次数，用于区分年度套餐类型
  * @returns 会员状态信息
  */
-export function getMembershipStatus(buytype: number, buydate: Date | null): MembershipStatus {
+export function getMembershipStatus(buytype: number, buydate: Date | null, value?: number): MembershipStatus {
   if (buytype === 0) {
     return {
       type: 'free',
@@ -59,10 +60,15 @@ export function getMembershipStatus(buytype: number, buydate: Date | null): Memb
     expiresAt.setMonth(expiresAt.getMonth() + 1)
     typeName = '月度会员'
   } else if (buytype === 2) {
-    // 年费：1年有效
+    // 年费：1年有效，根据下载次数区分套餐类型
     expiresAt = new Date(startDate)
     expiresAt.setFullYear(expiresAt.getFullYear() + 1)
-    typeName = '年度会员'
+    // 根据下载次数判断是哪种年度套餐
+    if (value && value >= 999999) {
+      typeName = '年度超级VIP' // 无限下载
+    } else {
+      typeName = '年度会员' // 5000次下载
+    }
   } else {
     return {
       type: 'unknown',
@@ -110,7 +116,7 @@ export function checkMembershipPermission(userProfile: any): {
     }
   }
 
-  const status = getMembershipStatus(userProfile.buytype, userProfile.buydate)
+  const status = getMembershipStatus(userProfile.buytype, userProfile.buydate, userProfile.value)
   const hasUsage = userProfile.value > 0
   
   // 只有会员状态活跃且有剩余次数才有权限

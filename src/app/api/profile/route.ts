@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 计算会员状态
-    const membershipStatus = getMembershipStatus(userProfile.buytype, userProfile.buydate)
+    const membershipStatus = getMembershipStatus(userProfile.buytype, userProfile.buydate, userProfile.value)
 
     return NextResponse.json({
       user: {

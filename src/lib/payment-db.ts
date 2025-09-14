@@ -68,8 +68,8 @@ async function getDefaultPlans(): Promise<SubscriptionPlan[]> {
       nameEn: 'Basic Monthly',
       description: '每月100次下载，支持图片和视频',
       descriptionEn: '100 downloads per month, supports images and videos',
-      price: 9.99,
-      currency: 'USD',
+      price: 28,
+      currency: 'CNY',
       duration: 'monthly',
       features: ['每月100次下载', '图片视频下载', '标准画质', '邮件支持'],
       featuresEn: ['100 downloads/month', 'Image & video download', 'Standard quality', 'Email support'],
@@ -88,8 +88,8 @@ async function getDefaultPlans(): Promise<SubscriptionPlan[]> {
       nameEn: 'Pro Monthly',
       description: '每月500次下载，高清画质，批量下载',
       descriptionEn: '500 downloads per month, HD quality, batch download',
-      price: 19.99,
-      currency: 'USD',
+      price: 188,
+      currency: 'CNY',
       duration: 'monthly',
       features: ['每月500次下载', '高清画质', '批量下载', '优先支持'],
       featuresEn: ['500 downloads/month', 'HD quality', 'Batch download', 'Priority support'],
@@ -108,8 +108,8 @@ async function getDefaultPlans(): Promise<SubscriptionPlan[]> {
       nameEn: 'Unlimited Monthly',
       description: '无限下载，最高画质，API访问',
       descriptionEn: 'Unlimited downloads, highest quality, API access',
-      price: 39.99,
-      currency: 'USD',
+      price: 398,
+      currency: 'CNY',
       duration: 'monthly',
       features: ['无限下载', '最高画质', 'API访问', '24/7支持'],
       featuresEn: ['Unlimited downloads', 'Highest quality', 'API access', '24/7 support'],
@@ -269,6 +269,99 @@ export async function getPaymentOrderByPaymentIntentId(paymentIntentId: string):
 export async function getPaymentOrderByAlipayTradeNo(tradeNo: string): Promise<PaymentOrder | null> {
   const orders = await readPaymentOrders()
   return orders.find(order => order.alipayTradeNo === tradeNo) || null
+}
+
+export async function getPaymentOrderByGatewayId(gatewayOrderId: string): Promise<PaymentOrder | null> {
+  const orders = await readPaymentOrders()
+  return orders.find(order => order.metadata?.gatewayOrderData?.orderId === gatewayOrderId) || null
+}
+
+// 支付成功处理参数
+interface ProcessPaymentParams {
+  orderId: string
+  userId: string
+  planId: string
+  paymentId: string
+  paidAt: string
+}
+
+export async function processSuccessfulPayment(params: ProcessPaymentParams): Promise<void> {
+  try {
+    const { orderId, userId, planId, paymentId, paidAt } = params
+
+    // 获取订单
+    const order = await getPaymentOrderById(orderId)
+    if (!order) {
+      throw new Error('订单不存在')
+    }
+
+    // 获取套餐信息
+    const plan = await getSubscriptionPlanById(planId)
+    if (!plan) {
+      throw new Error('套餐不存在')
+    }
+
+    // 更新订单状态
+    await updatePaymentOrder(orderId, {
+      status: 'paid',
+      paidAt,
+      metadata: {
+        ...order.metadata,
+        paymentId,
+        processedAt: new Date().toISOString()
+      }
+    })
+
+    // 检查用户是否已有活跃订阅
+    const existingSubscription = await getUserSubscription(userId)
+
+    if (existingSubscription) {
+      // 如果有现有订阅，先取消它
+      await updateUserSubscription(existingSubscription.id, {
+        status: 'canceled',
+        cancelAtPeriodEnd: true
+      })
+    }
+
+    // 计算订阅周期
+    const currentTime = new Date()
+    let periodEnd: Date
+
+    switch (plan.duration) {
+      case 'monthly':
+        periodEnd = new Date(currentTime.getTime() + 30 * 24 * 60 * 60 * 1000) // 30天
+        break
+      case 'yearly':
+        periodEnd = new Date(currentTime.getTime() + 365 * 24 * 60 * 60 * 1000) // 365天
+        break
+      case 'lifetime':
+        periodEnd = new Date(Date.UTC(2099, 11, 31)) // 设置为2099年
+        break
+      default:
+        periodEnd = new Date(currentTime.getTime() + 30 * 24 * 60 * 60 * 1000)
+    }
+
+    // 创建新订阅
+    const newSubscription = await createUserSubscription({
+      userId,
+      planId,
+      status: 'active',
+      paymentMethod: order.paymentMethod,
+      currentPeriodStart: currentTime.toISOString(),
+      currentPeriodEnd: periodEnd.toISOString(),
+      cancelAtPeriodEnd: false,
+      downloadCount: 0
+    })
+
+    // 创建使用统计记录
+    await createOrUpdateUsageStats(userId, newSubscription.id, 0)
+
+    console.log(`支付成功处理完成: 订单=${orderId}, 用户=${userId}, 订阅=${newSubscription.id}`)
+
+  } catch (error) {
+    console.error('处理支付成功失败:', error)
+    throw error
+  }
 }
 
 // ===== 使用统计管理 =====

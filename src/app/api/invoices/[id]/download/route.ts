@@ -5,7 +5,7 @@ import fs from 'fs/promises'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser()
@@ -17,7 +17,8 @@ export async function GET(
       )
     }
 
-    const invoice = await getInvoiceById(params.id)
+    const { id } = await params
+    const invoice = await getInvoiceById(id)
     
     if (!invoice) {
       return NextResponse.json(
@@ -35,7 +36,7 @@ export async function GET(
     }
 
     // 获取PDF文件路径
-    const pdfPath = await getInvoicePDFPath(params.id)
+    const pdfPath = await getInvoicePDFPath(id)
     if (!pdfPath) {
       return NextResponse.json(
         { success: false, error: '发票PDF不存在' },
