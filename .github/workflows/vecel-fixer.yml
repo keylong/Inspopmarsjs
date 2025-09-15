@@ -1,0 +1,92 @@
+name: Vercel Auto-Fix Suggester (Chinese Prompt)
+
+on:
+  check_run:
+    types: [completed]
+
+jobs:
+  suggest-fix-for-vercel-error:
+    if: contains(github.event.check_run.name, 'Vercel') && github.event.check_run.conclusion == 'failure'
+    
+    runs-on: ubuntu-latest
+    
+    permissions:
+      pull-requests: write
+      contents: read
+      checks: read
+
+    steps:
+      - name: 'Announce: Vercel deployment failed, generating fix suggestion'
+        run: echo "Vercel check '${{ github.event.check_run.name }}' failed. Starting Claude suggestion process..."
+
+      - name: Checkout PR Branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.check_run.pull_requests[0].ref }}
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Fetch Failed Vercel Deployment Logs
+        id: get_logs
+        run: |
+          echo "Fetching logs from deployment URL: ${{ github.event.check_run.details_url }}"
+          LOGS=$(vercel logs ${{ github.event.check_run.details_url }} --token=${{ secrets.VERCEL_TOKEN }} --project=${{ secrets.VERCEL_PROJECT_ID }} --org=${{ secrets.VERCEL_ORG_ID }})
+          echo "logs<<EOF" >> $GITHUB_OUTPUT
+          echo "$LOGS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Generate Fix Suggestion with Claude (Chinese Prompt)
+        id: claude_suggestion
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # ❗️ 已移除 model: "..."，将使用默认模型
+          
+          # ❗️ 已将 Prompt 替换为高质量的中文版本
+          direct_prompt: |
+            你是一位精通 Vercel 部署问题调试的全栈开发专家。
+            我的一个 Vercel 部署构建失败了。你的任务是分析下面的构建日志，找出根本原因，并提出具体的代码修复方案。
+
+            **输出要求:**
+            1. 你的输出格式必须是一条结构清晰、对开发者友好的 GitHub 评论。
+            2. 请先对问题的根源进行简要分析。
+            3. 然后在一个 GitHub 风格的 Markdown 代码块中（例如 ```javascript），提供具体的代码修复建议。
+            4. 请以 '### 🤖 Claude 自动修复建议' 作为你回复的标题。
+
+            以下是失败部署的构建日志:
+            ```
+            ${{ steps.get_logs.outputs.logs }}
+            ```
+        # ❗️ 新增 env 模块，使用你的自定义端点
+        env:
+          # 使用你存储在 Secret 中的自定义端点
+          ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
+
+      - name: Post Fix Suggestion to Pull Request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ github.event.check_run.pull_requests[0].number }};
+            const prAuthor = "${{ github.event.check_run.pull_requests[0].user.login }}";
+            const suggestion = `${{ steps.claude_suggestion.outputs.claude_response }}`;
+
+            const commentBody = `
+            你好 @${prAuthor}，
+
+            本次 Vercel 部署构建失败了。我分析了构建日志，并提供了一个或许可以解决问题的修复建议。
+
+            ---
+
+            ${suggestion}
+
+            ---
+            *这是一条由 AI 自动生成的建议，请在采纳前仔细审查。*
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: commentBody
+            });
