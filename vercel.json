@@ -1,8 +1,11 @@
 {
   "regions": ["hkg1"],
   "functions": {
-    "src/app/api/*": {
+    "src/app/api/**/*.ts": {
       "maxDuration": 30
     }
-  }
+  },
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install"
 }

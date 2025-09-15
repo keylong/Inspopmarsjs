@@ -1,11 +1,12 @@
 // import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
+import withPWAInit from 'next-pwa';
 
-const withPWA = require('next-pwa')({
+const withPWA = withPWAInit({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
+  disable: process.env.NODE_ENV === 'development' || process.env.VERCEL === '1',
   buildExcludes: [/middleware-manifest\.json$/],
   runtimeCaching: [
     {
@@ -417,9 +418,9 @@ const nextConfig: NextConfig = {
       
       // 定义 self 为 global
       config.plugins = config.plugins || [];
-      const webpack = require('webpack');
+      const { DefinePlugin } = require('webpack');
       config.plugins.push(
-        new webpack.DefinePlugin({
+        new DefinePlugin({
           'self': 'global',
         })
       );
