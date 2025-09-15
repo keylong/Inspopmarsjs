@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { defaultLocale, getLocaleFromCountryCode, isValidLocale } from './lib/i18n/config';
-
+ 
 // 扩展NextRequest类型以包含Vercel的geo信息
 interface GeoData {
   country?: string;
@@ -176,4 +176,5 @@ export const config = {
      */
     '/((?!api/auth|api/proxy|_next/static|_next/image|favicon.ico|manifest.json|robots.txt|sitemap.xml|.*\\.(?:ico|png|jpg|jpeg|gif|svg|webp|css|js|woff|woff2|ttf|eot)$).*)',
   ],
+
 };
