@@ -1,0 +1,96 @@
+# 工作流名称
+name: AI PR Summarizer (OpenAI - Hardcoded)
+
+# 触发器：当有新的 Pull Request 被打开或同步（有新的 commit）时
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+# 任务所需权限
+permissions:
+  pull-requests: write # 允许在 PR 中发表评论
+  contents: read      # 允许读取代码内容
+
+jobs:
+  summarize_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 第一步：检出代码，需要完整历史来获取 diff
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 第二步：获取 PR 的代码变更内容
+      - name: Get PR Diff
+        id: get_diff
+        run: |
+          DIFF_CONTENT=$(git diff origin/${{ github.base_ref }} ... HEAD)
+          DIFF_JSON=$(echo "$DIFF_CONTENT" | jq -R -s .)
+          echo "diff_for_prompt=${DIFF_JSON}" >> $GITHUB_OUTPUT
+
+      # 第三步：调用 OpenAI API 并发表评论
+      - name: Call OpenAI and Post Summary Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const diff = process.env.DIFF_CONTENT;
+            if (!diff || diff.trim() === '') {
+              console.log('No code changes detected. Skipping summary.');
+              return;
+            }
+
+            const { data: comment } = await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `### 🤖 AI 正在分析代码变更...\n\n请稍后...`
+            });
+
+            const prompt = `Please act as a senior software engineer. Summarize the following code changes from a pull request in a concise and easy-to-understand way. Use Chinese for your summary. The summary should be in markdown format. Diff:\n${diff}`;
+
+            try {
+              // ❗️ 已将端点直接写入
+              const apiEndpoint = 'https://gpt.chats2gpt.com/v1/chat/completions';
+              
+              const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  // ❗️ 已将 Token 直接写入
+                  'Authorization': 'Bearer apple888'
+                },
+                body: JSON.stringify({
+                  // ❗️ 已使用你指定的 gpt5 模型
+                  model: 'gpt5', 
+                  max_tokens: 1024,
+                  messages: [{ role: 'user', content: prompt }]
+                })
+              });
+
+              if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}: ${await response.text()}`);
+              }
+
+              const data = await response.json();
+              const summary = data.choices[0].message.content;
+
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: comment.id,
+                body: `### 🤖 AI 代码变更总结\n\n${summary}`
+              });
+
+            } catch (error) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: comment.id,
+                body: `### ❌ AI 总结失败\n\n抱歉，在调用 AI API 时遇到错误：\n\`\`\`\n${error.message}\n\`\`\`\`
+              });
+              throw error;
+            }
+        env:
+          DIFF_CONTENT: ${{ steps.get_diff.outputs.diff_for_prompt }}
