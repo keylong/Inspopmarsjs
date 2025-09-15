@@ -12,7 +12,14 @@ export async function GET(
       return NextResponse.json({
         success: false,
         error: '订单ID不能为空'
-      }, { status: 400 })
+      }, { 
+        status: 400,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
     }
 
     // 查找订单
@@ -22,7 +29,14 @@ export async function GET(
       return NextResponse.json({
         success: false,
         error: '订单不存在'
-      }, { status: 404 })
+      }, { 
+        status: 404,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
     }
 
     return NextResponse.json({
@@ -37,6 +51,12 @@ export async function GET(
         paidAt: order.paidAt,
         metadata: order.metadata
       }
+    }, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     })
 
   } catch (error) {
@@ -44,6 +64,13 @@ export async function GET(
     return NextResponse.json({
       success: false,
       error: '服务器错误'
-    }, { status: 500 })
+    }, { 
+      status: 500,
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
   }
 }
