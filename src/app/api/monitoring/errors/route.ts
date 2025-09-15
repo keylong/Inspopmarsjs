@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
     const offset = parseInt(searchParams.get('offset') || '0');
-    const severity = searchParams.get('severity');
+    // const severity = searchParams.get('severity');
     const startTime = searchParams.get('startTime');
     const endTime = searchParams.get('endTime');
     

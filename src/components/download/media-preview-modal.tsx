@@ -186,7 +186,7 @@ export function MediaPreviewModal({
       // 成功提示
       dismiss(loadingId);
       toast.success('开始下载！', `${mediaType}正在下载到您的设备`);
-    } catch (err) {
+    } catch {
       dismiss(loadingId);
       toast.error('下载失败', '请稍后重试或尝试其他分辨率');
     } finally {

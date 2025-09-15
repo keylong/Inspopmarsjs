@@ -46,7 +46,7 @@ interface ResultDisplayProps {
     };
   };
   onDownloadAll?: () => void;
-  onDownloadSelected?: (items: DownloadItem[]) => void;
+  _onDownloadSelected?: (items: DownloadItem[]) => void;
   onSingleDownload?: (item: DownloadItem) => void;
   onRetry?: () => void;
   className?: string;
@@ -57,7 +57,8 @@ export function ResultDisplay({
   onDownloadAll,
   onSingleDownload, 
   onRetry, 
-  className 
+  className,
+  _onDownloadSelected,
 }: ResultDisplayProps) {
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [previewMedia, setPreviewMedia] = useState<InstagramMedia | null>(null);

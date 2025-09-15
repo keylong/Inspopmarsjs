@@ -233,7 +233,7 @@ export async function GET(request: NextRequest) {
     let decodedUrl: string;
     try {
       decodedUrl = decodeURIComponent(mediaUrl);
-    } catch (e) {
+    } catch {
       return NextResponse.json(
         { error: 'URL格式无效' },
         { status: 400 }
