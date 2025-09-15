@@ -414,6 +414,10 @@ const nextConfig: NextConfig = {
         net: false,
         tls: false,
         crypto: false,
+        stream: false,
+        util: false,
+        buffer: false,
+        process: false,
       };
       
       // 定义 self 为 global
@@ -422,8 +426,21 @@ const nextConfig: NextConfig = {
       config.plugins.push(
         new DefinePlugin({
           'self': 'global',
+          'window': 'undefined',
         })
       );
+    }
+    
+    // 客户端配置优化
+    if (!isServer) {
+      config.resolve = config.resolve || {};
+      config.resolve.fallback = config.resolve.fallback || {};
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
     }
     
     return config;
