@@ -22,7 +22,9 @@ export default function DownloadPageWrapper({
   locale,
   contentType,
   translations,
-  acceptedTypes,
+  _acceptedTypes = [],
+  _requireAuth = false,
+  _enableBatch = false,
 }: DownloadPageWrapperProps) {
   return (
     <SEOLayout contentType={contentType} locale={locale}>
