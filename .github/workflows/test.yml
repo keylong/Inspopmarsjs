@@ -1,0 +1,23 @@
+name: Debug Check Run Event
+
+# 触发器和你的主工作流完全一样
+on:
+  check_run:
+    types: [completed]
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump check_run event context
+        run: |
+          echo "A 'check_run' event was completed. Here are the details:"
+          echo "========================================================"
+          echo ">> Check Name: ${{ github.event.check_run.name }}"
+          echo ">> App Name:   ${{ github.event.check_run.check_suite.app.name }}"
+          echo ">> Conclusion: ${{ github.event.check_run.conclusion }}"
+          echo ">> Status:     ${{ github.event.check_run.status }}"
+          echo "========================================================"
+          echo ""
+          echo "Full event context (JSON):"
+          echo '${{ toJSON(github.event) }}'
