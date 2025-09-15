@@ -1,4 +1,4 @@
-name: Vercel Auto-Fix Suggester (Chinese Prompt)
+name: Vercel Auto-Fix Suggester (Auto-Detect Project)
 
 on:
   check_run:
@@ -27,11 +27,17 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
+      # ✨ 新增步骤：自动拉取并链接 Vercel 项目信息
+      - name: Link Vercel Project
+        run: vercel pull --yes --token=${{ secrets.VERCEL_TOKEN }}
+
+      # ✨ 修改步骤：不再需要手动传入 Project ID 和 Org ID
       - name: Fetch Failed Vercel Deployment Logs
         id: get_logs
         run: |
           echo "Fetching logs from deployment URL: ${{ github.event.check_run.details_url }}"
-          LOGS=$(vercel logs ${{ github.event.check_run.details_url }} --token=${{ secrets.VERCEL_TOKEN }} --project=${{ secrets.VERCEL_PROJECT_ID }} --org=${{ secrets.VERCEL_ORG_ID }})
+          # Vercel CLI 会自动从 .vercel/project.json 文件中读取项目和组织 ID
+          LOGS=$(vercel logs ${{ github.event.check_run.details_url }} --token=${{ secrets.VERCEL_TOKEN }})
           echo "logs<<EOF" >> $GITHUB_OUTPUT
           echo "$LOGS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -41,9 +47,6 @@ jobs:
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # ❗️ 已移除 model: "..."，将使用默认模型
-          
-          # ❗️ 已将 Prompt 替换为高质量的中文版本
           direct_prompt: |
             你是一位精通 Vercel 部署问题调试的全栈开发专家。
             我的一个 Vercel 部署构建失败了。你的任务是分析下面的构建日志，找出根本原因，并提出具体的代码修复方案。
@@ -58,9 +61,7 @@ jobs:
             ```
             ${{ steps.get_logs.outputs.logs }}
             ```
-        # ❗️ 新增 env 模块，使用你的自定义端点
         env:
-          # 使用你存储在 Secret 中的自定义端点
           ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
 
       - name: Post Fix Suggestion to Pull Request
