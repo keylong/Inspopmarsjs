@@ -34,8 +34,10 @@ jobs:
         id: claude
         uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: cr_61ac5821639a8fdda9003cdb02749e13baccd88b693a1945bcfa2a24cb8717e2
+          # ⚠️ 修改这里：从 Secrets 中安全地读取密钥
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: |
             --allowedTools "Bash(*),Read(*),Edit(*),Write(*)"
         env:
+          # 检查你的代理服务是否正常工作
           ANTHROPIC_BASE_URL: "http://156.238.244.229:3000/api"
