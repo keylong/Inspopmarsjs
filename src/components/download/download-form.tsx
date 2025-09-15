@@ -12,7 +12,7 @@ import {
   AlertCircle, 
   Loader2,
   Settings,
-  Image,
+  Image as ImageIcon,
   Video,
   Package
 } from 'lucide-react';
@@ -28,8 +28,8 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 import { useInstagramDownloader } from '@/lib/hooks/use-download';
 import { DownloadFormData, URLValidationResult } from '@/types/instagram';
 import { useOptionalAuth } from '@/hooks/useAuth';
@@ -50,18 +50,23 @@ const downloadFormSchema = z.object({
   format: z.enum(['individual', 'zip']),
 });
 
-// FormData类型将在组件内部定义
+// 定义下载结果类型
+interface DownloadResult {
+  meta?: {
+    qualityDowngraded?: boolean;
+    needsAuth?: boolean;
+    remainingUsage?: number;
+  };
+  data?: unknown;
+}
 
 interface DownloadFormProps {
   onDownloadStart?: (data: DownloadFormData) => void;
-  onDownloadComplete?: (result: any) => void;
+  onDownloadComplete?: (result: DownloadResult) => void;
   onDownloadError?: (error: string) => void;
   placeholder?: string;
-  acceptedTypes?: string[];
   optimizedFor?: string;
   features?: string[];
-  requireAuth?: boolean;
-  enableBatch?: boolean;
 }
 
 export function DownloadForm({
@@ -69,20 +74,17 @@ export function DownloadForm({
   onDownloadComplete,
   onDownloadError,
   placeholder = "https://www.instagram.com/p/...",
-  acceptedTypes = ['auto', 'post', 'story', 'reel', 'igtv', 'highlight', 'profile'],
   optimizedFor,
   features = [],
-  requireAuth = false,
-  enableBatch = false,
 }: DownloadFormProps) {
   const [validation, setValidation] = useState<URLValidationResult | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const [downloadResult, setDownloadResult] = useState<any>(null);
+  const [downloadResult, setDownloadResult] = useState<DownloadResult | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   
   // 使用认证状态（可选）
-  const { user, isLoading: authLoading, isAuthenticated } = useOptionalAuth();
+  const { isAuthenticated } = useOptionalAuth();
   const { toast, dismiss } = useToast();
   
   useEffect(() => {
@@ -97,7 +99,6 @@ export function DownloadForm({
     formState: { errors },
     watch,
     setValue,
-    trigger,
   } = useForm<FormData>({
     resolver: zodResolver(downloadFormSchema),
     defaultValues: {
@@ -107,8 +108,7 @@ export function DownloadForm({
     },
   });
 
-  const { download, isLoading, error, data } = useInstagramDownloader();
-  const watchedUrl = watch('url');
+  const { download, isLoading, error } = useInstagramDownloader();
 
   // URL 自动验证
   const handleURLValidation = async (url: string) => {
@@ -134,7 +134,7 @@ export function DownloadForm({
       } else {
         setValidation({ isValid: false, error: result.error?.message });
       }
-    } catch (err) {
+    } catch {
       setValidation({ isValid: false, error: 'URL验证失败' });
     }
   };
@@ -153,16 +153,16 @@ export function DownloadForm({
     try {
       onDownloadStart?.(formData);
       
-      const result = await download(formData);
+      const downloadResponse = await download(formData);
       
       // 保存下载结果用于显示权限信息
-      setDownloadResult(result);
+      setDownloadResult(downloadResponse.result as DownloadResult);
       
       // 成功提示
       dismiss(loadingId);
       toast.success('获取成功！', '内容已准备好，请选择分辨率进行下载');
       
-      onDownloadComplete?.(result);
+      onDownloadComplete?.(downloadResponse.result as DownloadResult);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '下载失败';
       
@@ -178,7 +178,7 @@ export function DownloadForm({
 
   const getContentTypeIcon = (type?: string) => {
     switch (type) {
-      case 'post': return <Image className="w-4 h-4" />;
+      case 'post': return <ImageIcon className="w-4 h-4" />;
       case 'story': return <Video className="w-4 h-4" />;
       case 'reel': return <Video className="w-4 h-4" />;
       case 'igtv': return <Video className="w-4 h-4" />;
@@ -292,7 +292,7 @@ export function DownloadForm({
                   <Label htmlFor="type">内容类型</Label>
                   <Select
                     value={watch('type')}
-                    onValueChange={(value) => setValue('type', value as any)}
+                    onValueChange={(value) => setValue('type', value as 'auto' | 'post' | 'story' | 'highlight' | 'profile')}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -319,7 +319,7 @@ export function DownloadForm({
                   </Label>
                   <Select
                     value={watch('quality')}
-                    onValueChange={(value) => setValue('quality', value as any)}
+                    onValueChange={(value) => setValue('quality', value as 'original' | 'hd' | 'sd')}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -344,7 +344,7 @@ export function DownloadForm({
                   {isClient && (
                     <div className="text-xs text-muted-foreground">
                       {!isAuthenticated ? (
-                        <p>• 未登录用户只能下载高清和标清版本，<a href="/signin" className="text-blue-600 hover:underline">登录</a>后可下载原画质</p>
+                        <p>• 未登录用户只能下载高清和标清版本，<Link href="/signin" className="text-blue-600 hover:underline">登录</Link>后可下载原画质</p>
                       ) : (
                         <p>• 已登录用户可下载原画质（消耗使用次数）</p>
                       )}
@@ -357,7 +357,7 @@ export function DownloadForm({
                   <Label htmlFor="format">下载格式</Label>
                   <Select
                     value={watch('format')}
-                    onValueChange={(value) => setValue('format', value as any)}
+                    onValueChange={(value) => setValue('format', value as 'individual' | 'zip')}
                   >
                     <SelectTrigger>
                       <SelectValue />

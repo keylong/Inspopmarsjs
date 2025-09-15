@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { ChevronDown, Globe, Check } from 'lucide-react';
-import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
+import { useCurrentLocale } from '@/lib/i18n/client';
 import { locales, localeNames, localeFlags, type Locale } from '@/lib/i18n/config';
 
 interface LanguageSwitcherProps {
@@ -19,7 +19,6 @@ export function LanguageSwitcher({
   const router = useRouter();
   const pathname = usePathname();
   const currentLocale = useCurrentLocale() || 'zh-CN';
-  const t = useI18n();
 
   const handleLocaleChange = (newLocale: Locale) => {
     if (!pathname) return;

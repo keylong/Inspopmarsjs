@@ -7,7 +7,7 @@ import {
   createUserSubscription,
   updateUserSubscription,
   getUserSubscription
-} from './payment-db'
+} from './payment-db-prisma'
 import { createInvoice } from './invoice'
 import { StripeCheckoutSession } from '@/types/payment'
 
@@ -89,7 +89,7 @@ export async function createStripeCheckoutSession(
       planId,
       userId,
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('创建 Stripe 支付会话失败:', error)
     throw new Error('创建支付会话失败')
   }
@@ -110,7 +110,7 @@ export async function handleStripeWebhook(
       signature,
       paymentConfig.stripe.webhookSecret
     )
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Webhook 签名验证失败:', error)
     return { success: false, message: 'Invalid signature' }
   }
@@ -153,7 +153,7 @@ export async function handleStripeWebhook(
     }
 
     return { success: true }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('处理 Stripe webhook 失败:', error)
     return { success: false, message: 'Processing failed' }
   }
@@ -246,7 +246,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   try {
     await createInvoice(orderId)
     console.log('发票生成成功:', orderId)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('生成发票失败:', orderId, error)
   }
 }
@@ -254,31 +254,31 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 /**
  * 处理订阅更新
  */
-async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
+async function handleSubscriptionUpdated(_subscription: Stripe.Subscription) {
   // 根据 Stripe subscription ID 查找用户订阅
   // 这里需要添加通过 stripeSubscriptionId 查找订阅的方法
-  console.log('订阅更新:', subscription.id, subscription.status)
+  console.log('订阅更新:', _subscription.id, _subscription.status)
 }
 
 /**
  * 处理订阅删除
  */
-async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  console.log('订阅删除:', subscription.id)
+async function handleSubscriptionDeleted(_subscription: Stripe.Subscription) {
+  console.log('订阅删除:', _subscription.id)
 }
 
 /**
  * 处理发票支付成功
  */
-async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  console.log('发票支付成功:', invoice.id)
+async function handleInvoicePaymentSucceeded(_invoice: Stripe.Invoice) {
+  console.log('发票支付成功:', _invoice.id)
 }
 
 /**
  * 处理发票支付失败
  */
-async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  console.log('发票支付失败:', invoice.id)
+async function handleInvoicePaymentFailed(_invoice: Stripe.Invoice) {
+  console.log('发票支付失败:', _invoice.id)
 }
 
 /**
@@ -289,7 +289,7 @@ export async function cancelStripeSubscription(
   cancelAtPeriodEnd = true
 ): Promise<{ success: boolean; message?: string }> {
   try {
-    const subscription = await getStripe().subscriptions.update(subscriptionId, {
+    await getStripe().subscriptions.update(subscriptionId, {
       cancel_at_period_end: cancelAtPeriodEnd,
     })
 
@@ -297,7 +297,7 @@ export async function cancelStripeSubscription(
       success: true, 
       message: cancelAtPeriodEnd ? '订阅将在当前周期结束后取消' : '订阅已立即取消' 
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('取消订阅失败:', error)
     return { success: false, message: '取消订阅失败' }
   }
@@ -309,7 +309,7 @@ export async function cancelStripeSubscription(
 export async function getStripeSubscription(subscriptionId: string) {
   try {
     return await getStripe().subscriptions.retrieve(subscriptionId)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('获取订阅详情失败:', error)
     return null
   }
@@ -330,7 +330,7 @@ export async function createStripePortalSession(
     })
 
     return session.url
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('创建客户门户会话失败:', error)
     return null
   }

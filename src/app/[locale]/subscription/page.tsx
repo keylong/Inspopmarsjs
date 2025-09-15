@@ -1,14 +1,14 @@
 'use client'
 
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useParams } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Loader2, Calendar, Download, Check, Crown, Timer, Zap, Shield, MessageCircle, Copy, Star, Sparkles } from 'lucide-react'
+import { Loader2, Calendar, Download, Check, Crown, Timer, Zap, Shield, MessageCircle, Copy, Star } from 'lucide-react'
 import { WechatPayIcon, AlipayIcon } from '@/components/payment-icons'
 import { SubscriptionPlan } from '@/types/payment'
 import { useI18n } from '@/lib/i18n/client'
@@ -27,7 +27,7 @@ interface UserProfile {
 
 export default function SubscriptionPage() {
   const t = useI18n()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ id: string; email: string } | null>(null)
   const router = useRouter()
   const params = useParams()
   const locale = params?.locale as string || 'zh-CN'
@@ -53,7 +53,11 @@ export default function SubscriptionPage() {
   useEffect(() => {
     const getCurrentUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
+      if (user && user.email) {
+        setUser({ id: user.id, email: user.email })
+      } else {
+        setUser(null)
+      }
     }
     getCurrentUser()
   }, [])
@@ -105,7 +109,7 @@ export default function SubscriptionPage() {
       await navigator.clipboard.writeText(wechatId)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    } catch (error) {
+    } catch {
       // 降级处理：使用传统方法
       const textArea = document.createElement('textarea')
       textArea.value = wechatId
@@ -117,14 +121,14 @@ export default function SubscriptionPage() {
         document.execCommand('copy')
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
-      } catch (fallbackError) {
-        console.error('复制失败:', fallbackError)
+      } catch (fallbackErr) {
+        console.error('复制失败:', fallbackErr)
       }
       document.body.removeChild(textArea)
     }
   }
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     try {
       const response = await fetch('/api/profile')
       const result = await response.json()
@@ -132,12 +136,12 @@ export default function SubscriptionPage() {
       if (result.user) {
         setUserProfile(result.user)
       }
-    } catch (error) {
-      console.error('获取用户资料失败:', error)
+    } catch (err) {
+      console.error('获取用户资料失败:', err)
     }
-  }
+  }, [])
 
-  const fetchPlans = async () => {
+  const fetchPlans = useCallback(async () => {
     try {
       const response = await fetch('/api/payment/plans')
       const result = await response.json()
@@ -145,12 +149,12 @@ export default function SubscriptionPage() {
       if (result.success) {
         setPlans(result.data)
       }
-    } catch (error) {
-      console.error(t('subscription.errors.plansFetchFailed'), error)
+    } catch (err) {
+      console.error(t('subscription.errors.plansFetchFailed'), err)
     } finally {
       setLoading(false)
     }
-  }
+  }, [t])
 
   const handleUpgrade = async (planId: string, paymentMethod: 'stripe' | 'alipay' | 'wechat') => {
     // 如果用户未登录，跳转到登录页面
@@ -224,28 +228,14 @@ export default function SubscriptionPage() {
       } else {
         alert(t('subscription.errors.checkoutFailed') + ': ' + (result.error || t('subscription.errors.unknownError')))
       }
-    } catch (error) {
-      console.error(t('subscription.errors.checkoutFailed'), error)
+    } catch (err) {
+      console.error(t('subscription.errors.checkoutFailed'), err)
       alert(t('subscription.errors.retryLater'))
     } finally {
       setUpgrading(false)
     }
   }
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-green-100 text-green-800">{t('subscription.status.active')}</Badge>
-      case 'canceled':
-        return <Badge variant="secondary">{t('subscription.status.canceled')}</Badge>
-      case 'expired':
-        return <Badge variant="destructive">{t('subscription.status.expired')}</Badge>
-      case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800">{t('subscription.status.pending')}</Badge>
-      default:
-        return <Badge variant="outline">{status}</Badge>
-    }
-  }
 
   if (loading) {
     return (
@@ -397,7 +387,7 @@ export default function SubscriptionPage() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {plans.filter(plan => plan.id !== 'yearly-vip').map((plan, index) => {
+          {plans.filter(plan => plan.id !== 'yearly-vip').map((plan) => {
             // 根据用户的 buytype 和下载次数判断是否是当前套餐
             const isCurrentPlan = hasActiveMembership && (
               (plan.id === 'basic-monthly' && userProfile?.buytype === 1) ||
@@ -408,31 +398,22 @@ export default function SubscriptionPage() {
             const isYearly = plan.id === 'unlimited-monthly' // 无限月度套餐作为年度超级VIP显示
             const isYearlyVIP = plan.id === 'pro-monthly' // 专业月度套餐作为一年VIP会员显示  
             const isMonthlyBasic = plan.id === 'basic-monthly' // 基础月度套餐作为一个月VIP会员显示
-            const isPro = plan.name.includes('专业版') || plan.name.includes('Pro')
             
             // 设置不同套餐的价格
             let displayPrice = 0
             let originalPrice = 0
-            let monthlyPrice = 0
-            let saveAmount = 0
             
             if (isYearly) {
               displayPrice = 398
               originalPrice = 668
-              saveAmount = 270
-              monthlyPrice = displayPrice / 12
             } else if (isYearlyVIP) {
               displayPrice = 188
               originalPrice = 268
-              saveAmount = 80
-              monthlyPrice = displayPrice / 12
             } else if (isMonthlyBasic) {
               displayPrice = 28
-              monthlyPrice = displayPrice
             } else {
               // 其他套餐使用数据库中的价格
               displayPrice = Math.round(plan.price)
-              monthlyPrice = displayPrice
             }
             
             return (
@@ -799,7 +780,7 @@ export default function SubscriptionPage() {
                 ))}
               </div>
               <p className="text-sm text-gray-700 mb-2">
-                "超级VIP太值了！无限下载，再也不用担心次数不够用了。"
+                &ldquo;超级VIP太值了！无限下载，再也不用担心次数不够用了。&rdquo;
               </p>
               <p className="text-xs text-gray-500">— 李先生，设计师</p>
             </CardContent>
@@ -813,7 +794,7 @@ export default function SubscriptionPage() {
                 ))}
               </div>
               <p className="text-sm text-gray-700 mb-2">
-                "客服响应很快，支付很方便，下载速度也很给力！"
+                &ldquo;客服响应很快，支付很方便，下载速度也很给力！&rdquo;
               </p>
               <p className="text-xs text-gray-500">— 王女士，营销经理</p>
             </CardContent>
@@ -827,7 +808,7 @@ export default function SubscriptionPage() {
                 ))}
               </div>
               <p className="text-sm text-gray-700 mb-2">
-                "年度会员性价比很高，一年5000次完全够用了。"
+                &ldquo;年度会员性价比很高，一年5000次完全够用了。&rdquo;
               </p>
               <p className="text-xs text-gray-500">— 张同学，大学生</p>
             </CardContent>

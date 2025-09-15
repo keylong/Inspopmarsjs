@@ -3,7 +3,7 @@ import { getCurrentUser } from '@/lib/auth'
 import { getUserCheckinStatus, performCheckin } from '@/lib/checkin'
 
 // 获取签到状态
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
 }
 
 // 执行签到
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     

@@ -3,7 +3,7 @@
  * 解决Instagram图片/视频CORS限制，自动选择正确的代理端点
  */
 
-import { generateImageSrc, generateVideoSrc, generateProxyUrl, getMediaType } from './media-proxy';
+import { generateImageSrc } from './media-proxy';
 
 /**
  * 将Instagram媒体URL转换为安全的代理URL
@@ -86,8 +86,10 @@ export function getErrorPlaceholder(
   }
 }
 
-export default {
+const imageProxyUtils = {
   getProxyImageUrl,
   getProxyImageUrls,
   getErrorPlaceholder
 };
+
+export default imageProxyUtils;

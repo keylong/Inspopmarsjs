@@ -2,9 +2,9 @@ import jsPDF from 'jspdf'
 import fs from 'fs/promises'
 import path from 'path'
 import { Invoice, PaymentOrder } from '@/types/payment'
-import { getPaymentOrderById } from './payment-db'
+import { getPaymentOrderById } from './payment-db-prisma'
 import { getUserById } from '@/lib/auth'
-import { getSubscriptionPlanById } from './payment-db'
+import { getSubscriptionPlanById } from './payment-db-prisma'
 
 // 发票数据存储路径
 const INVOICES_FILE = path.join(process.cwd(), 'data', 'invoices.json')
@@ -96,8 +96,14 @@ export async function createInvoice(orderId: string): Promise<Invoice> {
     updatedAt: now.toISOString(),
   }
 
+  // 准备用户数据，确保所有字段都有有效值
+  const userData: UserData = {
+    name: user.name || user.email || 'Customer',
+    email: user.email || 'no-email@example.com'
+  }
+
   // 生成PDF发票
-  const pdfPath = await generateInvoicePDF(newInvoice, order, user, plan)
+  await generateInvoicePDF(newInvoice, order, userData, plan)
   newInvoice.downloadUrl = `/api/invoices/${newInvoice.id}/download`
 
   invoices.push(newInvoice)
@@ -109,11 +115,20 @@ export async function createInvoice(orderId: string): Promise<Invoice> {
 /**
  * 生成发票PDF
  */
+interface UserData {
+  name: string;
+  email: string;
+}
+
+interface PlanData {
+  name: string;
+}
+
 async function generateInvoicePDF(
   invoice: Invoice,
   order: PaymentOrder,
-  user: any,
-  plan: any
+  user: UserData,
+  plan: PlanData
 ): Promise<string> {
   await ensureInvoicesDir()
 
@@ -238,6 +253,12 @@ export async function getInvoicePDFPath(invoiceId: string): Promise<string | nul
     const plan = await getSubscriptionPlanById(order.planId)
     if (!plan) return null
     
-    return await generateInvoicePDF(invoice, order, user, plan)
+    // 准备用户数据，确保所有字段都有有效值
+    const userData: UserData = {
+      name: user.name || user.email || 'Customer',
+      email: user.email || 'no-email@example.com'
+    }
+    
+    return await generateInvoicePDF(invoice, order, userData, plan)
   }
 }

@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 
 import { useOptionalAuth } from '@/hooks/useAuth'
 
@@ -36,12 +38,12 @@ export default function TestAuthPage() {
           <div>
             <p className="text-gray-600">未登录</p>
             <div className="mt-4 space-x-4">
-              <a href="/signin" className="text-blue-600 hover:underline">
+              <Link href="/signin" className="text-blue-600 hover:underline">
                 登录
-              </a>
-              <a href="/signup" className="text-blue-600 hover:underline">
+              </Link>
+              <Link href="/signup" className="text-blue-600 hover:underline">
                 注册
-              </a>
+              </Link>
             </div>
           </div>
         )}

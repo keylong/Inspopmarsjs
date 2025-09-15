@@ -98,7 +98,13 @@ export function getMembershipStatus(buytype: number, buydate: Date | null, value
  * @param userProfile 用户资料
  * @returns 是否有权限 + 状态信息
  */
-export function checkMembershipPermission(userProfile: any): {
+interface UserProfile {
+  buytype: number;
+  buydate: Date | null;
+  value: number;
+}
+
+export function checkMembershipPermission(userProfile: UserProfile | null): {
   hasPermission: boolean;
   status: MembershipStatus;
   hasUsage: boolean;

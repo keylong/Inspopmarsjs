@@ -1,10 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Download, 
   Zap, 
   Shield, 
   Smartphone,
@@ -12,10 +10,8 @@ import {
   Play,
   Image,
   Star,
-  Users,
-  ArrowRight
+  Users
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/lib/i18n/client';
@@ -24,7 +20,6 @@ const DownloadForm = dynamic(() => import('@/components/download-form').then(mod
   ssr: true,
   loading: () => <div className="h-96 bg-white/80 rounded-2xl animate-pulse" />
 });
-import Link from 'next/link';
 
 // 动态导入广告组件，减少初始加载
 const AdSenseBanner = dynamic(

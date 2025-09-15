@@ -7,7 +7,7 @@ import {
   updateUserSubscription,
   getUserSubscription,
   getPaymentOrderByAlipayTradeNo
-} from './payment-db'
+} from './payment-db-prisma'
 import { createInvoice } from './invoice'
 import { AlipayOrderParams, AlipayNotifyParams } from '@/types/payment'
 import crypto from 'crypto'

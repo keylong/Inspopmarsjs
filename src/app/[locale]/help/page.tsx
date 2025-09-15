@@ -10,7 +10,7 @@ import {
   Download, 
   Instagram, 
   Video, 
-  Image, 
+  Image as ImageIcon, 
   Play, 
   Users, 
   Shield, 
@@ -167,7 +167,7 @@ export default function HelpPage() {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <Image className="h-8 w-8 text-blue-600" />
+                    <ImageIcon className="h-8 w-8 text-blue-600" />
                     <div>
                       <h4 className="font-medium">{t('help.supportedTypes.photos')}</h4>
                       <p className="text-sm text-gray-600">{t('help.supportedTypes.photosDesc')}</p>

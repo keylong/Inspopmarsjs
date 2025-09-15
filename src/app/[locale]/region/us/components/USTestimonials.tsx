@@ -2,7 +2,6 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Quote, CheckCircle } from 'lucide-react';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 interface Testimonial {
@@ -69,7 +68,7 @@ const testimonials: Testimonial[] = [
     company: 'Brand Builders NYC',
     avatar: '/avatars/lisa.jpg',
     rating: 5,
-    content: 'The speed and reliability are unmatched. We switched from our previous tool and haven\'t looked back. Customer support is also top-notch!',
+    content: 'The speed and reliability are unmatched. We switched from our previous tool and haven&apos;t looked back. Customer support is also top-notch!',
     verified: true,
     industry: 'Marketing Agency'
   },

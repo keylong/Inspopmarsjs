@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { HomeContent } from './home-content';
-import { locales, type Locale } from '@/lib/i18n/config';
+import { locales } from '@/lib/i18n/config';
+// import { type Locale } from '@/lib/i18n/config'; // 暂时注释未使用的导入
 import { generateHomeMetadata } from '@/components/seo/seo-metadata';
 
 // 生成静态参数

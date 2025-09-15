@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation' // 未使用，暂时注释
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -19,7 +19,7 @@ const plans = [
 export default function TestPaymentPage() {
   const [selectedPlan, setSelectedPlan] = useState('basic-monthly')
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  // const router = useRouter() // 未使用，暂时注释
   const { toast } = useToast()
 
   const handleStripeCheckout = async () => {

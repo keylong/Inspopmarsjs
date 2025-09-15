@@ -101,23 +101,6 @@ export default function ProfilePage() {
     setSuccess('')
   }
 
-  // 获取会员状态显示的颜色和样式
-  const getMembershipBadgeStyle = (membership: any) => {
-    if (!membership || membership.type === 'free') {
-      return 'bg-gray-100 text-gray-700'
-    }
-    if (membership.type === 'expired') {
-      return 'bg-red-100 text-red-700'
-    }
-    if (membership.type === 'active') {
-      // 超级年度会员特殊样式
-      if (membership.typeName === '超级年度会员') {
-        return 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 border border-purple-200'
-      }
-      return 'bg-green-100 text-green-700'
-    }
-    return 'bg-gray-100 text-gray-700'
-  }
 
   // 检查是否是VIP会员 (buytype >= 2)
   const isVip = userProfile?.buytype !== undefined && userProfile.buytype >= 2 && userProfile?.membership?.isActive

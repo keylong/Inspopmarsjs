@@ -23,18 +23,13 @@ export default function DownloadPageWrapper({
   contentType,
   translations,
   acceptedTypes,
-  requireAuth = false,
-  enableBatch = false,
 }: DownloadPageWrapperProps) {
   return (
     <SEOLayout contentType={contentType} locale={locale}>
       <DownloadForm
         placeholder={translations.placeholder}
-        acceptedTypes={acceptedTypes}
         optimizedFor={translations.subheading}
         features={translations.features}
-        requireAuth={requireAuth}
-        enableBatch={enableBatch}
       />
     </SEOLayout>
   );

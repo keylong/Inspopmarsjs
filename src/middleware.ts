@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { locales, defaultLocale, getLocaleFromCountryCode, isValidLocale } from './lib/i18n/config';
+import { defaultLocale, getLocaleFromCountryCode, isValidLocale } from './lib/i18n/config';
+
+// 扩展NextRequest类型以包含Vercel的geo信息
+interface GeoData {
+  country?: string;
+  city?: string;
+  region?: string;
+}
+
+interface ExtendedNextRequest extends NextRequest {
+  geo?: GeoData;
+}
 
 // 辅助函数：从请求中检测首选语言
-function detectPreferredLocale(request: NextRequest): string {
+function detectPreferredLocale(request: ExtendedNextRequest): string {
   // 1. 检查URL参数中的语言设置
   const urlLocale = request.nextUrl.searchParams.get('lang');
   if (urlLocale && isValidLocale(urlLocale)) {
@@ -16,13 +27,9 @@ function detectPreferredLocale(request: NextRequest): string {
   }
 
   // 3. 地理位置检测（Vercel Edge Function提供）- 增强版
-  const geo = (request as any).geo || {};
+  const geo: GeoData = request.geo || {};
   const country = geo.country || 'CN';
-  const city = geo.city || '';
-  const region = geo.region || '';
   
-  // 为跨境电商用户优化
-  const isEcommerceCountry = ['US', 'CN', 'HK', 'MY', 'SG', 'JP'].includes(country);
   const geoLocale = getLocaleFromCountryCode(country);
   
   // 4. Accept-Language header检测
@@ -44,7 +51,7 @@ function detectPreferredLocale(request: NextRequest): string {
   return geoLocale || defaultLocale;
 }
 
-export default async function middleware(request: NextRequest) {
+export default async function middleware(request: ExtendedNextRequest) {
   const { pathname } = request.nextUrl;
 
   // 跳过静态资源和API路由
@@ -116,19 +123,19 @@ export default async function middleware(request: NextRequest) {
   requestHeaders.set('x-locale', locale);
   
   // 添加地理位置信息headers（用于个性化内容）
-  const geo = (request as any).geo || {};
-  requestHeaders.set('x-geo-country', geo.country || 'unknown');
-  requestHeaders.set('x-geo-city', geo.city || 'unknown');
-  requestHeaders.set('x-geo-region', geo.region || 'unknown');
+  const geoHeaders: GeoData = request.geo || {};
+  requestHeaders.set('x-geo-country', geoHeaders.country || 'unknown');
+  requestHeaders.set('x-geo-city', geoHeaders.city || 'unknown');
+  requestHeaders.set('x-geo-region', geoHeaders.region || 'unknown');
   
   // 为跨境电商用户添加特殊标记
-  const isEcommerceUser = ['US', 'CN', 'HK', 'MY', 'SG', 'JP'].includes(geo.country);
+  const isEcommerceUser = ['US', 'CN', 'HK', 'MY', 'SG', 'JP'].includes(geoHeaders.country || '');
   if (isEcommerceUser) {
     requestHeaders.set('x-user-type', 'ecommerce');
   }
   
   // 检测海外华人（英语国家但语言偏好是中文）
-  const isOverseasChinese = ['US', 'CA', 'GB', 'AU', 'NZ'].includes(geo.country) && 
+  const isOverseasChinese = ['US', 'CA', 'GB', 'AU', 'NZ'].includes(geoHeaders.country || '') && 
                             (locale === 'zh-CN' || locale === 'zh-TW');
   if (isOverseasChinese) {
     requestHeaders.set('x-user-segment', 'overseas-chinese');

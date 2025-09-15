@@ -66,8 +66,13 @@ export const US_ANALYTICS_CONFIG = {
   },
 };
 
+// 事件参数类型定义
+interface EventParameters {
+  [key: string]: string | number | boolean | object;
+}
+
 // 追踪函数
-export function trackUSEvent(eventName: string, parameters?: Record<string, any>) {
+export function trackUSEvent(eventName: string, parameters?: EventParameters) {
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', eventName, {
       ...parameters,
@@ -172,7 +177,7 @@ export function trackUSPerformance() {
 export function trackUSError(error: Error, context?: string) {
   trackUSEvent('error_occurred', {
     error_message: error.message,
-    error_stack: error.stack,
+    error_stack: error.stack || 'No stack trace available',
     error_context: context || 'unknown',
     user_region: 'US',
     page_url: window.location.href,
@@ -193,12 +198,10 @@ export function initUSAnalytics() {
     });
     
     // 用户参与度追踪
-    let engagementTime = 0;
     let lastActiveTime = Date.now();
     
     setInterval(() => {
       if (Date.now() - lastActiveTime < 30000) { // 30秒内有活动
-        engagementTime += 10;
         trackUSEvent('user_engagement', {
           engagement_time_msec: 10000,
           user_region: 'US',
@@ -215,8 +218,13 @@ export function initUSAnalytics() {
   }
 }
 
+// 数据层参数类型定义
+interface DataLayerData {
+  [key: string]: string | number | boolean | object | null | undefined;
+}
+
 // 导出给 Google Tag Manager 使用的数据层
-export function pushToDataLayer(data: Record<string, any>) {
+export function pushToDataLayer(data: DataLayerData) {
   if (typeof window !== 'undefined') {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -227,10 +235,22 @@ export function pushToDataLayer(data: Record<string, any>) {
   }
 }
 
+// Google Analytics gtag 函数参数类型
+type GtagFunction = (
+  command: 'config' | 'event' | 'set',
+  targetId: string,
+  config?: EventParameters
+) => void;
+
+// 数据层项目类型
+interface DataLayerItem {
+  [key: string]: string | number | boolean | object | null | undefined;
+}
+
 // 声明全局类型
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
-    dataLayer: any[];
+    gtag: GtagFunction;
+    dataLayer: DataLayerItem[];
   }
 }

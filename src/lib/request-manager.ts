@@ -2,11 +2,11 @@
  * 请求管理器 - 防止重复请求并缓存结果
  */
 
-type RequestPromise = Promise<any>;
+type RequestPromise<T = unknown> = Promise<T>;
 
 class RequestManager {
   private pendingRequests: Map<string, RequestPromise> = new Map();
-  private cache: Map<string, { data: any; timestamp: number }> = new Map();
+  private cache: Map<string, { data: unknown; timestamp: number }> = new Map();
   private cacheTimeout = 5 * 60 * 1000; // 5分钟缓存
 
   /**
@@ -21,7 +21,7 @@ class RequestManager {
     useCache: boolean = true
   ): Promise<T> {
     // 1. 检查是否有正在进行的相同请求
-    const pending = this.pendingRequests.get(key);
+    const pending = this.pendingRequests.get(key) as Promise<T> | undefined;
     if (pending) {
       console.log(`[RequestManager] 请求 ${key} 正在进行中，等待结果...`);
       return pending;
@@ -32,7 +32,7 @@ class RequestManager {
       const cached = this.cache.get(key);
       if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
         console.log(`[RequestManager] 使用缓存的 ${key} 数据`);
-        return cached.data;
+        return cached.data as T;
       }
     }
 

@@ -11,6 +11,31 @@ interface PrivacyPolicyClientProps {
   locale: Locale;
 }
 
+// 定义隐私政策内容类型
+// interface SectionContent {
+//   title: string;
+//   content: string;
+//   items?: string[];
+//   email?: string;
+//   address?: string;
+//   response?: string;
+// }
+
+// interface PrivacySections {
+//   overview: SectionContent;
+//   dataCollection: SectionContent;
+//   dataUsage: SectionContent;
+//   dataSecurity: SectionContent;
+//   thirdPartyServices: SectionContent;
+//   userRights: SectionContent;
+//   dataRetention: SectionContent;
+//   cookies: SectionContent;
+//   contact: SectionContent;
+// }
+
+// 翻译函数类型（未使用但保留作为类型定义）
+// type TranslationFunction = (key: string) => string | PrivacySections;
+
 export default function PrivacyPolicyClient({ locale: _locale }: PrivacyPolicyClientProps) {
   const t = useI18n();
 
@@ -126,7 +151,7 @@ export default function PrivacyPolicyClient({ locale: _locale }: PrivacyPolicyCl
     title: t('privacy.title') || fallbackContent.title,
     subtitle: t('privacy.subtitle') || fallbackContent.subtitle,
     lastUpdated: t('privacy.lastUpdated') || fallbackContent.lastUpdated,
-    sections: (t as any)('privacy.sections') || fallbackContent.sections,
+    sections: (t as (key: string) => any)('privacy.sections') || fallbackContent.sections,
     tableOfContents: t('privacy.tableOfContents') || fallbackContent.tableOfContents
   };
 
@@ -209,7 +234,7 @@ export default function PrivacyPolicyClient({ locale: _locale }: PrivacyPolicyCl
               </CardHeader>
               <CardContent>
                 <nav className="space-y-2" role="navigation" aria-label="页面导航">
-                  {sections.map((sectionKey, _index) => {
+                  {sections.map((sectionKey) => {
                     const sectionContent = content.sections[sectionKey as keyof typeof content.sections];
                     const title = typeof sectionContent === 'object' && 'title' in sectionContent 
                       ? sectionContent.title 
@@ -222,7 +247,7 @@ export default function PrivacyPolicyClient({ locale: _locale }: PrivacyPolicyCl
                         className="block text-sm text-gray-600 hover:text-blue-600 transition-colors p-2 rounded hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         aria-label={`跳转到${title}部分`}
                       >
-                        {_index + 1}. {title}
+                        {sections.indexOf(sectionKey) + 1}. {title}
                       </a>
                     );
                   })}
@@ -234,7 +259,7 @@ export default function PrivacyPolicyClient({ locale: _locale }: PrivacyPolicyCl
           {/* Main Content */}
           <div className="lg:col-span-3">
             <div className="space-y-8">
-              {sections.map((sectionKey, index) => {
+              {sections.map((sectionKey) => {
                 const sectionContent = content.sections[sectionKey as keyof typeof content.sections];
                 const Icon = iconMap[sectionKey as keyof typeof iconMap];
                 

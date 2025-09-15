@@ -2,7 +2,7 @@
 
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
 export default function SignInPage() {
@@ -10,7 +10,6 @@ export default function SignInPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,20 +203,20 @@ export default function SignInPage() {
           </div>
 
           <div className="mt-4 text-center">
-            <a 
+            <Link 
               href="/forgot-password" 
               className="text-sm text-indigo-600 hover:text-indigo-500 hover:underline"
             >
               忘记密码？
-            </a>
+            </Link>
           </div>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               还没有账户？{' '}
-              <a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+              <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
                 立即注册
-              </a>
+              </Link>
             </p>
           </div>
         </div>

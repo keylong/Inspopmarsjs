@@ -3,18 +3,73 @@
  * 统一处理不同API响应格式，标准化数据结构
  */
 
-import { InstagramPost, InstagramMedia, DisplayResource, DownloadItem, DownloadResolution } from '@/types/instagram';
-import { generateProxyUrl, getMediaType, generateImageSrc, generateVideoSrc } from './media-proxy';
+import { InstagramPost, InstagramMedia, DisplayResource, DownloadItem, DownloadResolution } from '../../types/instagram';
+import { getMediaType } from './media-proxy';
+
+// Raw data types from Instagram API
+interface RawInstagramMedia {
+  id?: string;
+  shortcode?: string;
+  display_url?: string;
+  url?: string;
+  thumbnail_src?: string;
+  thumbnail?: string;
+  is_video?: boolean;
+  type?: string;
+  video_url?: string;
+  dimensions?: {
+    width: number;
+    height: number;
+  };
+  config_width?: number;
+  config_height?: number;
+  display_resources?: Array<{
+    src: string;
+    config_width: number;
+    config_height: number;
+  }>;
+  media_type?: number;
+  carousel_media?: RawInstagramMedia[];
+}
+
+interface RawInstagramPost extends RawInstagramMedia {
+  permalink?: string;
+  caption?: string;
+  username?: string;
+  taken_at_timestamp?: number;
+  timestamp?: string;
+  edge_sidecar_to_children?: {
+    edges: Array<{ node: RawInstagramMedia }>;
+  };
+  carousel_media?: RawInstagramMedia[];
+  edge_media_to_caption?: {
+    edges: Array<{
+      node: {
+        text: string;
+      };
+    }>;
+  };
+  owner?: {
+    username: string;
+  };
+  __typename?: string;
+  story_type?: string;
+  is_reel?: boolean;
+  is_igtv?: boolean;
+  igtv_type?: string;
+  highlight_reel_type?: string;
+  type?: 'post' | 'story' | 'highlight' | 'reel' | 'igtv';
+}
 
 /**
  * 标准化Instagram媒体数据
  */
-export function standardizeMediaData(rawMedia: any): InstagramMedia {
+export function standardizeMediaData(rawMedia: RawInstagramMedia): InstagramMedia {
   // 处理display_resources数组，生成多分辨率选项
   const displayResources: DisplayResource[] = [];
   
   if (rawMedia.display_resources && Array.isArray(rawMedia.display_resources)) {
-    rawMedia.display_resources.forEach((resource: any) => {
+    rawMedia.display_resources.forEach((resource) => {
       displayResources.push({
         src: resource.src,
         config_width: resource.config_width,
@@ -42,7 +97,7 @@ export function standardizeMediaData(rawMedia: any): InstagramMedia {
   // 对于视频，需要特殊处理缩略图
   const isVideo = rawMedia.is_video || rawMedia.type === 'video' || rawMedia.video_url;
   let thumbnailUrl = '';
-  let mainUrl = rawMedia.display_url || rawMedia.url || '';
+  const mainUrl = rawMedia.display_url || rawMedia.url || '';
   
   if (isVideo) {
     // 对于视频，thumbnail 字段通常是缩略图
@@ -53,36 +108,41 @@ export function standardizeMediaData(rawMedia: any): InstagramMedia {
     thumbnailUrl = rawMedia.display_url || rawMedia.thumbnail || '';
   }
 
-  return {
+  const media: InstagramMedia = {
     id: rawMedia.id || rawMedia.shortcode || generateRandomId(),
     type: determineMediaType(rawMedia),
     url: mainUrl,
     thumbnail: thumbnailUrl,
     width: rawMedia.dimensions?.width || rawMedia.config_width || 1080,
     height: rawMedia.dimensions?.height || rawMedia.config_height || 1080,
-    filename: generateFilename(rawMedia),
+    filename: '', // 临时占位符，下面会更新
     display_resources: displayResources,
     video_url: rawMedia.video_url,
-    is_video: isVideo
+    is_video: Boolean(isVideo)
   };
+  
+  // 生成文件名
+  media.filename = generateFilename(media);
+  
+  return media;
 }
 
 /**
  * 标准化Instagram帖子数据
  */
-export function standardizePostData(rawPost: any): InstagramPost {
+export function standardizePostData(rawPost: RawInstagramPost): InstagramPost {
   let allMedia: InstagramMedia[] = [];
   
   // 优先处理轮播媒体（edge_sidecar_to_children）
   if (rawPost.edge_sidecar_to_children?.edges) {
-    const carouselMedia = rawPost.edge_sidecar_to_children.edges.map((edge: any) => 
+    const carouselMedia = rawPost.edge_sidecar_to_children.edges.map((edge) => 
       standardizeMediaData(edge.node)
     );
     allMedia = allMedia.concat(carouselMedia);
   }
   // 处理carousel_media数组（备用格式）
   else if (rawPost.carousel_media && Array.isArray(rawPost.carousel_media)) {
-    const carouselMedia = rawPost.carousel_media.map((media: any) => 
+    const carouselMedia = rawPost.carousel_media.map((media) => 
       standardizeMediaData(media)
     );
     allMedia = allMedia.concat(carouselMedia);
@@ -102,10 +162,10 @@ export function standardizePostData(rawPost: any): InstagramPost {
       ? new Date(rawPost.taken_at_timestamp * 1000).toISOString()
       : rawPost.timestamp || new Date().toISOString(),
     media: allMedia,
-    type: rawPost.type || determinePostType(rawPost),
+    type: (rawPost.type || determinePostType(rawPost)) as InstagramPost['type'],
     is_carousel: allMedia.length > 1,
     carousel_media: allMedia.length > 1 ? allMedia : [],
-    edge_sidecar_to_children: rawPost.edge_sidecar_to_children
+    edge_sidecar_to_children: rawPost.edge_sidecar_to_children as InstagramPost['edge_sidecar_to_children']
   };
 }
 
@@ -278,17 +338,17 @@ export function generateDownloadItems(post: InstagramPost): DownloadItem[] {
 
 // 辅助函数
 
-function determineMediaType(rawMedia: any): 'image' | 'video' | 'carousel' {
+function determineMediaType(rawMedia: RawInstagramMedia): 'image' | 'video' | 'carousel' {
   if (rawMedia.is_video || rawMedia.video_url || rawMedia.type === 'video') {
     return 'video';
   }
-  if (rawMedia.media_type === 8 || rawMedia.carousel_media) {
+  if (rawMedia.media_type === 8 || (rawMedia.carousel_media && rawMedia.carousel_media.length > 0)) {
     return 'carousel';
   }
   return 'image';
 }
 
-function determinePostType(rawPost: any): 'post' | 'story' | 'highlight' | 'reel' | 'igtv' {
+function determinePostType(rawPost: RawInstagramPost): 'post' | 'story' | 'highlight' | 'reel' | 'igtv' {
   if (rawPost.__typename === 'GraphStory' || rawPost.story_type) return 'story';
   if (rawPost.__typename === 'GraphVideo' || rawPost.is_reel) return 'reel';
   if (rawPost.is_igtv || rawPost.igtv_type) return 'igtv';
@@ -414,8 +474,8 @@ function extractOriginalUrl(proxyUrl: string): string {
     try {
       const urlParam = proxyUrl.substring('/api/proxy/image?url='.length);
       return decodeURIComponent(urlParam);
-    } catch (e) {
-      console.warn('无法解码图片代理URL:', proxyUrl);
+    } catch (error) {
+      console.warn('无法解码图片代理URL:', proxyUrl, error);
       return proxyUrl;
     }
   }
@@ -425,8 +485,8 @@ function extractOriginalUrl(proxyUrl: string): string {
     try {
       const urlParam = proxyUrl.substring('/api/proxy/video?url='.length);
       return decodeURIComponent(urlParam);
-    } catch (e) {
-      console.warn('无法解码视频代理URL:', proxyUrl);
+    } catch (error) {
+      console.warn('无法解码视频代理URL:', proxyUrl, error);
       return proxyUrl;
     }
   }

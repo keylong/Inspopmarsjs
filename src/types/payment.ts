@@ -50,7 +50,7 @@ export interface PaymentOrder {
   alipayTradeNo?: string // 支付宝交易号
   paidAt?: string
   failedReason?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   createdAt: string
   updatedAt: string
 }
@@ -86,7 +86,7 @@ export interface StripeWebhookEvent {
   id: string
   type: string
   data: {
-    object: any
+    object: Record<string, unknown>
   }
   created: number
 }
@@ -107,7 +107,7 @@ export interface AlipayNotifyParams {
   trade_status: string
   total_amount: string
   buyer_email?: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 // API 请求/响应类型

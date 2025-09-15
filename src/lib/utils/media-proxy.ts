@@ -195,7 +195,6 @@ export function createSafeMediaConfig(
   fallbackImage: string = '/placeholder-image.jpg'
 ): SafeMediaConfig {
   const primaryType = getMediaType(primaryUrl);
-  const thumbnailType = thumbnailUrl ? getMediaType(thumbnailUrl) : 'unknown';
   
   return {
     // 图片源：优先使用缩略图（如果是图片），否则使用占位符

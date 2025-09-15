@@ -375,7 +375,7 @@ export const contentTypeConfigs: Record<ContentType, SEOContentConfig> = {
 };
 
 // 生成页面SEO配置
-export function generateSEOConfig(contentType: ContentType, locale: string = 'zh'): NextSeoProps {
+export function generateSEOConfig(contentType: ContentType, _locale: string = 'zh'): NextSeoProps {
   const config = contentTypeConfigs[contentType];
   const baseUrl = 'https://ins.popmars.com';
   

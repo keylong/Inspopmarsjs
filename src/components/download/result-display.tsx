@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Download, 
   ExternalLink, 
@@ -12,14 +12,14 @@ import {
   Video, 
   Package,
   Eye,
-  Share2,
+  // Share2,
   Calendar,
   User,
   FileText,
   AlertCircle,
-  ChevronLeft,
-  ChevronRight,
-  Grid3X3,
+  // ChevronLeft,
+  // ChevronRight,
+  // Grid3X3,
   Play,
   Loader2
 } from 'lucide-react';
@@ -28,7 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { InstagramPost, InstagramMedia, DownloadItem, DownloadResolution } from '@/types/instagram';
-import { ResolutionSelector } from './resolution-selector';
+// import { ResolutionSelector } from './resolution-selector';
 import { MediaPreviewModal } from './media-preview-modal';
 import { generateDownloadItems } from '@/lib/utils/instagram-data-transformer';
 import { useI18n } from '@/lib/i18n/client';
@@ -55,7 +55,6 @@ interface ResultDisplayProps {
 export function ResultDisplay({ 
   result, 
   onDownloadAll,
-  onDownloadSelected,
   onSingleDownload, 
   onRetry, 
   className 

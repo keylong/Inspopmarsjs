@@ -5,8 +5,7 @@ import { USTestimonials } from './components/USTestimonials';
 import { USPricing } from './components/USPricing';
 import { LocalBusinessStructuredData } from '@/components/seo/structured-data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Shield, Zap, Globe, CreditCard, Users, Star, TrendingUp, Award } from 'lucide-react';
+import { CheckCircle, Shield, Zap, Globe, Star, TrendingUp, Award } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 

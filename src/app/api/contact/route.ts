@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
 }
 
 // 处理 OPTIONS 请求（CORS 预检）
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS(_request: NextRequest) {
   return new NextResponse(null, {
     status: 200,
     headers: {

@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import type { SubscriptionPlan as ISubscriptionPlan, PaymentOrder as IPaymentOrder, UserSubscription as IUserSubscription } from '@/types/payment'
 
 // 全局 Prisma 实例
 const globalForPrisma = globalThis as unknown as {
@@ -14,8 +15,13 @@ export const prisma =
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-// 类型定义
-export interface SubscriptionPlan {
+// 导出类型别名
+export type SubscriptionPlan = ISubscriptionPlan
+export type PaymentOrder = IPaymentOrder  
+export type UserSubscription = IUserSubscription
+
+// 扩展类型定义（增加数据库特有字段）
+interface DbSubscriptionPlan extends ISubscriptionPlan {
   id: string
   name: string
   nameEn: string | null
@@ -36,32 +42,37 @@ export interface SubscriptionPlan {
   updatedAt: Date
 }
 
-export interface UserSubscription {
+interface DbUserSubscription {
   id: string
   userId: string
   planId: string
-  status: string
-  paymentMethod: string
+  status: 'active' | 'canceled' | 'expired' | 'pending'
+  paymentMethod: 'stripe' | 'alipay'
   currentPeriodStart: Date
   currentPeriodEnd: Date
   cancelAtPeriodEnd: boolean
   downloadCount: number
+  stripeSubscriptionId?: string | null
+  alipayOrderId?: string | null
   createdAt: Date
   updatedAt: Date
 }
 
-export interface PaymentOrder {
+interface DbPaymentOrder {
   id: string
   userId: string
   planId: string
-  amount: number
+  amount: Decimal
   currency: string
   paymentMethod: string
   status: string
   paymentIntentId: string | null
   alipayTradeNo: string | null
+  gatewayOrderId?: string | null
+  gatewayAmount?: Decimal | null
   metadata: any
   paidAt: Date | null
+  failedReason?: string | null
   createdAt: Date
   updatedAt: Date
 }
@@ -204,6 +215,25 @@ async function getDefaultPlans(): Promise<SubscriptionPlan[]> {
 
 // ===== 用户订阅管理 =====
 
+// 辅助函数：转换数据库订阅到应用订阅
+function convertDbSubscriptionToApp(dbSub: DbUserSubscription): UserSubscription {
+  return {
+    id: dbSub.id,
+    userId: dbSub.userId,
+    planId: dbSub.planId,
+    status: dbSub.status,
+    paymentMethod: dbSub.paymentMethod,
+    currentPeriodStart: dbSub.currentPeriodStart.toISOString(),
+    currentPeriodEnd: dbSub.currentPeriodEnd.toISOString(),
+    cancelAtPeriodEnd: dbSub.cancelAtPeriodEnd,
+    downloadCount: dbSub.downloadCount,
+    stripeSubscriptionId: dbSub.stripeSubscriptionId || undefined,
+    alipayOrderId: dbSub.alipayOrderId || undefined,
+    createdAt: dbSub.createdAt.toISOString(),
+    updatedAt: dbSub.updatedAt.toISOString()
+  }
+}
+
 export async function getUserSubscription(userId: string): Promise<UserSubscription | null> {
   try {
     const subscription = await prisma.userSubscription.findFirst({
@@ -217,9 +247,11 @@ export async function getUserSubscription(userId: string): Promise<UserSubscript
         }
       },
       orderBy: { createdAt: 'desc' }
-    })
+    }) as DbUserSubscription | null
 
-    return subscription
+    if (!subscription) return null
+
+    return convertDbSubscriptionToApp(subscription)
   } catch (error) {
     console.error('获取用户订阅失败:', error)
     return null
@@ -237,7 +269,7 @@ export async function createUserSubscription(subscription: Omit<UserSubscription
     })
 
     console.log(`创建用户订阅成功: ${newSubscription.id}`)
-    return newSubscription
+    return convertDbSubscriptionToApp(newSubscription as DbUserSubscription)
   } catch (error) {
     console.error('创建用户订阅失败:', error)
     throw new Error(`创建订阅失败: ${error instanceof Error ? error.message : String(error)}`)
@@ -251,7 +283,7 @@ export async function updateUserSubscription(id: string, updates: Partial<Omit<U
       data: updates
     })
 
-    return updatedSubscription
+    return convertDbSubscriptionToApp(updatedSubscription as DbUserSubscription)
   } catch (error) {
     console.error('更新用户订阅失败:', error)
     return null
@@ -260,20 +292,40 @@ export async function updateUserSubscription(id: string, updates: Partial<Omit<U
 
 // ===== 支付订单管理 =====
 
+// 辅助函数：转换数据库订单到应用订单
+function convertDbOrderToApp(dbOrder: DbPaymentOrder): PaymentOrder {
+  return {
+    id: dbOrder.id,
+    userId: dbOrder.userId,
+    planId: dbOrder.planId,
+    amount: dbOrder.amount.toNumber(),
+    currency: dbOrder.currency,
+    paymentMethod: dbOrder.paymentMethod as 'stripe' | 'alipay',
+    status: dbOrder.status as 'pending' | 'paid' | 'failed' | 'canceled' | 'refunded',
+    paymentIntentId: dbOrder.paymentIntentId || undefined,
+    alipayTradeNo: dbOrder.alipayTradeNo || undefined,
+    paidAt: dbOrder.paidAt ? dbOrder.paidAt.toISOString() : undefined,
+    failedReason: dbOrder.failedReason || undefined,
+    metadata: dbOrder.metadata || undefined,
+    createdAt: dbOrder.createdAt.toISOString(),
+    updatedAt: dbOrder.updatedAt.toISOString()
+  }
+}
+
 export async function createPaymentOrder(order: Omit<PaymentOrder, 'id' | 'createdAt' | 'updatedAt'>): Promise<PaymentOrder> {
   try {
+    const { metadata, paidAt, ...orderData } = order
     const newOrder = await prisma.paymentOrder.create({
       data: {
-        ...order,
-        amount: new Decimal(order.amount)
+        ...orderData,
+        amount: new Decimal(order.amount),
+        metadata: metadata as Prisma.InputJsonValue || undefined,
+        paidAt: paidAt ? new Date(paidAt) : undefined
       }
     })
 
     console.log(`创建支付订单成功: ${newOrder.id}`)
-    return {
-      ...newOrder,
-      amount: newOrder.amount.toNumber()
-    }
+    return convertDbOrderToApp(newOrder as DbPaymentOrder)
   } catch (error) {
     console.error('创建支付订单失败:', error)
     throw new Error(`创建订单失败: ${error instanceof Error ? error.message : String(error)}`)
@@ -286,16 +338,17 @@ export async function updatePaymentOrder(id: string, updates: Partial<Omit<Payme
     if (updates.amount !== undefined) {
       updateData.amount = new Decimal(updates.amount)
     }
+    // 转换 paidAt 为 Date 对象
+    if (updates.paidAt !== undefined) {
+      updateData.paidAt = updates.paidAt ? new Date(updates.paidAt) : null
+    }
 
     const updatedOrder = await prisma.paymentOrder.update({
       where: { id },
       data: updateData
     })
 
-    return {
-      ...updatedOrder,
-      amount: updatedOrder.amount.toNumber()
-    }
+    return convertDbOrderToApp(updatedOrder as DbPaymentOrder)
   } catch (error) {
     console.error('更新支付订单失败:', error)
     return null
@@ -310,10 +363,7 @@ export async function getPaymentOrderById(id: string): Promise<PaymentOrder | nu
 
     if (!order) return null
 
-    return {
-      ...order,
-      amount: order.amount.toNumber()
-    }
+    return convertDbOrderToApp(order as DbPaymentOrder)
   } catch (error) {
     console.error('获取支付订单失败:', error)
     return null
@@ -328,10 +378,7 @@ export async function getPaymentOrderByPaymentIntentId(paymentIntentId: string):
 
     if (!order) return null
 
-    return {
-      ...order,
-      amount: order.amount.toNumber()
-    }
+    return convertDbOrderToApp(order as DbPaymentOrder)
   } catch (error) {
     console.error('通过PaymentIntentId获取订单失败:', error)
     return null
@@ -346,10 +393,7 @@ export async function getPaymentOrderByAlipayTradeNo(tradeNo: string): Promise<P
 
     if (!order) return null
 
-    return {
-      ...order,
-      amount: order.amount.toNumber()
-    }
+    return convertDbOrderToApp(order as DbPaymentOrder)
   } catch (error) {
     console.error('通过支付宝交易号获取订单失败:', error)
     return null
@@ -369,10 +413,7 @@ export async function getPaymentOrderByGatewayId(gatewayOrderId: string): Promis
 
     if (!order) return null
 
-    return {
-      ...order,
-      amount: order.amount.toNumber()
-    }
+    return convertDbOrderToApp(order as DbPaymentOrder)
   } catch (error) {
     console.error('通过网关订单ID获取订单失败:', error)
     return null
@@ -407,7 +448,7 @@ export async function processSuccessfulPayment(params: ProcessPaymentParams): Pr
     // 更新订单状态
     await updatePaymentOrder(orderId, {
       status: 'paid',
-      paidAt: new Date(paidAt),
+      paidAt: paidAt,
       metadata: {
         ...order.metadata,
         paymentId,
@@ -450,8 +491,8 @@ export async function processSuccessfulPayment(params: ProcessPaymentParams): Pr
       planId,
       status: 'active',
       paymentMethod: order.paymentMethod,
-      currentPeriodStart: currentTime,
-      currentPeriodEnd: periodEnd,
+      currentPeriodStart: currentTime.toISOString(),
+      currentPeriodEnd: periodEnd.toISOString(),
       cancelAtPeriodEnd: false,
       downloadCount: 0
     })

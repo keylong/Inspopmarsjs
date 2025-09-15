@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
     } else if (!membershipCheck.hasPermission) {
       // 登录但无有效会员权限：根据具体情况给出提示
       let errorMessage = '下载失败';
-      let needsUpgrade = true;
+      const needsUpgrade = true;
       
       if (!membershipCheck.hasUsage) {
         errorMessage = '下载次数不足，请购买VIP会员';

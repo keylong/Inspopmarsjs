@@ -6,11 +6,11 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useParams } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, Gift, Calendar, TrendingUp, Star, Target, Award, Users, Sparkles } from 'lucide-react'
-import { useI18n } from '@/lib/i18n/client'
+import { Loader2, Gift, TrendingUp, Star, Target, Award, Users, Sparkles } from 'lucide-react'
+// import { useI18n } from '@/lib/i18n/client' // 暂时注释未使用的导入
 import { CheckinCard } from '@/components/checkin/checkin-card'
 import Link from 'next/link'
 
@@ -21,9 +21,14 @@ interface UserProfile {
   value: number
 }
 
+interface User {
+  id: string
+  email?: string
+  created_at?: string
+}
+
 export default function CheckinPage() {
-  const t = useI18n()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
   const params = useParams()
   const locale = params?.locale as string || 'zh-CN'

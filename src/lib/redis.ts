@@ -28,12 +28,6 @@ const redisConfig: RedisConfig = {
   keepAlive: 30000,
 };
 
-// 缓存操作结果接口
-interface CacheOperationResult<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
 
 // 创建 Redis 实例
 let redis: Redis | null = null;
@@ -76,7 +70,7 @@ export function getRedisClient(): Redis | null {
     }
     
     console.log('Redis 未启用，使用内存缓存模式');
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Failed to create Redis client:', {
       error: error instanceof Error ? error.message : String(error),
       timestamp: new Date().toISOString()
@@ -97,7 +91,7 @@ export class CacheService {
   /**
    * 获取缓存值
    */
-  async get<T = any>(key: string): Promise<T | null> {
+  async get<T = unknown>(key: string): Promise<T | null> {
     if (!key?.trim()) {
       console.warn('Cache get: 空的缓存键');
       return null;
@@ -117,12 +111,12 @@ export class CacheService {
       
       try {
         return JSON.parse(value) as T;
-      } catch (parseError) {
+      } catch (parseError: unknown) {
         console.error(`Cache parse error for key ${trimmedKey}:`, parseError);
         // 如果JSON解析失败，尝试返回原始字符串值
         return value as unknown as T;
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Cache get error for key ${trimmedKey}:`, {
         error: error instanceof Error ? error.message : String(error),
         timestamp: new Date().toISOString()
@@ -134,7 +128,7 @@ export class CacheService {
   /**
    * 设置缓存值
    */
-  async set(key: string, value: any, ttlSeconds?: number): Promise<boolean> {
+  async set(key: string, value: unknown, ttlSeconds?: number): Promise<boolean> {
     if (!key?.trim()) {
       console.warn('Cache set: 空的缓存键');
       return false;
@@ -152,7 +146,7 @@ export class CacheService {
       // 尝试序列化值
       try {
         serialized = JSON.stringify(value);
-      } catch (serializeError) {
+      } catch (serializeError: unknown) {
         console.error(`Cache serialize error for key ${trimmedKey}:`, serializeError);
         return false;
       }
@@ -170,7 +164,7 @@ export class CacheService {
       }
       
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Cache set error for key ${trimmedKey}:`, {
         error: error instanceof Error ? error.message : String(error),
         ttl: ttlSeconds,
@@ -199,7 +193,7 @@ export class CacheService {
       
       await this.redis.del(...validKeys);
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Cache delete error for key(s) ${JSON.stringify(key)}:`, {
         error: error instanceof Error ? error.message : String(error),
         timestamp: new Date().toISOString()
@@ -219,7 +213,7 @@ export class CacheService {
     try {
       const result = await this.redis.exists(key);
       return result === 1;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Cache exists check error for key ${key}:`, error);
       return false;
     }
@@ -236,7 +230,7 @@ export class CacheService {
     try {
       const result = await this.redis.expire(key, seconds);
       return result === 1;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Cache expire error for key ${key}:`, error);
       return false;
     }
@@ -245,7 +239,7 @@ export class CacheService {
   /**
    * 批量获取
    */
-  async mget<T = any>(keys: string[]): Promise<(T | null)[]> {
+  async mget<T = unknown>(keys: string[]): Promise<(T | null)[]> {
     if (!this.redis || keys.length === 0) {
       return keys.map(() => null);
     }
@@ -260,7 +254,7 @@ export class CacheService {
           return null;
         }
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Cache mget error for keys ${keys.join(', ')}:`, error);
       return keys.map(() => null);
     }
@@ -269,7 +263,7 @@ export class CacheService {
   /**
    * 批量设置
    */
-  async mset(keyValuePairs: Record<string, any>, ttlSeconds?: number): Promise<boolean> {
+  async mset(keyValuePairs: Record<string, unknown>, ttlSeconds?: number): Promise<boolean> {
     if (!this.redis) {
       return false;
     }
@@ -307,7 +301,7 @@ export class CacheService {
           }
           
           validPairs++;
-        } catch (serializeError) {
+        } catch (serializeError: unknown) {
           console.error(`Cache mset serialize error for key ${trimmedKey}:`, serializeError);
           continue;
         }
@@ -320,7 +314,7 @@ export class CacheService {
       
       await pipeline.exec();
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Cache mset error:', {
         error: error instanceof Error ? error.message : String(error),
         keysCount: Object.keys(keyValuePairs).length,
@@ -358,7 +352,7 @@ export class CacheService {
       } else {
         return await this.redis.incrby(trimmedKey, increment);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Cache incr error for key ${trimmedKey}:`, {
         error: error instanceof Error ? error.message : String(error),
         increment,
@@ -378,7 +372,7 @@ export class CacheService {
     
     try {
       return await this.redis.keys(pattern);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Cache keys error for pattern ${pattern}:`, error);
       return [];
     }

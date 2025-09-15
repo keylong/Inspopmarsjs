@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
-import { getUserSubscription, getSubscriptionPlanById } from '@/lib/payment-db'
+import { getUserSubscription, getSubscriptionPlanById } from '@/lib/payment-db-prisma'
 import { GetSubscriptionResponse } from '@/types/payment'
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await getCurrentUser()
     

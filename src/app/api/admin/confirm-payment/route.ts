@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPaymentOrderById, updatePaymentOrder } from '@/lib/payment-db'
+import { getPaymentOrderById, updatePaymentOrder } from '@/lib/payment-db-prisma'
 import { processSimplePayment } from '@/lib/payment-simple'
 
 export async function POST(request: NextRequest) {

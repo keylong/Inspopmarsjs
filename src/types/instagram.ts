@@ -85,18 +85,18 @@ export interface DownloadResult {
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: Record<string, unknown>;
   };
   progress?: DownloadProgress;
 }
 
-export interface APIResponse<T = any> {
+export interface APIResponse<T = Record<string, unknown>> {
   success: boolean;
   data?: T;
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: Record<string, unknown>;
   };
   meta?: {
     timestamp: string;

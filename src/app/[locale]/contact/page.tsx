@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useI18n } from '@/lib/i18n/client';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,7 +14,6 @@ import {
   Mail, 
   MessageSquare, 
   Send, 
-  Phone, 
   MapPin, 
   Clock,
   CheckCircle,
@@ -80,13 +80,6 @@ export default function ContactPage() {
     }
   };
 
-  const categoryIcons = {
-    support: HelpCircle,
-    bug: Bug,
-    feedback: Heart,
-    feature: Lightbulb,
-    other: MessageSquare
-  };
 
   if (isSubmitted) {
     return (
@@ -108,7 +101,7 @@ export default function ContactPage() {
                     {t('contact.success.sendAnother')}
                   </Button>
                   <Button asChild>
-                    <a href="/">{t('contact.success.backHome')}</a>
+                    <Link href="/">{t('contact.success.backHome')}</Link>
                   </Button>
                 </div>
               </div>
@@ -358,7 +351,7 @@ export default function ContactPage() {
                 <h3 className="font-medium">{t('contact.quickHelp.faq.title')}</h3>
                 <p className="text-sm text-gray-600">{t('contact.quickHelp.faq.description')}</p>
                 <Button variant="outline" size="sm" asChild>
-                  <a href="/help#faq">{t('contact.quickHelp.faq.button')}</a>
+                  <Link href="/help#faq">{t('contact.quickHelp.faq.button')}</Link>
                 </Button>
               </div>
               
@@ -369,7 +362,7 @@ export default function ContactPage() {
                 <h3 className="font-medium">{t('contact.quickHelp.guide.title')}</h3>
                 <p className="text-sm text-gray-600">{t('contact.quickHelp.guide.description')}</p>
                 <Button variant="outline" size="sm" asChild>
-                  <a href="/help">{t('contact.quickHelp.guide.button')}</a>
+                  <Link href="/help">{t('contact.quickHelp.guide.button')}</Link>
                 </Button>
               </div>
               
@@ -380,7 +373,7 @@ export default function ContactPage() {
                 <h3 className="font-medium">{t('contact.quickHelp.troubleshooting.title')}</h3>
                 <p className="text-sm text-gray-600">{t('contact.quickHelp.troubleshooting.description')}</p>
                 <Button variant="outline" size="sm" asChild>
-                  <a href="/help#troubleshooting">{t('contact.quickHelp.troubleshooting.button')}</a>
+                  <Link href="/help#troubleshooting">{t('contact.quickHelp.troubleshooting.button')}</Link>
                 </Button>
               </div>
             </div>

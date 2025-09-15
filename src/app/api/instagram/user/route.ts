@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { InstagramDownloader, UserService } from '@/lib/api/instagram';
+import { InstagramDownloader } from '@/lib/api/instagram';
+// import { UserService } from '@/lib/api/instagram'; // 未使用，暂时注释
 
 /**
  * POST /api/instagram/user

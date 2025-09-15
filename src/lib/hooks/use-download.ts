@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { DownloadFormData, DownloadResult, URLValidationResult, APIResponse } from '@/types/instagram';
+import { DownloadFormData, URLValidationResult, APIResponse } from '@/types/instagram';
 
 // API 调用函数
 async function validateURL(url: string): Promise<URLValidationResult> {
@@ -20,7 +20,7 @@ async function validateURL(url: string): Promise<URLValidationResult> {
   return result.data!;
 }
 
-async function downloadInstagramContent(data: DownloadFormData): Promise<any> {
+async function downloadInstagramContent(data: DownloadFormData): Promise<APIResponse<Record<string, unknown>>> {
   const response = await fetch('/api/instagram/download', {
     method: 'POST',
     headers: {
@@ -29,7 +29,7 @@ async function downloadInstagramContent(data: DownloadFormData): Promise<any> {
     body: JSON.stringify(data),
   });
 
-  const result = await response.json();
+  const result: APIResponse<Record<string, unknown>> = await response.json();
   
   if (!result.success) {
     throw new Error(result.error?.message || 'Download failed');

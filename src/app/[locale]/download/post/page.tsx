@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -29,13 +29,14 @@ import { useCurrentLocale, useI18n } from '@/lib/i18n/client';
 import { useSearchParams } from 'next/navigation';
 import { useOptionalAuth } from '@/hooks/useAuth';
 import { useToast } from '@/lib/hooks/use-toast';
+import type { I18nFunction } from '@/types/i18n';
 
 import { InstagramPost, DownloadItem } from '@/types/instagram';
-import { generateImageSrc, isVideoUrl, generateVideoSrc } from '@/lib/utils/media-proxy';
+import { generateImageSrc } from '@/lib/utils/media-proxy';
 import { VideoPreviewModal } from '@/components/ui/video-preview-modal';
 import { PremiumUpgradeModal } from '@/components/ui/premium-upgrade-modal';
 import { IPLimitModal } from '@/components/ui/ip-limit-modal';
-import { createErrorHandler, showSuccessToast, showSmartSuggestion } from '@/lib/error-handler';
+import { createErrorHandler } from '@/lib/error-handler';
 
 // 生成内联SVG占位符
 const generatePlaceholder = (width: number, height: number, text: string) => {
@@ -60,15 +61,19 @@ interface DownloadResult {
   error?: string;
   _mode?: string;
   needsUpgrade?: boolean;
-  showUpgradeButton?: boolean; // 新增：是否显示升级按钮
-  membershipStatus?: any; // 新增：会员状态信息
+  showUpgradeButton?: boolean;
+  membershipStatus?: {
+    type: string;
+    typeName: string;
+    isActive: boolean;
+  };
   meta?: {
     remainingUsage?: number;
     usageDeducted?: boolean;
     userAuthenticated?: boolean;
     actualQuality?: string;
     requestedQuality?: string;
-    membershipExpired?: boolean; // 新增：会员是否过期
+    membershipExpired?: boolean;
     ipDownloads?: {
       downloadCount: number;
       remainingDownloads: number;
@@ -130,19 +135,19 @@ export default function InstagramPostDownloadPage() {
         clearTimeout(timer);
       }
     };
-  }, [searchParams]); // 移除 autoSubmitted 依赖，避免重复触发
+  }, [searchParams, autoSubmitted]); // 添加必要的依赖
 
   // 滚动到结果区域
-  const scrollToResults = () => {
+  const scrollToResults = useCallback(() => {
     if (resultsRef.current) {
       resultsRef.current.scrollIntoView({ 
         behavior: 'smooth',
         block: 'start'
       });
     }
-  };
+  }, []);
 
-  const handleAutoSubmit = async (autoUrl: string) => {
+  const handleAutoSubmit = useCallback(async (autoUrl: string) => {
     if (!autoUrl.trim() || isSubmittingRef.current) return;
     
     // 设置提交标记，防止重复提交
@@ -222,9 +227,9 @@ export default function InstagramPostDownloadPage() {
       setShowLoadingPrompt(false);
       isSubmittingRef.current = false; // 重置提交标记
     }
-  };
+  }, [isAuthenticated, errorHandler, t, scrollToResults]);  // 添加必要依赖
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!url.trim() || isSubmittingRef.current) {
@@ -314,7 +319,7 @@ export default function InstagramPostDownloadPage() {
       setShowLoadingPrompt(false);
       isSubmittingRef.current = false; // 重置提交标记
     }
-  };
+  }, [url, isAuthenticated, errorHandler, t, scrollToResults]);  // 添加必要依赖
 
   const handleClear = () => {
     setUrl('');
@@ -716,7 +721,7 @@ export default function InstagramPostDownloadPage() {
                                 onDirectDownload={handleDirectDownload}
                                 onCopyUrl={handleCopyUrl}
                                 onPremiumUpgrade={() => setPremiumModalOpen(true)}
-                                t={t}
+                                t={t as I18nFunction}
                               />
                             ))}
                           </div>
@@ -771,7 +776,7 @@ export default function InstagramPostDownloadPage() {
                   <AlertDescription>
                     {typeof result.error === 'string' 
                       ? result.error 
-                      : (result.error as any)?.message || (result.error as any)?.toString() || t('download.form.downloadFailed')
+                      : result.error ? String(result.error) : t('download.form.downloadFailed')
                     }
                   </AlertDescription>
                 </Alert>
@@ -996,10 +1001,11 @@ export default function InstagramPostDownloadPage() {
 import { InstagramMedia, DisplayResource } from '@/types/instagram';
 
 // 获取分辨率标签的辅助函数
-function getResolutionLabel(index: number, isAuthenticated: boolean, resource: DisplayResource, t: any): string {
+function getResolutionLabel(index: number, isAuthenticated: boolean, resource: DisplayResource, t: I18nFunction): string {
   if (index === 0) {
     // 第一个选项（原图）
-    return isAuthenticated ? t('download.result.original') : '原图 🔒';
+    const originalText = t('download.result.original');
+    return isAuthenticated ? (typeof originalText === 'string' ? originalText : '原图') : '原图 🔒';
   }
   
   // 其他选项
@@ -1018,7 +1024,7 @@ interface MediaCardProps {
   onDirectDownload: (url: string, filename: string) => void;
   onCopyUrl: () => void;
   onPremiumUpgrade: () => void;
-  t: any;
+  t: I18nFunction;
 }
 
 function MediaCard({ media, index, isAuthenticated, isDownloading, onImageClick, onDirectDownload, onCopyUrl, onPremiumUpgrade, t }: MediaCardProps) {
@@ -1140,14 +1146,14 @@ function MediaCard({ media, index, isAuthenticated, isDownloading, onImageClick,
         {media.is_video && (
           <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
             <Film className="w-3 h-3" />
-            {t('download.result.video')}
+            {String(t('download.result.video'))}
           </div>
         )}
         {/* 图片标识 */}
         {!media.is_video && (
           <div className="absolute top-2 left-2 bg-white/90 text-gray-800 px-2 py-1 rounded text-xs flex items-center gap-1">
             <ImageIcon className="w-3 h-3" />
-            {t('download.result.image')}
+            {String(t('download.result.image'))}
           </div>
         )}
         {/* 媒体序号 */}
@@ -1181,7 +1187,7 @@ function MediaCard({ media, index, isAuthenticated, isDownloading, onImageClick,
         {filteredResolutions.length > 0 && (
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('download.result.selectResolution')}:
+              {String(t('download.result.selectResolution'))}:
             </label>
             <div className="flex flex-wrap gap-2">
               {filteredResolutions.map((resource: DisplayResource, resIndex: number) => {
@@ -1231,7 +1237,7 @@ function MediaCard({ media, index, isAuthenticated, isDownloading, onImageClick,
             }}
           >
             <ZoomIn className="w-4 h-4 mr-1" />
-            {t('download.result.preview')}
+            {String(t('download.result.preview'))}
           </Button>
           <Button
             size="sm"

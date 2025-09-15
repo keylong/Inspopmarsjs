@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import QRCode from 'qrcode'
 import {
   Dialog,
   DialogContent,
@@ -11,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { QrCode, Check, Loader2, AlertCircle, X, Shield, Timer, BadgeCheck } from 'lucide-react'
+import { Check, Loader2, AlertCircle, X, Shield, Timer, BadgeCheck } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { WechatPayIcon, AlipayIcon, WechatSecureIcon, AlipaySecureIcon } from '@/components/payment-icons'
 
@@ -60,48 +59,34 @@ export function GatewayPaymentModal({
   // 获取收款二维码
   const fetchPaymentQRCode = async (orderData: any) => {
     try {
-      const response = await fetch(`/api/payment/qr-code?method=${paymentMethod}&orderId=${orderData.gatewayOrderId}`)
+      // 使用本地代理接口避免CORS问题
+      const qrcodeUrl = `/api/payment/qrcode?type=${paymentMethod}&amount=${orderData.gatewayAmount || orderData.amount}`
+      
+      const response = await fetch(qrcodeUrl)
       const result = await response.json()
       
-      if (result.success && result.qrCodeUrl) {
-        setQrCodeUrl(result.qrCodeUrl)
+      console.log('二维码接口响应:', result)
+      
+      if (result.qrCode) {
+        // 直接使用返回的二维码
+        setQrCodeUrl(result.qrCode)
+      } else if (result.data?.qrCode) {
+        // 如果在data字段中
+        setQrCodeUrl(result.data.qrCode)
+      } else if (result.data) {
+        // 如果data就是二维码
+        setQrCodeUrl(result.data)
       } else {
-        // 如果获取不到真实收款码，生成一个示例二维码
-        await generateDemoQRCode(orderData)
+        // 如果获取不到真实收款码，显示错误
+        console.error('未获取到有效的二维码数据')
+        setQrCodeUrl('')
       }
     } catch (error) {
       console.error('获取收款码失败:', error)
-      await generateDemoQRCode(orderData)
-    }
-  }
-
-  // 生成演示二维码
-  const generateDemoQRCode = async (orderData: any) => {
-    try {
-      const paymentInfo = {
-        type: 'payment_demo',
-        orderId: orderData.gatewayOrderId,
-        amount: orderData.amount,
-        method: paymentMethod,
-        timestamp: Date.now(),
-        note: '这是演示二维码，实际收款码需要在支付网关后台配置'
-      }
-      
-      const qrCodeDataURL = await QRCode.toDataURL(JSON.stringify(paymentInfo), {
-        width: 200,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
-        }
-      })
-      
-      setQrCodeUrl(qrCodeDataURL)
-    } catch (error) {
-      console.error('生成演示二维码失败:', error)
       setQrCodeUrl('')
     }
   }
+
 
   // 创建订单
   const createOrder = async () => {
@@ -317,9 +302,8 @@ export function GatewayPaymentModal({
                   ) : (
                     <div className="w-48 h-48 bg-gradient-to-br from-blue-50 to-green-50 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
                       <div className="text-center">
-                        <QrCode className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-600 font-medium">收款二维码</p>
-                        <p className="text-xs text-gray-500 mt-1">请联系管理员配置</p>
+                        <Loader2 className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-2" />
+                        <p className="text-sm text-gray-600 font-medium">加载二维码中...</p>
                       </div>
                     </div>
                   )}
@@ -364,10 +348,10 @@ export function GatewayPaymentModal({
 
               {/* 支付说明和保障 */}
               <div className="space-y-3">
-                {/* 退款保证 */}
-                <div className="flex items-center justify-center gap-2 p-2 bg-orange-50 rounded-lg border border-orange-200">
-                  <Shield className="w-4 h-4 text-orange-600" />
-                  <span className="text-sm text-orange-700 font-medium">当前显示的是演示二维码，实际使用请关闭此窗口</span>
+                {/* 安全保证 */}
+                <div className="flex items-center justify-center gap-2 p-2 bg-green-50 rounded-lg border border-green-200">
+                  <Shield className="w-4 h-4 text-green-600" />
+                  <span className="text-sm text-green-700 font-medium">安全支付，请放心扫码</span>
                 </div>
                 
                 <div className="text-xs text-gray-500 bg-gray-50 rounded p-3">
@@ -375,11 +359,6 @@ export function GatewayPaymentModal({
                   <p>• 支付成功后系统会超快自动激活会员权益</p>
                   <p>• 转账时请确保金额准确无误</p>
                   <p>• 如有问题请联系客服</p>
-                  <div className="mt-2 pt-2 border-t border-gray-200">
-                    <p className="text-orange-600 font-medium">
-                      • 当前显示的演示二维码，供参考外观和布局，实际使用请在开发者后台配置收款码
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>

@@ -12,9 +12,9 @@ import {
   ZoomOut, 
   RotateCw,
   Play,
-  Pause,
-  Volume2,
-  VolumeX,
+  // Pause,
+  // Volume2,
+  // VolumeX,
   Maximize2,
   Minimize2,
   Loader2
@@ -142,9 +142,9 @@ export function MediaPreviewModal({
     setIsPlaying(!isPlaying);
   };
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-  };
+  // const toggleMute = () => {
+  //   setIsMuted(!isMuted);
+  // };
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {

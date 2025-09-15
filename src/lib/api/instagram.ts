@@ -18,13 +18,13 @@ interface ApiResponse<T = any> extends APIResponse<T> {
   _mode?: string;
 }
 
-// 统一错误类型
-interface ApiError {
-  code: string;
-  message: string;
-  details?: any;
-  timestamp: string;
-}
+// 统一错误类型（未使用但保留作为类型定义）
+// interface ApiError {
+//   code: string;
+//   message: string;
+//   details?: any;
+//   timestamp: string;
+// }
 
 // API 配置
 const API_CONFIG = {
@@ -85,7 +85,7 @@ async function apiRequest<T>(endpoint: string, params?: Record<string, any>): Pr
             errorDetails = { ...errorDetails, body: errorBody };
           }
         }
-      } catch (e) {
+      } catch (_e) {
         console.warn(`[${requestId}] 无法读取错误响应体`);
       }
       

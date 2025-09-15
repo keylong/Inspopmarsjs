@@ -30,7 +30,7 @@ export async function getUserByEmail(email: string) {
         password: true,
       }
     })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('获取用户失败:', error)
     return null
   }
@@ -47,7 +47,7 @@ export async function getUserById(id: string) {
         image: true,
       }
     })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('获取用户失败:', error)
     return null
   }
@@ -66,7 +66,7 @@ export async function createUser(data: CreateUserData) {
         // 其他字段使用默认值
       }
     })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('创建用户失败:', error)
     throw new Error('创建用户失败')
   }
@@ -112,7 +112,7 @@ export async function getCurrentUser(): Promise<User | null> {
     })
     
     return user
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('获取当前用户失败:', error)
     return null
   }

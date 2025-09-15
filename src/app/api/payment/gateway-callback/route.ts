@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifySignature, getPaymentGatewayConfig } from '@/lib/payment-gateway'
-import { getPaymentOrderByGatewayId, updatePaymentOrder } from '@/lib/payment-db'
+import { getPaymentOrderByGatewayId, updatePaymentOrder } from '@/lib/payment-db-prisma'
 import { processSimplePayment } from '@/lib/payment-simple'
 import type { GatewayCallbackData } from '@/lib/payment-gateway'
 
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     // 验证签名
     console.log('开始验证签名...')
-    if (!verifySignature(callbackData, callbackData.signature, config.apiKey)) {
+    if (!verifySignature(callbackData as unknown as Record<string, string | number | boolean>, callbackData.signature, config.apiKey)) {
       console.error('❌ 签名验证失败')
       return NextResponse.json({
         success: false,

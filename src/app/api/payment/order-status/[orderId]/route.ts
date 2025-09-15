@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPaymentOrderById } from '@/lib/payment-db'
+import { getPaymentOrderById } from '@/lib/payment-db-prisma'
 
 export async function GET(
   request: NextRequest,
@@ -35,7 +35,6 @@ export async function GET(
         paymentMethod: order.paymentMethod,
         createdAt: order.createdAt,
         paidAt: order.paidAt,
-        failedReason: order.failedReason,
         metadata: order.metadata
       }
     })

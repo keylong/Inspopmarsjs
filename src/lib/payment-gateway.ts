@@ -70,9 +70,9 @@ function getCurrentDomain(): string {
 }
 
 // 生成签名
-export function generateSignature(params: Record<string, any>, apiKey: string): string {
+export function generateSignature(params: Record<string, string | number | boolean>, apiKey: string): string {
   // 添加API密钥到参数中
-  const allParams: Record<string, any> = { ...params, api_key: apiKey }
+  const allParams: Record<string, string | number | boolean> = { ...params, api_key: apiKey }
   
   // 按key排序
   const sortedKeys = Object.keys(allParams).sort()
@@ -92,9 +92,9 @@ export function generateSignature(params: Record<string, any>, apiKey: string): 
 }
 
 // 验证签名
-export function verifySignature(params: Record<string, any>, receivedSignature: string, apiKey: string): boolean {
+export function verifySignature(params: Record<string, string | number | boolean>, receivedSignature: string, apiKey: string): boolean {
   try {
-    const { signature, ...otherParams } = params
+    const { signature: _signature, ...otherParams } = params // 从参数中提取签名（未直接使用）
     const expectedSignature = generateSignature(otherParams, apiKey)
     
     // 使用constant-time比较防止时序攻击
@@ -102,7 +102,7 @@ export function verifySignature(params: Record<string, any>, receivedSignature: 
       Buffer.from(receivedSignature, 'hex'),
       Buffer.from(expectedSignature, 'hex')
     )
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('签名验证错误:', error)
     return false
   }
@@ -136,7 +136,7 @@ export async function createGatewayOrder(params: CreateGatewayOrderParams): Prom
     }
 
     return result
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('创建支付网关订单失败:', error)
     throw error
   }
@@ -155,7 +155,7 @@ export async function getGatewayOrderStatus(orderId: string): Promise<GatewayOrd
 
     const result = await response.json()
     return result
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('查询支付网关订单状态失败:', error)
     throw error
   }
@@ -195,7 +195,7 @@ export async function configurePaymentGateway(): Promise<void> {
     } else {
       console.error('支付网关配置更新失败:', result.message)
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('配置支付网关失败:', error)
   }
 }

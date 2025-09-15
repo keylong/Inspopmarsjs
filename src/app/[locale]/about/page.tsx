@@ -20,9 +20,12 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
-                {[0, 1, 2, 3, 4, 5].map((index) => (
-                  <li key={index}>• {(t as any)(`about.features.items.${index}`)}</li>
-                ))}
+                <li>• {t('about.features.items.0')}</li>
+                <li>• {t('about.features.items.1')}</li>
+                <li>• {t('about.features.items.2')}</li>
+                <li>• {t('about.features.items.3')}</li>
+                <li>• {t('about.features.items.4')}</li>
+                <li>• {t('about.features.items.5')}</li>
               </ul>
             </CardContent>
           </Card>
@@ -33,9 +36,12 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm">
-                {[0, 1, 2, 3, 4, 5].map((index) => (
-                  <li key={index}>• {(t as any)(`about.contentTypes.items.${index}`)}</li>
-                ))}
+                <li>• {t('about.contentTypes.items.0')}</li>
+                <li>• {t('about.contentTypes.items.1')}</li>
+                <li>• {t('about.contentTypes.items.2')}</li>
+                <li>• {t('about.contentTypes.items.3')}</li>
+                <li>• {t('about.contentTypes.items.4')}</li>
+                <li>• {t('about.contentTypes.items.5')}</li>
               </ul>
             </CardContent>
           </Card>

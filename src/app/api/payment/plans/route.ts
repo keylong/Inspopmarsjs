@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSubscriptionPlans } from '@/lib/payment-db-prisma'
 import { GetPlansResponse } from '@/types/payment'
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const plans = await getSubscriptionPlans()
     

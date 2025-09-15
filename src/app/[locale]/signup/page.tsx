@@ -2,8 +2,8 @@
 
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -12,7 +12,6 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +20,7 @@ export default function SignUpPage() {
     setMessage('');
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -37,7 +36,7 @@ export default function SignUpPage() {
       }
 
       setMessage('注册成功！请检查您的邮箱以验证账户。');
-    } catch (error) {
+    } catch {
       setError('注册失败，请重试');
     } finally {
       setLoading(false);
@@ -52,7 +51,7 @@ export default function SignUpPage() {
       
       console.log('开始Google注册，使用默认重定向')
       
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           queryParams: {
@@ -62,7 +61,7 @@ export default function SignUpPage() {
         }
       });
 
-      console.log('Google注册响应:', { data, error })
+      console.log('Google注册响应:', { error })
 
       if (error) {
         console.error('Google注册错误:', error);
@@ -84,11 +83,11 @@ export default function SignUpPage() {
       
       console.log('开始Apple注册，使用默认重定向')
       
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'apple'
       });
 
-      console.log('Apple注册响应:', { data, error })
+      console.log('Apple注册响应:', { error })
 
       if (error) {
         console.error('Apple注册错误:', error);
@@ -222,9 +221,9 @@ export default function SignUpPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               已有账户？{' '}
-              <a href="/signin" className="font-medium text-indigo-600 hover:text-indigo-500">
+              <Link href="/signin" className="font-medium text-indigo-600 hover:text-indigo-500">
                 立即登录
-              </a>
+              </Link>
             </p>
           </div>
         </div>

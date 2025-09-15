@@ -2,6 +2,7 @@
 
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   trackDownload, 
@@ -194,13 +195,13 @@ export default function TestMonitoringPage() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 md:grid-cols-3">
-              <a
+              <Link
                 href="/zh-CN/monitoring"
                 className="block bg-blue-50 border border-blue-200 rounded p-4 hover:bg-blue-100 transition-colors"
               >
                 <h3 className="font-semibold text-blue-900">监控仪表板</h3>
                 <p className="text-sm text-blue-700">查看实时系统监控数据</p>
-              </a>
+              </Link>
               
               <div className="bg-gray-50 border border-gray-200 rounded p-4">
                 <h3 className="font-semibold text-gray-900">Sentry</h3>

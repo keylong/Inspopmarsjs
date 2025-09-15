@@ -15,10 +15,8 @@ export default function BatchDownloadPage() {
     <SEOLayout contentType="batch">
       <DownloadForm 
         placeholder={t('batchDownload.placeholder')}
-        acceptedTypes={['post', 'reels', 'igtv']}
         optimizedFor={t('batchDownload.optimizedFor')}
         features={features}
-        enableBatch={true}
       />
     </SEOLayout>
   );

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 
 interface WebVitalMetric {
   name: string;
@@ -106,7 +107,7 @@ async function logWebVital(metric: WebVitalMetric) {
 // 生成客户端ID
 function generateClientId(userAgent: string, url: string): string {
   // 简单的哈希函数生成客户端ID
-  const hash = require('crypto')
+  const hash = crypto
     .createHash('md5')
     .update(userAgent + url)
     .digest('hex');

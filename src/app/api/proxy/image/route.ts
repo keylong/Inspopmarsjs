@@ -37,7 +37,7 @@ async function proxyMedia(mediaUrl: string): Promise<NextResponse> {
     let decodedUrl: string;
     try {
       decodedUrl = decodeURIComponent(mediaUrl);
-    } catch (e) {
+    } catch {
       return NextResponse.json(
         { error: 'URL格式无效' },
         { status: 400 }

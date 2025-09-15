@@ -1,8 +1,22 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { requestManager } from '@/lib/request-manager'
+
+interface SupabaseUser {
+  id: string
+  email?: string
+  user_metadata?: {
+    name?: string
+    full_name?: string
+    avatar_url?: string
+  }
+  app_metadata?: {
+    providers?: string[]
+  }
+  email_confirmed_at?: string | null
+}
 
 interface User {
   id: string
@@ -47,12 +61,12 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const initialFetchDone = useRef(false)
 
-  const updateUser = async (supabaseUser: any) => {
+  const updateUser = useCallback(async (supabaseUser: SupabaseUser | null) => {
     if (supabaseUser) {
       console.log('用户认证状态变化:', { 
         id: supabaseUser.id, 
@@ -92,7 +106,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
           const result = await response.json()
           console.log('用户同步结果:', result)
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('同步OAuth用户失败:', error)
         }
       }
@@ -104,10 +118,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         image: supabaseUser.user_metadata?.avatar_url || '',
         emailVerified: supabaseUser.email_confirmed_at !== null,
       })
-      // 用户登录后自动获取profile
-      if (supabaseUser) {
-        fetchUserProfile(supabaseUser.id)
-      }
+      // 不在这里直接调用fetchUserProfile，而是通过useEffect处理
     } else {
       setUser(null)
       setUserProfile(null)
@@ -115,9 +126,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.log('[AuthContext] updateUser - 用户为空，清理所有缓存')
       requestManager.clearCache()
     }
-  }
+  }, [])
 
-  const fetchUserProfile = async (userId?: string) => {
+  const fetchUserProfile = useCallback(async (userId?: string) => {
     const currentUserId = userId || user?.id
     if (!currentUserId) {
       console.log('没有用户ID，跳过获取 Profile')
@@ -148,21 +159,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
       )
       
       setUserProfile(data)
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('获取用户资料失败:', error)
       setUserProfile(null)
     }
-  }
+  }, [user])
 
   const refreshUser = async () => {
     try {
       const { data: { user: supabaseUser } } = await supabase.auth.getUser()
-      updateUser(supabaseUser)
-    } catch (error) {
+      await updateUser(supabaseUser as SupabaseUser | null)
+    } catch (error: unknown) {
       console.error('刷新用户信息失败:', error)
       setUser(null)
     }
   }
+
+  // 当 user 变化时自动获取 profile
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserProfile(user.id)
+    }
+  }, [user?.id, fetchUserProfile])
 
   useEffect(() => {
     const initAuth = async () => {
@@ -172,10 +190,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         
         // 只在初始化时调用一次
         if (!initialFetchDone.current) {
-          await updateUser(supabaseUser)
+          await updateUser(supabaseUser as SupabaseUser | null)
           initialFetchDone.current = true
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('初始化认证失败:', error)
         setUser(null)
       } finally {
@@ -203,8 +221,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             }
           }
           
-          await updateUser(session?.user || null)
-        } catch (error) {
+          await updateUser((session?.user || null) as SupabaseUser | null)
+        } catch (error: unknown) {
           console.error('处理认证状态变化失败:', error)
         } finally {
           setIsLoading(false)
@@ -226,7 +244,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       // 执行登出
       await supabase.auth.signOut()
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('退出登录失败:', error)
     }
   }
@@ -258,7 +276,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       )
       
       setUserProfile(data)
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('刷新用户资料失败:', error)
       setUserProfile(null)
     }

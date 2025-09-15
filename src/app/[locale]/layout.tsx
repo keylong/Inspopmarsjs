@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
-import { Geist, Geist_Mono } from 'next/font/google';
 import { I18nProviderClient } from '@/lib/i18n/client';
 import { locales, type Locale } from '@/lib/i18n/config';
 import { Navigation } from '@/components/navigation';
@@ -15,19 +14,6 @@ import { PWAInstallPrompt } from '@/components/pwa/install-prompt';
 export const revalidate = 3600; // 每小时重新验证一次
 export const dynamicParams = true;
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-  display: 'swap', // 优化字体加载
-  preload: true,
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-  display: 'swap', // 优化字体加载
-  preload: true,
-});
 
 interface LocaleLayoutProps {
   children: ReactNode;
